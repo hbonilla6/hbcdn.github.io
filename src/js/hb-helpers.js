@@ -770,21 +770,8 @@ function addActionFunction(functionName, functionImplementation) {
 }
 
 // 3. Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
-function handleCards(cardToClose, cardToOpen) {
-    // Si se especifica una carta para cerrar
-    if (cardToClose) {
-        const cardElementToClose = document.getElementById(cardToClose);
-        if (cardElementToClose) {
-            cardElementToClose.classList.add('collapsed-card');
-            // Actualizamos el ícono de la carta cerrada
-            const buttonIcon = cardElementToClose.querySelector('.card-tools .btn-tool i');
-            if (buttonIcon) {
-                buttonIcon.classList.remove('fa-minus');
-                buttonIcon.classList.add('fa-plus');
-            }
-        }
-    }
-
+// Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
+function handleCards(cardToOpen, cardsToClose = []) {
     // Si se especifica una carta para abrir
     if (cardToOpen) {
         const cardElementToOpen = document.getElementById(cardToOpen);
@@ -798,7 +785,25 @@ function handleCards(cardToClose, cardToOpen) {
             }
         }
     }
+
+    // Si no se especifican cartas a cerrar, se cierran todas las cartas
+    const cards = cardsToClose.length === 0 ? document.querySelectorAll('.card') : cardsToClose;
+
+    // Si se especifica una carta o varias para cerrar
+    cards.forEach(card => {
+        const cardElementToClose = typeof card === 'string' ? document.getElementById(card) : card;
+        if (cardElementToClose && cardElementToClose !== document.getElementById(cardToOpen)) {
+            cardElementToClose.classList.add('collapsed-card');
+            // Actualizamos el ícono de la carta cerrada
+            const buttonIcon = cardElementToClose.querySelector('.card-tools .btn-tool i');
+            if (buttonIcon) {
+                buttonIcon.classList.remove('fa-minus');
+                buttonIcon.classList.add('fa-plus');
+            }
+        }
+    });
 }
+
 
 // 4. Función que devuelve todos los elementos que se pueden enfocar (input, select, textarea)
 function getFocusableElements() {
