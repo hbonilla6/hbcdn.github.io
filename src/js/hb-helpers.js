@@ -768,8 +768,6 @@ function addActionFunction(functionName, functionImplementation) {
         console.error('El nombre de la función debe ser un string y la implementación debe ser una función.');
     }
 }
-
-// 3. Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
 // Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
 function handleCards(cardToOpen, cardsToClose = []) {
     // Si se especifica una carta para abrir
@@ -777,6 +775,11 @@ function handleCards(cardToOpen, cardsToClose = []) {
         const cardElementToOpen = document.getElementById(cardToOpen);
         if (cardElementToOpen) {
             cardElementToOpen.classList.remove('collapsed-card');
+            // Mostramos el card-body
+            const cardBody = cardElementToOpen.querySelector('.card-body');
+            if (cardBody) {
+                cardBody.style.display = 'block';  // Muestra el card-body cuando está abierto
+            }
             // Actualizamos el ícono de la carta abierta
             const buttonIcon = cardElementToOpen.querySelector('.card-tools .btn-tool i');
             if (buttonIcon) {
@@ -794,6 +797,11 @@ function handleCards(cardToOpen, cardsToClose = []) {
         const cardElementToClose = typeof card === 'string' ? document.getElementById(card) : card;
         if (cardElementToClose && cardElementToClose !== document.getElementById(cardToOpen)) {
             cardElementToClose.classList.add('collapsed-card');
+            // Ocultamos el card-body
+            const cardBody = cardElementToClose.querySelector('.card-body');
+            if (cardBody) {
+                cardBody.style.display = 'none';  // Oculta el card-body cuando está cerrado
+            }
             // Actualizamos el ícono de la carta cerrada
             const buttonIcon = cardElementToClose.querySelector('.card-tools .btn-tool i');
             if (buttonIcon) {
@@ -804,16 +812,15 @@ function handleCards(cardToOpen, cardsToClose = []) {
     });
 }
 
-
 // 4. Función que devuelve todos los elementos que se pueden enfocar (input, select, textarea)
 function getFocusableElements() {
     // Definimos los selectores para los elementos enfocados
     const selectors = [
-        'input:not([disabled]):not([type="hidden"])',
-        'select:not([disabled]):not([type="hidden"])',
-        'textarea:not([disabled]):not([type="hidden"])'
+        'input:not([disabled]):not([type="hidden"]):not([data-exclude-apply])',
+        'select:not([disabled]):not([type="hidden"]):not([data-exclude-apply])',
+        'textarea:not([disabled]):not([type="hidden"]):not([data-exclude-apply])'
     ];
-
+    
     // Obtenemos todos los elementos que cumplen con esos selectores y los filtramos para asegurarnos de que sean visibles y de tamaño
     return Array.from(document.querySelectorAll(selectors.join(',')))
         .filter(el => {
