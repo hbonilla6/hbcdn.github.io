@@ -754,72 +754,127 @@ function applyAttributes() {
     h("*[data-interactive='false']")?.css({ 'pointer-events': 'none', opacity: 0.7 });
 }
 
-function getFocusableElements() {
-    const selectors = [
-        'input:not([disabled]):not([type="hidden"]):not([type="readonly"])',
-        'select:not([disabled]):not([type="hidden"]):not([type="readonly"])',
-        'textarea:not([disabled]):not([type="hidden"]):not([type="readonly"])'
-    ];
+// 1. Definimos el objeto global actionFunctions
+const actionFunctions = {};
 
-    return Array.from(document.querySelectorAll(selectors.join(',')))
-        .filter(el => {
-            const style = window.getComputedStyle(el);
-            return style.visibility !== 'hidden' &&
-                style.display !== 'none' &&
-                el.offsetWidth > 0 &&
-                el.offsetHeight > 0;
-        })
-        .sort((a, b) => {
-            const aTab = a.tabIndex || 0;
-            const bTab = b.tabIndex || 0;
-            return aTab - bTab || a.compareDocumentPosition(b) & 2 ? 1 : -1;
-        });
+// 2. Función para agregar dinámicamente una nueva acción a actionFunctions
+function addActionFunction(functionName, functionImplementation) {
+    // Verificamos si el nombre de la función es un string y si la implementación es una función
+    if (typeof functionName === 'string' && typeof functionImplementation === 'function') {
+        // Agregamos la función al objeto actionFunctions
+        actionFunctions[functionName] = functionImplementation;
+    } else {
+        // Si hay algún error, lo mostramos en la consola
+        console.error('El nombre de la función debe ser un string y la implementación debe ser una función.');
+    }
 }
 
+// 3. Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
+function handleCards(cardToClose, cardToOpen) {
+    // Si se especifica una carta para cerrar
+    if (cardToClose) {
+        const cardElementToClose = document.getElementById(cardToClose);
+        if (cardElementToClose) {
+            cardElementToClose.classList.add('collapsed-card');
+            // Actualizamos el ícono de la carta cerrada
+            const buttonIcon = cardElementToClose.querySelector('.card-tools .btn-tool i');
+            if (buttonIcon) {
+                buttonIcon.classList.remove('fa-minus');
+                buttonIcon.classList.add('fa-plus');
+            }
+        }
+    }
 
-function handleEnterAsTab(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const focusable = getFocusableElements();
-        const currentIndex = focusable.indexOf(e.target);
-
-        if (currentIndex > -1) {
-            const nextElement = focusable[currentIndex + 1] || focusable[0];
-            if (nextElement) {
-                nextElement.focus();
-
-                // Función para selección y posicionamiento
-                const selectContent = () => {
-                    if (nextElement instanceof HTMLInputElement) {
-                        if (['text', 'number', 'email', 'tel', 'url', 'password'].includes(nextElement.type)) {
-                            nextElement.select();
-                            // Posicionar cursor al final
-                            //nextElement.setSelectionRange(nextElement.value.length, nextElement.value.length);
-                        }
-                    } else if (nextElement instanceof HTMLTextAreaElement) {
-                        nextElement.select();
-                        // Posicionar cursor al final
-                        //nextElement.setSelectionRange(nextElement.value.length, nextElement.value.length);
-                    } else if (nextElement.isContentEditable) {
-                        const range = document.createRange();
-                        range.selectNodeContents(nextElement);
-                        range.collapse(false); // Posicionar al final
-                        const selection = window.getSelection();
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    }
-                };
-
-                // Fix para Firefox y navegadores que necesitan delay
-                if (nextElement.isContentEditable && navigator.userAgent.toLowerCase().indexOf('firefox') > -1) {
-                    setTimeout(selectContent, 5);
-                } else {
-                    selectContent();
-                }
+    // Si se especifica una carta para abrir
+    if (cardToOpen) {
+        const cardElementToOpen = document.getElementById(cardToOpen);
+        if (cardElementToOpen) {
+            cardElementToOpen.classList.remove('collapsed-card');
+            // Actualizamos el ícono de la carta abierta
+            const buttonIcon = cardElementToOpen.querySelector('.card-tools .btn-tool i');
+            if (buttonIcon) {
+                buttonIcon.classList.remove('fa-plus');
+                buttonIcon.classList.add('fa-minus');
             }
         }
     }
 }
+
+// 4. Función que devuelve todos los elementos que se pueden enfocar (input, select, textarea)
+function getFocusableElements() {
+    // Definimos los selectores para los elementos enfocados
+    const selectors = [
+        'input:not([disabled]):not([type="hidden"])',
+        'select:not([disabled]):not([type="hidden"])',
+        'textarea:not([disabled]):not([type="hidden"])'
+    ];
+
+    // Obtenemos todos los elementos que cumplen con esos selectores y los filtramos para asegurarnos de que sean visibles y de tamaño
+    return Array.from(document.querySelectorAll(selectors.join(',')))
+        .filter(el => {
+            const style = window.getComputedStyle(el);
+            return style.visibility !== 'hidden' && 
+                   style.display !== 'none' && 
+                   el.offsetWidth > 0 && 
+                   el.offsetHeight > 0;
+        });
+}
+
+// 5. Función para manejar el evento `Enter` como un "Tab" (pasar al siguiente elemento)
+function handleEnterAsTab(e) {
+    // Si la tecla presionada es "Enter"
+    if (e.key === 'Enter') {
+        e.preventDefault();  // Prevenimos el comportamiento por defecto del Enter (como enviar un formulario)
+        
+        const currentElement = e.target;  // Elemento que activó el evento
+        
+        // Obtener el ID del siguiente elemento al que se quiere mover
+        const targetId = currentElement.getAttribute('data-next-element-id');
+        
+        // Obtener la función que debe ejecutarse antes de mover al siguiente elemento (si existe)
+        const beforeFunction = currentElement.getAttribute('data-function-before-navigation');
+        
+        // Obtener y parsear los parámetros para la función
+        let functionParams = [];
+        const paramsAttr = currentElement.getAttribute('data-function-parameters');
+        if (paramsAttr) {
+            try {
+                // Intentamos convertir el string a un array de parámetros de forma segura
+                functionParams = JSON.parse(paramsAttr.replace(/'/g, '"'));
+            } catch (error) {
+                console.error('Error parsing function parameters:', error);
+            }
+        }
+        
+        // Ejecutamos la función antes de cambiar al siguiente elemento si está definida
+        if (beforeFunction && actionFunctions[beforeFunction]) {
+            actionFunctions[beforeFunction](...functionParams);
+        }
+        
+        // Buscar el siguiente elemento enfocable
+        let nextElement;
+        if (targetId) {
+            // Si existe un ID destino, lo buscamos
+            nextElement = document.getElementById(targetId);
+        } else {
+            // Si no hay ID, buscamos el siguiente elemento dentro de los elementos enfocados
+            const focusable = getFocusableElements();
+            const currentIndex = focusable.indexOf(currentElement);
+            nextElement = focusable[currentIndex + 1] || focusable[0];  // Si no hay siguiente, vamos al primero
+        }
+
+        // Si encontramos el siguiente elemento, lo enfocamos
+        if (nextElement) {
+            nextElement.focus();  // Establecemos el enfoque al siguiente elemento
+            // Si el siguiente elemento es un input de tipo texto, seleccionamos su contenido
+            if (nextElement instanceof HTMLInputElement && 
+                ['text', 'search', 'url', 'tel', 'password'].includes(nextElement.type)) {
+                nextElement.select();
+            }
+        }
+    }
+}
+
 
 /**
          * Función para manejar la validación de inputs de tipo number.
