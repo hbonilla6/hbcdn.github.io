@@ -756,10 +756,9 @@ function applyAttributes() {
 
 function getFocusableElements() {
     const selectors = [
-        'input:not([disabled]):not([type="hidden"])',
-        'select:not([disabled])',
-        'textarea:not([disabled])',
-        '[contenteditable]',
+        'input:not([disabled]):not([type="hidden"]):not([type="readonly"])',
+        'select:not([disabled]):not([type="hidden"]):not([type="readonly"])',
+        'textarea:not([disabled]):not([type="hidden"]):not([type="readonly"])'
     ];
 
     return Array.from(document.querySelectorAll(selectors.join(',')))
@@ -776,6 +775,7 @@ function getFocusableElements() {
             return aTab - bTab || a.compareDocumentPosition(b) & 2 ? 1 : -1;
         });
 }
+
 
 function handleEnterAsTab(e) {
     if (e.key === 'Enter') {
