@@ -760,7 +760,6 @@ function getFocusableElements() {
         'select:not([disabled])',
         'textarea:not([disabled])',
         '[contenteditable]',
-        '[tabindex]:not([tabindex="-1"]):not([disabled])'
     ];
 
     return Array.from(document.querySelectorAll(selectors.join(',')))
