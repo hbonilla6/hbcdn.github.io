@@ -759,8 +759,6 @@ function getFocusableElements() {
         'input:not([disabled]):not([type="hidden"])',
         'select:not([disabled])',
         'textarea:not([disabled])',
-        'button:not([disabled])',
-        'a[href]',
         '[contenteditable]',
         '[tabindex]:not([tabindex="-1"]):not([disabled])'
     ];
