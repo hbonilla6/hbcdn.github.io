@@ -182,8 +182,8 @@ function executeStep(step, sections, globalConfig = {}) {
                 return {
                     element: elementToHighlight,
                     popover: {
-                        title: title,
-                        description: description,
+                        title: title || 'Sin título',
+                        description: description || 'Sin descripción',
                         position: 'bottom',
                         ...fieldsConfig.popover,
                         ...fieldConfig.popover
