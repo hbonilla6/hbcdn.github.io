@@ -81,12 +81,12 @@ function executeStep(step, sections, globalConfig = {}) {
                 const subSteps = this.createSubSteps(section.fields, section.fieldsConfig);
                 // Aplica la configuración específica del sub-tour
                 const subTourConfig = this.mergeConfigurations(section.fieldsConfig);
-                
+
                 // Crea el sub-tour con los pasos generados
                 const subTour = this.createTour(subSteps, () => {
                     subTour.destroy(); // Limpia el sub-tour
                     this.removeAllEventListeners(); // Elimina listeners
-                    
+
                     // Recrea el tour principal
                     this.mainTour = this.createTour(this.createMainSteps(), () => {
                         // Verifica si se debe terminar el tour
@@ -97,7 +97,7 @@ function executeStep(step, sections, globalConfig = {}) {
                         }
                     }, section.config);
                 }, subTourConfig);
-                
+
                 // Inicia el sub-tour desde el campo seleccionado
                 subTour.drive(fieldIndex);
             }
@@ -164,7 +164,7 @@ function executeStep(step, sections, globalConfig = {}) {
                 // Obtiene el título y descripción del campo
                 let title = field.title;
                 let description = field.description;
-                
+
                 // Maneja contenido dinámico si existe
                 if (field.getDynamicContent) {
                     const dynamicContent = field.getDynamicContent();
@@ -194,26 +194,39 @@ function executeStep(step, sections, globalConfig = {}) {
         }
 
         /**
-         * Crea los pasos para el tour principal
-         */
+ * Crea los pasos para el tour principal
+ */
         createMainSteps() {
-            return Object.entries(this.sections).map(([key, section], index) => ({
-                element: section.id,
-                popover: {
-                    title: section.title,
-                    description: section.description,
-                    position: 'bottom',
-                    ...section.config?.popover
-                },
-                onHighlightStarted: () => this.controlCards(section.id),
-                onHighlighted: () => {
-                    const sectionElement = document.querySelector(section.id);
-                    if (sectionElement) {
-                        this.setupSectionEvents(section, sectionElement, index + 1);
-                    }
-                },
-                ...this.mergeConfigurations(section.config)
-            }));
+            return Object.entries(this.sections).map(([key, section], index) => {
+                // Verificamos que el elemento existe y lo obtenemos correctamente
+                const elementSelector = section.id.startsWith('#') ? section.id : `#${section.id}`;
+                const element = document.querySelector(elementSelector);
+
+                if (!element) {
+                    console.warn(`Elemento no encontrado para la sección ${key}: ${section.id}`);
+                    return null;
+                }
+
+                return {
+                    element: elementSelector, // Usamos el selector completo con #
+                    popover: {
+                        title: section.title || 'Sin título',
+                        description: section.description || 'Sin descripción',
+                        position: 'bottom',
+                        showButtons: ['next', 'previous'],
+                        doneBtnText: 'Finalizar',
+                        closeBtnText: 'Cerrar',
+                        nextBtnText: 'Siguiente',
+                        prevBtnText: 'Anterior',
+                        ...section.config?.popover
+                    },
+                    onHighlightStarted: () => this.controlCards(elementSelector),
+                    onHighlighted: () => {
+                        this.setupSectionEvents(section, element, index + 1);
+                    },
+                    ...this.mergeConfigurations(section.config)
+                };
+            }).filter(step => step !== null); // Filtramos los pasos nulos
         }
 
         /**
@@ -224,7 +237,7 @@ function executeStep(step, sections, globalConfig = {}) {
                 // Obtiene el elemento jQuery
                 const element = $(section.id);
                 const collapsedCard = element.hasClass('collapsed-card');
-                
+
                 // Alterna el estado de colapso
                 element.toggleClass('collapsed-card', section.id !== activeCardId);
 
@@ -245,15 +258,36 @@ function executeStep(step, sections, globalConfig = {}) {
         }
 
         /**
-         * Crea una nueva instancia del tour
-         */
+ * Crea una nueva instancia del tour
+ */
         createTour(steps, onDestroyCallback = null, specificConfig = {}) {
             // Combina las configuraciones
             const tourConfig = this.mergeConfigurations(specificConfig);
-            
+
+            // Aseguramos que la configuración del popover esté presente
+            const finalConfig = {
+                ...tourConfig,
+                animate: true,
+                opacity: 0.75,
+                padding: 5,
+                allowClose: true,
+                overlayClickNext: false,
+                showButtons: true,
+                popover: {
+                    ...tourConfig.popover,
+                    className: 'driver-popover',
+                    showButtons: true,
+                    position: 'bottom',
+                    doneBtnText: 'Finalizar',
+                    closeBtnText: 'Cerrar',
+                    nextBtnText: 'Siguiente',
+                    prevBtnText: 'Anterior'
+                }
+            };
+
             // Crea y retorna la instancia del tour
             return driver({
-                ...tourConfig,
+                ...finalConfig,
                 steps,
                 onDestroyStarted: onDestroyCallback,
             });
@@ -265,7 +299,7 @@ function executeStep(step, sections, globalConfig = {}) {
         start() {
             // Limpia listeners existentes
             this.removeAllEventListeners();
-            
+
             // Crea el tour principal
             this.mainTour = this.createTour(this.createMainSteps(), () => {
                 // Verifica si se debe terminar el tour
@@ -274,7 +308,7 @@ function executeStep(step, sections, globalConfig = {}) {
                     this.removeAllEventListeners();
                 }
             });
-            
+
             // Inicia el tour desde el paso indicado (ajustando el índice base-0)
             this.mainTour.drive(step - 1);
         }
