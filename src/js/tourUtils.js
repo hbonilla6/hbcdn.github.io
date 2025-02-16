@@ -1,130 +1,130 @@
 /**
- * Ejecuta un paso específico del tour guiado en la aplicación.
- * Esta función principal inicializa y controla todo el proceso del tour.
+ * Ejecuta un paso específico del tour.
  * 
- * @param {number} step - El número del paso a ejecutar (comienza en 1)
- * @param {Object} sections - Objeto que contiene todas las secciones del tour
- * @param {Object} [globalConfig={}] - Configuración global del driver (opcional)
+ * @param {number} step - El número del paso a ejecutar (comienza en 1).
  */
-function executeStep(step, sections, globalConfig = {}) {
-    // Obtiene la referencia al driver usando optional chaining para prevenir errores
-    const driver = window.driver?.js?.driver;
+function executeStep(step) {
 
-    // Verifica la disponibilidad del driver antes de continuar
+    // Obtener la función driver del objeto global window.driver.js usando optional chaining
+    const driver = window.driver?.js?.driver;
+    // Verificar si el driver está disponible
     if (!driver) {
         console.error('La función driver no está disponible.');
         return;
     }
 
-    // Define la configuración común base que se aplicará a todos los tours
+    // Configuración común que se aplicará a todos los tours
     const commonConfig = {
-        showProgress: true,      // Controla la visibilidad de la barra de progreso
-        progressText: 'Paso {{current}} de {{total}}', // Plantilla para el texto de progreso
+        showProgress: true,      // Mostrar barra de progreso
+        progressText: 'Paso {{current}} de {{total}}', // Formato del texto de progreso
     };
 
     /**
-     * Clase principal que gestiona toda la funcionalidad del tour guiado
+     * Clase que maneja la funcionalidad del tour guiado en la aplicación
      */
     class TourManager {
         /**
-         * Inicializa una nueva instancia del gestor de tours
+         * Constructor de la clase TourManager
+         * @param {Object} sections - Objeto que contiene todas las secciones del tour
+         * @param {Object} driverConfig - Configuración para el driver del tour
          */
-        constructor(sections, globalConfig) {
-            this.sections = sections; // Almacena las secciones del tour
-            this.globalConfig = { ...commonConfig, ...globalConfig }; // Combina configuraciones
-            this.mainTour = null; // Referencia al tour principal activo
-            this.eventListeners = new Map(); // Almacena los event listeners
+        constructor(sections, driverConfig) {
+            // Almacena las secciones del tour para uso posterior
+            this.sections = sections;
+            // Almacena la configuración del driver
+            this.driverConfig = driverConfig;
+            // Variable para almacenar la referencia al tour principal
+            this.mainTour = null;
+            // Mapa para almacenar los event listeners asociados a elementos
+            this.eventListeners = new Map();
         }
 
         /**
-         * Combina diferentes niveles de configuración
-         * @param {Object} specificConfig - Configuración específica a combinar
-         */
-        mergeConfigurations(specificConfig = {}) {
-            // Combina la configuración global con la específica
-            return {
-                ...this.globalConfig,
-                ...specificConfig,
-                // Maneja especialmente la configuración del popover
-                popover: {
-                    ...this.globalConfig.popover,
-                    ...specificConfig.popover
-                }
-            };
-        }
-
-        /**
-         * Obtiene el elemento form-group más cercano o el elemento original
+         * Obtiene el elemento objetivo para el evento, buscando el contenedor form-group más cercano
          * @param {HTMLElement} element - Elemento DOM base
+         * @returns {HTMLElement} - Elemento form-group encontrado o el elemento original
          */
         getTargetElement(element) {
-            // Busca el contenedor form-group más cercano
+            // Busca el contenedor form-group más cercano al elemento
             const formGroup = element.closest('.form-group');
-            // Retorna el form-group si existe, si no, el elemento original
+            // Retorna el form-group si existe, si no, retorna el elemento original
             return formGroup || element;
         }
 
         /**
          * Maneja la interacción con elementos específicos dentro de una sección
+         * @param {Object} section - Sección actual del tour
+         * @param {number} nextStepIndex - Índice del siguiente paso
+         * @param {HTMLElement} element - Elemento con el que se interactuó
          */
         handleElementInteraction(section, nextStepIndex, element) {
             // Busca el índice del campo que corresponde al elemento clickeado
             const fieldIndex = section.fields.findIndex(field => {
+                // Obtiene el elemento del DOM correspondiente al campo
                 const targetElement = document.querySelector(`#${field.id}`);
+                // Obtiene el elemento objetivo (form-group o el elemento original)
                 const elementToCheck = this.getTargetElement(targetElement);
+                // Verifica si el elemento clickeado corresponde o está contenido en el elemento objetivo
                 return elementToCheck && (elementToCheck === element || elementToCheck.contains(element));
             });
 
             // Si se encontró un campo correspondiente
             if (fieldIndex !== -1) {
-                // Crea los pasos para el sub-tour
-                const subSteps = this.createSubSteps(section.fields, section.fieldsConfig);
-                // Aplica la configuración específica del sub-tour
-                const subTourConfig = this.mergeConfigurations(section.fieldsConfig);
-
+                // Crea los pasos para el sub-tour basados en los campos
+                const subSteps = this.createSubSteps(section.fields);
                 // Crea el sub-tour con los pasos generados
                 const subTour = this.createTour(subSteps, () => {
-                    subTour.destroy(); // Limpia el sub-tour
-                    this.removeAllEventListeners(); // Elimina listeners
-
+                    // Destruye el sub-tour cuando termine 
+                    subTour.destroy();
+                    // Elimina todos los event listeners al cerrar el sub-tour
+                    this.removeAllEventListeners();
                     // Recrea el tour principal
                     this.mainTour = this.createTour(this.createMainSteps(), () => {
                         // Verifica si se debe terminar el tour
                         if (!this.mainTour.hasNextStep() || confirm('¿Quieres terminar el recorrido?')) {
                             this.mainTour.destroy();
+                            // Elimina los event listeners al terminar
                             this.removeAllEventListeners();
                             return;
                         }
-                    }, section.config);
-                }, subTourConfig);
-
+                    });
+                    return;
+                });
                 // Inicia el sub-tour desde el campo seleccionado
                 subTour.drive(fieldIndex);
             }
         }
 
         /**
-         * Crea un manejador de eventos para la interacción con secciones
+         * Crea un manejador de interacción para una sección específica
+         * @param {Object} section - Sección actual
+         * @param {number} nextStepIndex - Índice del siguiente paso
+         * @returns {Function} - Función manejadora del evento
          */
         handleInteraction(section, nextStepIndex) {
+            // Retorna una función que manejará el evento click
             return (event) => {
                 this.handleElementInteraction(section, nextStepIndex, event.target);
             };
         }
 
         /**
-         * Registra un event listener para una sección
+         * Agrega y registra un event listener a una sección
+         * @param {Object} section - Sección a la que se agregará el listener
+         * @param {HTMLElement} sectionElement - Elemento DOM de la sección
+         * @param {number} nextStepIndex - Índice del siguiente paso
          */
         addSectionEventListener(section, sectionElement, nextStepIndex) {
             // Crea el manejador del evento
             const handler = this.handleInteraction(section, nextStepIndex);
-            // Registra el event listener
+            // Agrega el event listener al elemento
             sectionElement.addEventListener('click', handler);
 
-            // Almacena el listener para limpieza posterior
+            // Inicializa el array de listeners para este elemento si no existe
             if (!this.eventListeners.has(sectionElement)) {
                 this.eventListeners.set(sectionElement, []);
             }
+            // Guarda la referencia del listener
             this.eventListeners.get(sectionElement).push({
                 type: 'click',
                 handler: handler
@@ -137,6 +137,7 @@ function executeStep(step, sections, globalConfig = {}) {
         removeAllEventListeners() {
             // Itera sobre todos los elementos y sus listeners
             this.eventListeners.forEach((listeners, element) => {
+                // Elimina cada listener del elemento
                 listeners.forEach(({ type, handler }) => {
                     element.removeEventListener(type, handler);
                 });
@@ -147,15 +148,22 @@ function executeStep(step, sections, globalConfig = {}) {
 
         /**
          * Configura los eventos para una sección específica
+         * @param {Object} section - Sección a configurar
+         * @param {HTMLElement} sectionElement - Elemento DOM de la sección
+         * @param {number} nextStepIndex - Índice del siguiente paso
          */
         setupSectionEvents(section, sectionElement, nextStepIndex) {
+            // Agrega el event listener a la sección
             this.addSectionEventListener(section, sectionElement, nextStepIndex);
         }
 
         /**
          * Crea los pasos para el sub-tour basados en los campos
+         * @param {Array} fields - Array de campos de la sección
+         * @returns {Array} - Array de pasos configurados para el sub-tour
          */
-        createSubSteps(fields, fieldsConfig = {}) {
+        createSubSteps(fields) {
+            // Mapea cada campo a un paso del tour
             return fields.map(field => {
                 // Obtiene el elemento base del DOM
                 const baseElement = document.querySelector(`#${field.id}`);
@@ -164,8 +172,7 @@ function executeStep(step, sections, globalConfig = {}) {
                 // Obtiene el título y descripción del campo
                 let title = field.title;
                 let description = field.description;
-
-                // Maneja contenido dinámico si existe
+                // Si existe una función para contenido dinámico, la ejecuta
                 if (field.getDynamicContent) {
                     const dynamicContent = field.getDynamicContent();
                     if (dynamicContent) {
@@ -176,74 +183,62 @@ function executeStep(step, sections, globalConfig = {}) {
 
                 // Obtiene el elemento a resaltar
                 const elementToHighlight = this.getTargetElement(baseElement);
-                const fieldConfig = field.config || {};
 
                 // Retorna la configuración del paso
                 return {
                     element: elementToHighlight,
                     popover: {
-                        title: title || 'Sin título',
-                        description: description || 'Sin descripción',
+                        title: title,
+                        description: description,
                         position: 'bottom',
-                        ...fieldsConfig.popover,
-                        ...fieldConfig.popover
-                    },
-                    ...this.mergeConfigurations(fieldConfig)
+                    }
                 };
-            }).filter(step => step !== null); // Elimina pasos nulos
+            }).filter(step => step !== null); // Elimina los pasos nulos
         }
 
         /**
- * Crea los pasos para el tour principal
- */
+         * Crea los pasos para el tour principal
+         * @returns {Array} - Array de pasos configurados para el tour principal
+         */
         createMainSteps() {
-            return Object.entries(this.sections).map(([key, section], index) => {
-                // Verificamos que el elemento existe y lo obtenemos correctamente
-                const elementSelector = section.id.startsWith('#') ? section.id : `#${section.id}`;
-                const element = document.querySelector(elementSelector);
-
-                if (!element) {
-                    console.warn(`Elemento no encontrado para la sección ${key}: ${section.id}`);
-                    return null;
-                }
-
-                return {
-                    element: elementSelector, // Usamos el selector completo con #
-                    popover: {
-                        title: section.title || 'Sin título',
-                        description: section.description || 'Sin descripción',
-                        position: 'bottom',
-                        showButtons: ['next', 'previous'],
-                        doneBtnText: 'Finalizar',
-                        closeBtnText: 'Cerrar',
-                        nextBtnText: 'Siguiente',
-                        prevBtnText: 'Anterior',
-                        ...section.config?.popover
-                    },
-                    onHighlightStarted: () => this.controlCards(elementSelector),
-                    onHighlighted: () => {
-                        this.setupSectionEvents(section, element, index + 1);
-                    },
-                    ...this.mergeConfigurations(section.config)
-                };
-            }).filter(step => step !== null); // Filtramos los pasos nulos
+            // Mapea cada sección a un paso del tour principal
+            return Object.entries(this.sections).map(([key, section], index) => ({
+                element: section.id,
+                popover: {
+                    title: section.title,
+                    description: section.description,
+                    position: 'bottom',
+                },
+                // Callback cuando se inicia el resaltado
+                onHighlightStarted: () => this.controlCards(section.id),
+                // Callback cuando se completa el resaltado
+                onHighlighted: () => {
+                    const sectionElement = document.querySelector(section.id);
+                    if (sectionElement) {
+                        this.setupSectionEvents(section, sectionElement, index + 1);
+                    }
+                },
+            }));
         }
 
         /**
          * Controla el estado de las tarjetas (expandido/colapsado)
+         * @param {string} activeCardId - ID de la tarjeta activa
          */
         controlCards(activeCardId) {
+            // Itera sobre todas las secciones
             Object.values(this.sections).forEach(section => {
                 // Obtiene el elemento jQuery
                 const element = $(section.id);
+                // Verifica si la tarjeta está colapsada
                 const collapsedCard = element.hasClass('collapsed-card');
-
-                // Alterna el estado de colapso
+                // Alterna la clase collapsed-card según corresponda
                 element.toggleClass('collapsed-card', section.id !== activeCardId);
 
-                // Maneja el icono del botón
+                // Obtiene el icono del botón
                 const buttonIcon = element.find('.card-tools .btn-tool i').get(0);
                 if (buttonIcon) {
+                    // Actualiza las clases del icono según el estado
                     if (section.id !== activeCardId) {
                         if (!collapsedCard) {
                             buttonIcon.classList.add('fa-minus');
@@ -258,63 +253,41 @@ function executeStep(step, sections, globalConfig = {}) {
         }
 
         /**
- * Crea una nueva instancia del tour
- */
-        createTour(steps, onDestroyCallback = null, specificConfig = {}) {
-            // Combina las configuraciones
-            const tourConfig = this.mergeConfigurations(specificConfig);
-
-            // Aseguramos que la configuración del popover esté presente
-            const finalConfig = {
-                ...tourConfig,
-                animate: true,
-                opacity: 0.75,
-                padding: 5,
-                allowClose: true,
-                overlayClickNext: false,
-                showButtons: true,
-                popover: {
-                    ...tourConfig.popover,
-                    className: 'driver-popover',
-                    showButtons: true,
-                    position: 'bottom',
-                    doneBtnText: 'Finalizar',
-                    closeBtnText: 'Cerrar',
-                    nextBtnText: 'Siguiente',
-                    prevBtnText: 'Anterior'
-                }
-            };
-
-            // Crea y retorna la instancia del tour
+         * Crea una nueva instancia del tour
+         * @param {Array} steps - Pasos del tour
+         * @param {Function} onDestroyCallback - Callback para cuando se destruye el tour
+         * @returns {Object} - Instancia del tour
+         */
+        createTour(steps, onDestroyCallback = null) {
+            // Crea y retorna una nueva instancia del driver con la configuración proporcionada
             return driver({
-                ...finalConfig,
+                ...this.driverConfig,
                 steps,
                 onDestroyStarted: onDestroyCallback,
             });
         }
 
         /**
-         * Inicia el tour desde el paso especificado
+         * Inicia el tour
          */
         start() {
-            // Limpia listeners existentes
+            // Limpia cualquier event listener existente antes de comenzar
             this.removeAllEventListeners();
-
             // Crea el tour principal
             this.mainTour = this.createTour(this.createMainSteps(), () => {
                 // Verifica si se debe terminar el tour
                 if (!this.mainTour.hasNextStep() || confirm('¿Quieres terminar el recorrido?')) {
                     this.mainTour.destroy();
+                    // Elimina los event listeners al terminar
                     this.removeAllEventListeners();
                 }
             });
-
-            // Inicia el tour desde el paso indicado (ajustando el índice base-0)
+            // Inicia el tour desde el paso indicado
             this.mainTour.drive(step - 1);
         }
     }
 
-    // Crea e inicia una instancia del TourManager
-    const tourManager = new TourManager(sections, globalConfig);
+    // Crea una instancia del TourManager y comienza el tour
+    const tourManager = new TourManager(sections, commonConfig);
     tourManager.start();
 }
