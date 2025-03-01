@@ -717,6 +717,53 @@ function showLoadingAlert(loading = true) {
 }
 
 
+/**
+ * @function onSuccessAlert
+ * @description Realiza una solicitud Ajax GET al servidor para obtener contenido parcial y actualizar la vista.
+ *              Muestra una alerta de éxito utilizando SweetAlert2 tras una operación exitosa.
+ * @returns {void}
+ */
+function onSuccessAlert() {
+    // Obtener la URL actual (ruta completa)
+    const currentPath = getFullPath();
+
+    // Obtener el mensaje de éxito desde el atributo data-msj-success del formulario
+    const mensaje = $("form[data-ajax='true']").attr("data-msj-success");
+
+    // Realizar una solicitud Ajax GET al servidor
+    $.ajax({
+        url: currentPath, // URL de la solicitud (ruta completa)
+        type: 'GET', // Método HTTP a utilizar
+        data: { isPartial: true }, // Datos enviados en la solicitud para indicar que es una carga parcial
+        success: function (response) {
+            // Reemplazar el contenido del elemento con id 'renderBody' con la respuesta del servidor
+            $('#renderBody').html(response);
+
+            // Ocultar cualquier modal abierto
+            $('.modal').modal('hide');
+            // Eliminar la clase 'modal-open' del cuerpo para restablecer el estado de la interfaz
+            $('body').removeClass('modal-open');
+            // Eliminar los elementos de fondo de modal
+            $('.modal-backdrop').remove();
+
+            // Mostrar una alerta de éxito utilizando SweetAlert2
+            Swal.fire({
+                icon: 'success', // Tipo de icono a mostrar
+                title: 'Operación exitosa', // Título de la alerta
+                text: mensaje, // Texto del mensaje de éxito
+                showConfirmButton: false, // No mostrar el botón de confirmación
+                timer: 1500 // Duración de la alerta en milisegundos
+            });
+        },
+        error: function (e) {
+            // Mostrar una alerta en caso de error en la solicitud Ajax
+            alert('Error', e);
+        }
+    });
+}
+
+
+
 function hideLoadingAlert(){
     showLoadingAlert(false);
 }
