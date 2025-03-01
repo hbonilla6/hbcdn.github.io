@@ -684,6 +684,7 @@ function togglePassword(button, show) {
     }
 }
 
+let alertLoading;
 /**
  * Muestra una alerta de carga y deshabilita los botones de envío.
  * @param {boolean} [loading=true] - Indica si se debe mostrar el estado de carga (true) o no (false).
@@ -691,15 +692,33 @@ function togglePassword(button, show) {
 function showLoadingAlert(loading = true) {
     // Si 'loading' es true, muestra el mensaje de "Cargando..." y deshabilita los botones de envío.
     if (loading) {
-        // Muestra un toast (notificación) con ícono de información y el mensaje "Cargando...".
-        toast({ icon: tToast.info, title: "Cargando..." });
+         // Mostrar un toast de carga con mensaje "Cargando..."
+         alertLoading = toast({
+            icon: tToast.info, // Ícono informativo
+            position: tToasPosition.bottomStart, // Posición del toast
+            title: "Cargando...", // Título del mensaje de carga
+            timer: 10000 // Tiempo de espera del toast (10 segundos)
+        });
 
         // Deshabilita todos los inputs y botones de tipo submit.
         h("input[type='submit'], button[type='submit']").attr("disabled", true);
     } else {
+        if(alertLoading){
+            // Cerrar el toast de carga
+            const toastInstance = toastMap.get(alertLoading); // Obtener la instancia del toast por su uuid
+            if (toastInstance) {
+                toastInstance.close(); // Cerrar el toast si está presente
+                toastMap.delete(alertLoading); // Eliminar el uuid de la lista de toasts
+            }
+        }
         // Si 'loading' es false, habilita nuevamente los inputs y botones de tipo submit.
         h("input[type='submit'], button[type='submit']").removeAttr("disabled");
     }
+}
+
+
+function hideLoadingAlert(){
+    showLoadingAlert(false);
 }
 
 /**
