@@ -74,89 +74,91 @@
 
     function asyncRequest(element, options) {
         var confirm, loading, method, duration;
-
+    
         confirm = element.getAttribute("data-ajax-confirm");
-
-
+    
         if (confirm) {
-            // Muestra una confirmación usando SweetAlert antes de enviar el formulario.
+            // Muestra una confirmación usando SweetAlert y espera la respuesta
             swalConfirmation({
-                type: tToast.confirm, // Tipo de notificación.
-                title: confirm, // Título de la confirmación.
+                type: tToast.confirm,
+                title: confirm,
                 options: {
                     buttons: {
-                        deny: { show: false }, // Oculta el botón de denegar.
-                        confirm: { color: '#4caf50' } // Configura el color del botón de confirmación.
+                        deny: { show: false },
+                        confirm: { color: '#4caf50' }
                     },
                     onConfirm: function () {
-                        return;
+                        // Solo procede con la solicitud AJAX cuando el usuario confirma
+                        proceedWithAjaxRequest();
                     }
                 }
             });
+        } else {
+            // Si no hay confirmación necesaria, procede directamente
+            proceedWithAjaxRequest();
         }
-
-        loading = $(element.getAttribute("data-ajax-loading"));
-        duration = parseInt(element.getAttribute("data-ajax-loading-duration"), 10) || 0;
-
-        $.extend(options, {
-            type: element.getAttribute("data-ajax-method") || undefined,
-            url: element.getAttribute("data-ajax-url") || undefined,
-            cache: (element.getAttribute("data-ajax-cache") || "").toLowerCase() === "true",
-            beforeSend: function (xhr) {
-                var result;
-                asyncOnBeforeSend(xhr, method);
-                result = getFunction(element.getAttribute("data-ajax-begin"), ["xhr"]).apply(element, arguments);
-                if (result !== false) {
-                    loading.show(duration);
-                }
-                return result;
-            },
-            complete: function () {
-                loading.hide(duration);
-                getFunction(element.getAttribute("data-ajax-complete"), ["xhr", "status"]).apply(element, arguments);
-            },
-            success: function (data, status, xhr) {
-                asyncOnSuccess(element, data, xhr.getResponseHeader("Content-Type") || "text/html");
-                getFunction(element.getAttribute("data-ajax-success"), ["data", "status", "xhr"]).apply(element, arguments);
-            },
-            error: function () {
-                getFunction(element.getAttribute("data-ajax-failure"), ["xhr", "status", "error"]).apply(element, arguments);
-            }
-        });
-
-        options.data.push({ name: "X-Requested-With", value: "XMLHttpRequest" });
-
-        method = options.type.toUpperCase();
-        if (!isMethodProxySafe(method)) {
-            options.type = "POST";
-            options.data.push({ name: "X-HTTP-Method-Override", value: method });
-        }
-
-        // change here:
-        // Check for a Form POST with enctype=multipart/form-data
-        // add the input file that were not previously included in the serializeArray()
-        // set processData and contentType to false
-        var $element = $(element);
-        if ($element.is("form") && $element.attr("enctype") == "multipart/form-data") {
-            var formdata = new FormData();
-            $.each(options.data, function (i, v) {
-                formdata.append(v.name, v.value);
-            });
-            $("input[type=file]", $element).each(function () {
-                var file = this;
-                $.each(file.files, function (n, v) {
-                    formdata.append(file.name, v);
-                });
-            });
+    
+        // Función interna para manejar la solicitud AJAX después de la confirmación
+        function proceedWithAjaxRequest() {
+            loading = $(element.getAttribute("data-ajax-loading"));
+            duration = parseInt(element.getAttribute("data-ajax-loading-duration"), 10) || 0;
+    
             $.extend(options, {
-                processData: false,
-                contentType: false,
-                data: formdata
+                type: element.getAttribute("data-ajax-method") || undefined,
+                url: element.getAttribute("data-ajax-url") || undefined,
+                cache: (element.getAttribute("data-ajax-cache") || "").toLowerCase() === "true",
+                beforeSend: function (xhr) {
+                    var result;
+                    asyncOnBeforeSend(xhr, method);
+                    result = getFunction(element.getAttribute("data-ajax-begin"), ["xhr"]).apply(element, arguments);
+                    if (result !== false) {
+                        loading.show(duration);
+                    }
+                    return result;
+                },
+                complete: function () {
+                    loading.hide(duration);
+                    getFunction(element.getAttribute("data-ajax-complete"), ["xhr", "status"]).apply(element, arguments);
+                },
+                success: function (data, status, xhr) {
+                    asyncOnSuccess(element, data, xhr.getResponseHeader("Content-Type") || "text/html");
+                    getFunction(element.getAttribute("data-ajax-success"), ["data", "status", "xhr"]).apply(element, arguments);
+                },
+                error: function () {
+                    getFunction(element.getAttribute("data-ajax-failure"), ["xhr", "status", "error"]).apply(element, arguments);
+                }
             });
+    
+            options.data.push({ name: "X-Requested-With", value: "XMLHttpRequest" });
+    
+            method = options.type.toUpperCase();
+            if (!isMethodProxySafe(method)) {
+                options.type = "POST";
+                options.data.push({ name: "X-HTTP-Method-Override", value: method });
+            }
+    
+            // Check for a Form POST with enctype=multipart/form-data
+            var $element = $(element);
+            if ($element.is("form") && $element.attr("enctype") == "multipart/form-data") {
+                var formdata = new FormData();
+                $.each(options.data, function (i, v) {
+                    formdata.append(v.name, v.value);
+                });
+                $("input[type=file]", $element).each(function () {
+                    var file = this;
+                    $.each(file.files, function (n, v) {
+                        formdata.append(file.name, v);
+                    });
+                });
+                $.extend(options, {
+                    processData: false,
+                    contentType: false,
+                    data: formdata
+                });
+            }
+    
+            $.ajax(options);
         }
-        // end change
-
-        $.ajax(options);
     }
 
     function validate(form) {
