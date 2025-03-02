@@ -76,8 +76,23 @@
         var confirm, loading, method, duration;
 
         confirm = element.getAttribute("data-ajax-confirm");
-        if (confirm && !window.confirm(confirm)) {
-            return;
+
+
+        if (confirm) {
+            // Muestra una confirmación usando SweetAlert antes de enviar el formulario.
+            swalConfirmation({
+                type: tToast.confirm, // Tipo de notificación.
+                title: "¿Desea confirmar?", // Título de la confirmación.
+                options: {
+                    buttons: {
+                        deny: { show: false }, // Oculta el botón de denegar.
+                        confirm: { color: '#4caf50' } // Configura el color del botón de confirmación.
+                    },
+                    onConfirm: function () {
+                        return;
+                    }
+                }
+            });
         }
 
         loading = $(element.getAttribute("data-ajax-loading"));
