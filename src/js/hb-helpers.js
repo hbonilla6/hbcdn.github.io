@@ -554,6 +554,8 @@ function utilityModal(urlOptions, actionCallBack) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
+            h("[hb-ajax]").each(form => initializeAjaxForm(form));
+
             h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
             // Configura los elementos con `data-post-simple` para habilitar peticiones Ajax unobtrusive
@@ -974,5 +976,160 @@ function handleNumberInput() {
             if (max !== null && value > max) input.value = max; // Ajustamos al máximo permitido si existe
             if (min !== null && value < min) input.value = min; // Ajustamos al mínimo permitido si existe
         }
+    });
+}
+
+
+/**
+ * Inicializa el manejo de formularios AJAX con validación y confirmación.
+ * @param {string} formSelector - Selector CSS del formulario (ej. '#formAjax')
+ * @param {Object} options - Opciones de configuración opcional
+ * @param {string} options.successTitle - Título para el mensaje de éxito
+ * @param {string} options.errorTitle - Título para el mensaje de error
+ * @param {string} options.confirmTitle - Título para el mensaje de confirmación
+ * @param {string} options.confirmText - Texto para el mensaje de confirmación
+ * @param {string} options.renderTarget - Selector donde renderizar la respuesta (ej. '#renderBody')
+ */
+function initializeAjaxForm(formSelector, options = {}) {
+    // Configuración por defecto
+    const config = {
+        successTitle: 'Operación exitosa',
+        errorTitle: 'Ocurrió un error al enviar el formulario',
+        confirmTitle: '¿Estás seguro?',
+        confirmText: '¿Deseas enviar el formulario?',
+        renderTarget: '#renderBody',
+        ...options
+    };
+
+    // Seleccionar todos los formularios que coinciden con el selector
+    $(formSelector).each(function () {
+        const form = $(this)[0]; // Obtener el elemento DOM del objeto jQuery
+
+        // Obtener todos los elementos requeridos en el formulario
+        const requiredElements = form.querySelectorAll('[data-val-required], [required]');
+
+        if (requiredElements.length > 0) {
+            // Mostrar una notificación sobre campos obligatorios
+            toastR({
+                title: "Los elementos marcados con <b style='color: red; font-size: x-large;'>*</b> son obligatorios.",
+                type: tToast.info
+            });
+
+            requiredElements.forEach((element) => {
+                // Obtener la etiqueta asociada al elemento, si existe
+                const labelForElement = document.querySelector(`label[for="${element.id}"]:not(.label-not-required)`);
+                if (labelForElement) {
+                    labelForElement.classList.add('label-required'); // Marcar la etiqueta como requerida
+                } else if (!element.id) {
+                    // Mostrar una advertencia si el elemento requerido no tiene un atributo "id"
+                    h.warn('Elemento con `data-val-required` no tiene un atributo "id":', element);
+                }
+            });
+        }
+
+        // Manejar el evento submit del formulario
+        $(form).submit(function (event) {
+            event.preventDefault(); // Evitar el envío automático del formulario
+
+            // Obtener referencia al formulario desde el evento
+            const submittedForm = event.target;
+
+            // Ejecutar validación de jQuery Validate
+            $(submittedForm).valid();
+
+            // Obtener todos los elementos requeridos que están vacíos o son inválidos
+            const elemInvalids = [...submittedForm.querySelectorAll('[data-val-required], [required]')].filter((element) =>
+                !element.value.trim() ||
+                (typeof isValidElement === 'function' && !isValidElement(element)) ||
+                element.getAttribute("aria-invalid") === 'true'
+            );
+
+            if (elemInvalids.length > 0) {
+                // Si hay elementos inválidos, mostrar un grupo de errores en la consola
+                h.groupCollapsed('Campos Requeridos Inválidos:');
+                elemInvalids.forEach((element, index) => {
+                    // Obtener la etiqueta del elemento o usar el nombre del elemento como alternativa
+                    const label = element.labels?.[0]?.textContent?.trim() || element.name?.trim() || 'Sin etiqueta';
+                    h.error(`- ${label}`); // Mostrar el error en la consola
+
+                    // Solo enfocar el primer campo inválido
+                    if (index === 0) {
+                        element.focus();
+                    }
+                });
+                h.groupEnd();
+                return false; // Prevenir el envío del formulario si hay errores
+            }
+
+            swalConfirmation({
+                type: tToast.confirm, // Tipo de notificación
+                title: config.confirmTitle,
+                text: config.confirmText,
+                options: {
+                    buttons: {
+                        deny: { show: false }, // Ocultar el botón denegar
+                        confirm: { color: '#4caf50' } // Configurar el color del botón de confirmación
+                    },
+                    onConfirm: function () {
+                        // Mostrar indicador de carga
+                        showLoadingAlert(true);
+
+                        // Verificar si las funciones de validación están definidas y devuelven true
+                        const canContinue = (
+                            (typeof convertCase !== 'function' || convertCase()) &&
+                            (typeof verifyIntlTelInput !== 'function' || verifyIntlTelInput())
+                        );
+
+                        if (canContinue) {
+                            // Enviar el formulario usando AJAX
+                            $.ajax({
+                                url: $(submittedForm).attr('action'),
+                                type: $(submittedForm).attr('method'),
+                                data: $(submittedForm).serialize(),
+                                success: function (response) {
+                                    // Manejar la respuesta del servidor
+                                    $(config.renderTarget).html(response);
+
+                                    // Cerrar cualquier modal abierto
+                                    $('.modal').modal('hide');
+                                    // Eliminar la clase 'modal-open' del body para restablecer el estado de la interfaz
+                                    $('body').removeClass('modal-open');
+                                    // Eliminar elementos de fondo del modal
+                                    $('.modal-backdrop').remove();
+
+                                    // Mostrar alerta de éxito usando SweetAlert2
+                                    Swal.fire({
+                                        icon: 'success',
+                                        title: config.successTitle,
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                },
+                                error: function (xhr, status, error) {
+                                    // Manejar errores
+                                    console.error("Error en la solicitud AJAX:", error);
+
+                                    // Mostrar alerta de error usando SweetAlert2
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: config.errorTitle,
+                                        text: xhr.responseText || 'Error desconocido',
+                                        showConfirmButton: true
+                                    });
+                                },
+                                complete: function () {
+                                    // Asegurar que el indicador de carga se oculte en todos los casos
+                                    showLoadingAlert(false);
+                                }
+                            });
+                        } else {
+                            // Si alguna validación falla, habilitar los botones de envío nuevamente
+                            showLoadingAlert(false);
+                            console.warn("Falló la validación de convertCase() o verifyIntlTelInput()");
+                        }
+                    }
+                }
+            });
+        });
     });
 }
