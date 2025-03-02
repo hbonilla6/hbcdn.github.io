@@ -24,6 +24,15 @@ function initializeAjaxForm(formSelector, options = {}) {
     $(formSelector).each(function () {
         const form = $(this)[0]; // Obtener el elemento DOM del objeto jQuery
 
+        // Obtener el mensaje de éxito desde el atributo data-msj-success del formulario
+        const successTitle = $(options.form).attr("hb-success-title");
+        config.successTitle = config.successTitle || successTitle;
+        const confirmtitle = $(options.form).attr("hb-confirm-msg");
+        config.confirmTitle = config.confirmTitle || confirmtitle;
+        const successMsg = $(options.form).attr("hb-success-msg");
+        config.successMsg = config.successMsg || successMsg;
+
+        
         // Obtener todos los elementos requeridos en el formulario
         const requiredElements = form.querySelectorAll('[data-val-required], [required]');
 
@@ -106,7 +115,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 type: $(submittedForm).attr('method'),
                                 data: $(submittedForm).serialize(),
                                 success: function (response) {
-                                    onSuccessAlert(options);
+                                    onSuccessAlert(config);
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores
@@ -890,7 +899,7 @@ function onSuccessAlert(options) {
             Swal.fire({
                 icon: 'success', // Tipo de icono a mostrar
                 title: options.successTitle, // Título de la alerta
-                text: mensaje, // Texto del mensaje de éxito
+                text: options.successMsg, // Texto del mensaje de éxito
                 showConfirmButton: false, // No mostrar el botón de confirmación
                 timer: 1500 // Duración de la alerta en milisegundos
             });
