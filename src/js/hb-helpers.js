@@ -106,23 +106,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 type: $(submittedForm).attr('method'),
                                 data: $(submittedForm).serialize(),
                                 success: function (response) {
-                                    // Manejar la respuesta del servidor
-                                    $(config.renderTarget).html(response);
-
-                                    // Cerrar cualquier modal abierto
-                                    $('.modal').modal('hide');
-                                    // Eliminar la clase 'modal-open' del body para restablecer el estado de la interfaz
-                                    $('body').removeClass('modal-open');
-                                    // Eliminar elementos de fondo del modal
-                                    $('.modal-backdrop').remove();
-
-                                    // Mostrar alerta de éxito usando SweetAlert2
-                                    Swal.fire({
-                                        icon: 'success',
-                                        title: config.successTitle,
-                                        showConfirmButton: false,
-                                        timer: 1500
-                                    });
+                                    onSuccessAlert(options);
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores
@@ -882,12 +866,9 @@ function showLoadingAlert(loading = true) {
  *              Muestra una alerta de éxito utilizando SweetAlert2 tras una operación exitosa.
  * @returns {void}
  */
-function onSuccessAlert() {
+function onSuccessAlert(options) {
     // Obtener la URL actual (ruta completa)
     const currentPath = getFullPath();
-
-    // Obtener el mensaje de éxito desde el atributo data-msj-success del formulario
-    const mensaje = $("form[data-ajax='true']").attr("data-msj-success");
 
     // Realizar una solicitud Ajax GET al servidor
     $.ajax({
@@ -896,7 +877,7 @@ function onSuccessAlert() {
         data: { isPartial: true }, // Datos enviados en la solicitud para indicar que es una carga parcial
         success: function (response) {
             // Reemplazar el contenido del elemento con id 'renderBody' con la respuesta del servidor
-            $('#renderBody').html(response);
+            $(options.renderTarget).html(response);
 
             // Ocultar cualquier modal abierto
             $('.modal').modal('hide');
@@ -908,7 +889,7 @@ function onSuccessAlert() {
             // Mostrar una alerta de éxito utilizando SweetAlert2
             Swal.fire({
                 icon: 'success', // Tipo de icono a mostrar
-                title: 'Operación exitosa', // Título de la alerta
+                title: options.successTitle, // Título de la alerta
                 text: mensaje, // Texto del mensaje de éxito
                 showConfirmButton: false, // No mostrar el botón de confirmación
                 timer: 1500 // Duración de la alerta en milisegundos
