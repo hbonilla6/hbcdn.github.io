@@ -445,8 +445,10 @@ function checkRequiredElements(form) {
         });
     }
 
-    // Asigna el manejador de confirmación al evento de envío del formulario.
-    form.addEventListener("submit", confirmForm);
+    if (!form.hasAttribute('data-ajax')) {
+        // Asigna el manejador de confirmación al evento de envío del formulario.
+        form.addEventListener("submit", confirmForm);
+    }
 }
 
 /**
@@ -683,22 +685,7 @@ function togglePassword(button, show) {
 }
 
 function onBegin() {
-    h("#modalContent").find("form").each(form => {
-        // Muestra una confirmación usando SweetAlert antes de enviar el formulario.
-        swalConfirmation({
-            type: tToast.confirm, // Tipo de notificación.
-            title: "¿Desea confirmar?", // Título de la confirmación.
-            options: {
-                buttons: {
-                    deny: { show: false }, // Oculta el botón de denegar.
-                    confirm: { color: '#4caf50' } // Configura el color del botón de confirmación.
-                },
-                onConfirm: function () {
-                    validateForm(form); // Llama a la función de validación del formulario si se confirma.
-                }
-            }
-        });
-    });
+
 }
 
 let alertLoading;
