@@ -82,7 +82,7 @@
             // Muestra una confirmación usando SweetAlert antes de enviar el formulario.
             swalConfirmation({
                 type: tToast.confirm, // Tipo de notificación.
-                title: "¿Desea confirmar?", // Título de la confirmación.
+                title: confirm, // Título de la confirmación.
                 options: {
                     buttons: {
                         deny: { show: false }, // Oculta el botón de denegar.
