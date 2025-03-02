@@ -25,11 +25,11 @@ function initializeAjaxForm(formSelector, options = {}) {
         const form = $(this)[0]; // Obtener el elemento DOM del objeto jQuery
 
         // Obtener el mensaje de éxito desde el atributo data-msj-success del formulario
-        const successTitle = $(options.form).attr("hb-success-title");
+        const successTitle = $(form).attr("hb-success-title");
         config.successTitle = config.successTitle || successTitle;
-        const confirmtitle = $(options.form).attr("hb-confirm-msg");
+        const confirmtitle = $(form).attr("hb-confirm-msg");
         config.confirmTitle = config.confirmTitle || confirmtitle;
-        const successMsg = $(options.form).attr("hb-success-msg");
+        const successMsg = $(form).attr("hb-success-msg");
         config.successMsg = config.successMsg || successMsg;
 
         
