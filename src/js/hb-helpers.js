@@ -494,8 +494,6 @@ function simplePostUnobtrusiveAjax() {
         .attr("data-ajax-method", "POST")
         // Define el método a llamar en caso de éxito de la solicitud
         .attr("data-ajax-success", "onSuccessAlert")
-        // Define el método a llamar en caso de fallo de la solicitud
-        .attr("data-ajax-failure", "onFailureAlert")
         // Define el método a llamar antes de iniciar la solicitud (mostrar carga)
         .attr("data-ajax-begin", "onBegin")
         // Define el método a llamar cuando la solicitud esté completa (ocultar carga)
@@ -764,12 +762,14 @@ function onSuccessAlert() {
             alert('Error', e);
         }
     });
+    return false;
 }
 
 
 
 function hideLoadingAlert(){
     showLoadingAlert(false);
+    return false;
 }
 
 /**
