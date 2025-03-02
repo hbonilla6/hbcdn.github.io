@@ -542,7 +542,7 @@ function onSelect2Individual(id) {
  * @param {string} urlOptions - URL desde donde se cargará el contenido del modal.
  * @param {function} actionCallBack - Función que se ejecutará luego de que el contenido del modal sea cargado.
  */
-function utilityModal(urlOptions, actionCallBack) {
+function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
     // Realiza una solicitud asincrónica para cargar contenido en el modal
     requestAsync({
         // URL del contenido a cargar
@@ -554,7 +554,7 @@ function utilityModal(urlOptions, actionCallBack) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
-            h("[hb-ajax]").each(form => initializeAjaxForm(form));
+            h("[hb-ajax]").each(form => initializeAjaxForm(form, hbOptions));
 
             h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
