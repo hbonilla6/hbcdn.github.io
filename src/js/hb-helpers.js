@@ -497,7 +497,7 @@ function simplePostUnobtrusiveAjax() {
         // Define el método a llamar en caso de fallo de la solicitud
         .attr("data-ajax-failure", "onFailureAlert")
         // Define el método a llamar antes de iniciar la solicitud (mostrar carga)
-        .attr("data-ajax-begin", "showLoadingAlert")
+        .attr("data-ajax-begin", "onBegin")
         // Define el método a llamar cuando la solicitud esté completa (ocultar carga)
         .attr("data-ajax-complete", "hideLoadingAlert")
 }
@@ -682,6 +682,10 @@ function togglePassword(button, show) {
     } else {
         passwordField.setAttribute('type', 'password'); // Volver a tipo password
     }
+}
+
+function onBegin(){
+    h("form[data-verify-form='true']").each(form => validateForm(form));
 }
 
 let alertLoading;
