@@ -445,10 +445,8 @@ function checkRequiredElements(form) {
         });
     }
 
-    if (!form.hasAttribute('data-ajax')) {
         // Asigna el manejador de confirmación al evento de envío del formulario.
         form.addEventListener("submit", confirmForm);
-    }
 }
 
 /**
@@ -556,7 +554,7 @@ function utilityModal(urlOptions, actionCallBack) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
-            h("#modalContent").find("form").each(form => checkRequiredElements(form));
+            h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
             // Configura los elementos con `data-post-simple` para habilitar peticiones Ajax unobtrusive
             simplePostUnobtrusiveAjax();
