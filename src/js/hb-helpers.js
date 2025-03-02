@@ -682,8 +682,23 @@ function togglePassword(button, show) {
     }
 }
 
-function onBegin(){
-    return false;
+function onBegin() {
+    h("#modalContent").find("form").each(form => {
+        // Muestra una confirmación usando SweetAlert antes de enviar el formulario.
+        swalConfirmation({
+            type: tToast.confirm, // Tipo de notificación.
+            title: "¿Desea confirmar?", // Título de la confirmación.
+            options: {
+                buttons: {
+                    deny: { show: false }, // Oculta el botón de denegar.
+                    confirm: { color: '#4caf50' } // Configura el color del botón de confirmación.
+                },
+                onConfirm: function () {
+                    validateForm(form); // Llama a la función de validación del formulario si se confirma.
+                }
+            }
+        });
+    });
 }
 
 let alertLoading;
@@ -694,8 +709,8 @@ let alertLoading;
 function showLoadingAlert(loading = true) {
     // Si 'loading' es true, muestra el mensaje de "Cargando..." y deshabilita los botones de envío.
     if (loading) {
-         // Mostrar un toast de carga con mensaje "Cargando..."
-         alertLoading = toast({
+        // Mostrar un toast de carga con mensaje "Cargando..."
+        alertLoading = toast({
             icon: tToast.info, // Ícono informativo
             position: tToasPosition.bottomStart, // Posición del toast
             title: "Cargando...", // Título del mensaje de carga
@@ -705,7 +720,7 @@ function showLoadingAlert(loading = true) {
         // Deshabilita todos los inputs y botones de tipo submit.
         h("input[type='submit'], button[type='submit']").attr("disabled", true);
     } else {
-        if(alertLoading){
+        if (alertLoading) {
             // Cerrar el toast de carga
             const toastInstance = toastMap.get(alertLoading); // Obtener la instancia del toast por su uuid
             if (toastInstance) {
@@ -767,7 +782,7 @@ function onSuccessAlert() {
 
 
 
-function hideLoadingAlert(){
+function hideLoadingAlert() {
     showLoadingAlert(false);
     return false;
 }
@@ -890,15 +905,15 @@ function getFocusableElements() {
         'select:not([disabled]):not([type="hidden"]):not([data-exclude-apply])',
         'textarea:not([disabled]):not([type="hidden"]):not([data-exclude-apply])'
     ];
-    
+
     // Obtenemos todos los elementos que cumplen con esos selectores y los filtramos para asegurarnos de que sean visibles y de tamaño
     return Array.from(document.querySelectorAll(selectors.join(',')))
         .filter(el => {
             const style = window.getComputedStyle(el);
-            return style.visibility !== 'hidden' && 
-                   style.display !== 'none' && 
-                   el.offsetWidth > 0 && 
-                   el.offsetHeight > 0;
+            return style.visibility !== 'hidden' &&
+                style.display !== 'none' &&
+                el.offsetWidth > 0 &&
+                el.offsetHeight > 0;
         });
 }
 
@@ -907,15 +922,15 @@ function handleEnterAsTab(e) {
     // Si la tecla presionada es "Enter"
     if (e.key === 'Enter') {
         e.preventDefault();  // Prevenimos el comportamiento por defecto del Enter (como enviar un formulario)
-        
+
         const currentElement = e.target;  // Elemento que activó el evento
-        
+
         // Obtener el ID del siguiente elemento al que se quiere mover
         const targetId = currentElement.getAttribute('data-next-element-id');
-        
+
         // Obtener la función que debe ejecutarse antes de mover al siguiente elemento (si existe)
         const beforeFunction = currentElement.getAttribute('data-function-before-navigation');
-        
+
         // Obtener y parsear los parámetros para la función
         let functionParams = [];
         const paramsAttr = currentElement.getAttribute('data-function-parameters');
@@ -927,12 +942,12 @@ function handleEnterAsTab(e) {
                 console.error('Error parsing function parameters:', error);
             }
         }
-        
+
         // Ejecutamos la función antes de cambiar al siguiente elemento si está definida
         if (beforeFunction && actionFunctions[beforeFunction]) {
             actionFunctions[beforeFunction](...functionParams);
         }
-        
+
         // Buscar el siguiente elemento enfocable
         let nextElement;
         if (targetId) {
@@ -949,7 +964,7 @@ function handleEnterAsTab(e) {
         if (nextElement) {
             nextElement.focus();  // Establecemos el enfoque al siguiente elemento
             // Si el siguiente elemento es un input de tipo texto, seleccionamos su contenido
-            if (nextElement instanceof HTMLInputElement && 
+            if (nextElement instanceof HTMLInputElement &&
                 ['text', 'search', 'url', 'tel', 'password'].includes(nextElement.type)) {
                 nextElement.select();
             }
