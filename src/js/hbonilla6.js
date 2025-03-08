@@ -424,6 +424,26 @@ H.prototype.readonly = function (readonly) {
 };
 
 /**
+ * Obtiene o establece la propiedad 'pointer-events' y el color de fondo en elementos HTML.
+ * @param {boolean} [enabled] - Valor para activar o desactivar los eventos de puntero. Si no se proporciona, se obtiene el estado actual.
+ * @returns {H|boolean} La instancia de H para encadenar o el estado de 'pointer-events' si no se proporciona.
+ */
+H.prototype.pointerEvents = function (enabled) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            if (enabled !== undefined) {
+                this[key].style.pointerEvents = enabled ? "auto" : "none";
+                this[key].style.backgroundColor = enabled ? "" : "#e9ecef";
+            } else {
+                return this[key].style.pointerEvents !== "none";
+            }
+        }
+    }
+    return this;
+};
+
+
+/**
  * Obtiene o establece el atributo 'disabled' en elementos HTML.
  * @param {boolean} [disabled] - Valor para establecer el atributo 'disabled'. Si no se proporciona, se obtiene el valor actual.
  * @returns {H|boolean} La instancia de H para encadenar o el valor de 'disabled' si no se proporciona.

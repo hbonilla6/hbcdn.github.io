@@ -92,7 +92,7 @@ function initializeAjaxForm(formSelector, options = {}) {
             swalConfirmation({
                 type: tToast.confirm, // Tipo de notificación
                 title: config.confirmTitle,
-                text: config.confirmText,
+                // text: config.confirmText,
                 options: {
                     buttons: {
                         deny: { show: false }, // Ocultar el botón denegar
