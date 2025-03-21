@@ -966,11 +966,11 @@ function toInt(value, defaultValue = 0) {
 
 // Función para aplicar atributos según los data-attributes
 function applyAttributes() {
-    h("*[data-disabled='true']")?.attr("disabled", "disabled");
-    h("*[data-checked='true']")?.attr("checked", "checked");
-    h("*[data-readonly='true']")?.attr("readonly", "readonly");
-    h("*[data-hidden='true']")?.attr("hidden", "hidden");
-    h("*[data-interactive='false']")?.css({ 'pointer-events': 'none', opacity: 0.7 });
+    h("*[data-disabled='true']")?.disabled(true);
+    h("*[data-checked='true']")?.checked(true);
+    h("*[data-readonly='true']")?.readonly(true);
+    h("*[data-hidden='true']")?.hidden(true);
+    h("*[data-interactive='false']")?.pointerEvents(false);
 }
 
 // 1. Definimos el objeto global actionFunctions
