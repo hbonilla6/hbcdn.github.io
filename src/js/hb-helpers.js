@@ -702,6 +702,8 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
+            applyAttributes();
+
             initializeAjaxForm("form[hb-ajax]", hbOptions);
 
             h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
