@@ -146,6 +146,46 @@ H.prototype.prop = function (propName, value) {
     }
 };
 
+/**
+ * Obtiene o establece un atributo de datos en los elementos.
+ * @param {string} dataName - Nombre del atributo de datos (sin "data-").
+ * @param {*} [value] - Valor para establecer en el atributo.
+ * @returns {H|*} La instancia de H para encadenar o el valor del atributo del primer elemento si no se pasa un nuevo valor.
+ */
+H.prototype.data = function (dataName, value) {
+    if (value !== undefined) {
+        // Establece el valor del atributo de datos en todos los elementos
+        for (let key in this) {
+            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+                this[key].setAttribute(`data-${dataName}`, value);
+            }
+        }
+        return this;
+    } else {
+        // Retorna el valor del atributo de datos del primer elemento
+        for (let key in this) {
+            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+                return this[key].getAttribute(`data-${dataName}`);
+            }
+        }
+    }
+};
+
+/**
+ * Verifica si los elementos coinciden con el selector especificado.
+ * @param {string} selector - El selector CSS que se va a verificar.
+ * @returns {boolean} `true` si algún elemento coincide con el selector, `false` en caso contrario.
+ */
+H.prototype.is = function (selector) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            if (this[key].matches(selector)) {
+                return true;
+            }
+        }
+    }
+    return false;
+};
 
 
 /**

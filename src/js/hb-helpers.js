@@ -1128,24 +1128,24 @@ function handleNumberInput() {
 
 
 /**
- * Inicializa la funcionalidad de subida de imágenes.
+ * Inicializa la funcionalidad de subida de imágenes con jQuery.
  *
- * Configura los manejadores de eventos para la carga de archivos mediante el input y el arrastrar-soler,
+ * Configura los manejadores de eventos para la carga de archivos mediante el input y el arrastrar-soltar,
  * actualizando la vista previa de la imagen y utilizando una imagen de marcador de posición cuando sea necesario.
  *
  * @function initImageUpload
  */
 function initImageUpload() {
-    const uploadContainer = document.querySelector('.hb-image-upload');
+    const $uploadContainer = h('.hb-image-upload');
     // Contenedor principal que envuelve la subida y vista previa de la imagen.
     
-    const preview = uploadContainer.querySelector('.hb-image-preview');
+    const $preview = $uploadContainer.find('.hb-image-preview');
     // Elemento que muestra la vista previa de la imagen.
 
-    const fileInput = uploadContainer.querySelector('input[type="file"]');
+    const $fileInput = $uploadContainer.find('input[type="file"]');
     // Elemento input para seleccionar archivos.
 
-    const placeholderImage = preview.getAttribute('data-placeholder');
+    const placeholderImage = $preview.data('placeholder');
     // Imagen de marcador de posición que se mostrará por defecto.
 
     let currentBlobUrl = null;
@@ -1165,7 +1165,7 @@ function initImageUpload() {
         }
         currentBlobUrl = imageUrl instanceof Blob ? URL.createObjectURL(imageUrl) : imageUrl;
         // Crea una URL para el Blob o utiliza la URL proporcionada.
-        preview.src = currentBlobUrl;
+        $preview.attr('src', currentBlobUrl);
         // Actualiza la propiedad src del elemento de vista previa.
     }
 
@@ -1179,13 +1179,13 @@ function initImageUpload() {
             URL.revokeObjectURL(currentBlobUrl);
             currentBlobUrl = null;
         }
-        preview.src = placeholderImage;
+        $preview.attr('src', placeholderImage);
     }
 
     resetImage();
     // Inicializa la vista previa con la imagen de marcador de posición.
 
-    fileInput.addEventListener('change', function(event) {
+    $fileInput.on('change', function(event) {
         // Detecta cuando se selecciona un archivo mediante el input.
         const file = event.target.files[0];
         if (file) {
@@ -1195,28 +1195,28 @@ function initImageUpload() {
         }
     });
 
-    preview.addEventListener('dragover', function(event) {
-        const label = fileInput.nextElementSibling; // Obtiene el label asociado al input
-        if (label.hidden) {
+    $preview.on('dragover', function(event) {
+        const $label = $fileInput.next('label'); // Obtiene el label asociado al input
+        if ($label.is(':hidden')) {
             event.preventDefault(); // Evita el comportamiento predeterminado
             return;
         }
         event.preventDefault();
-        preview.classList.add('hb-dragover');
+        $preview.addClass('hb-dragover');
     });
 
-    preview.addEventListener('drop', function(event) {
-        const label = fileInput.nextElementSibling; // Obtiene el label asociado al input
-        if (label.hidden) {
+    $preview.on('drop', function(event) {
+        const $label = $fileInput.next('label'); // Obtiene el label asociado al input
+        if ($label.is(':hidden')) {
             event.preventDefault(); // Evita la carga de archivos si el label está oculto
             return;
         }
         event.preventDefault();
-        preview.classList.remove('hb-dragover');
-        const file = event.dataTransfer.files[0];
+        $preview.removeClass('hb-dragover');
+        const file = event.originalEvent.dataTransfer.files[0];
         if (file && file.type.startsWith('image/')) {
             setImage(file);
-            fileInput.files = event.dataTransfer.files;
+            $fileInput.prop('files', event.originalEvent.dataTransfer.files);
         }
     });
 }
