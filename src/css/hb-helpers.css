@@ -1,3 +1,7 @@
+.justify-content-center{
+    justify-content: center !important;
+}
+
 /* Contenedor principal para la carga de imágenes */
 .hb-image-upload {
     position: relative; /* Permite posicionar elementos hijos de manera absoluta */
