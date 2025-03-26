@@ -1125,3 +1125,98 @@ function handleNumberInput() {
         }
     });
 }
+
+
+/**
+ * Inicializa la funcionalidad de subida de imágenes.
+ *
+ * Configura los manejadores de eventos para la carga de archivos mediante el input y el arrastrar-soler,
+ * actualizando la vista previa de la imagen y utilizando una imagen de marcador de posición cuando sea necesario.
+ *
+ * @function initImageUpload
+ */
+function initImageUpload() {
+    const uploadContainer = document.querySelector('.hb-image-upload');
+    // Contenedor principal que envuelve la subida y vista previa de la imagen.
+    
+    const preview = uploadContainer.querySelector('.hb-image-preview');
+    // Elemento que muestra la vista previa de la imagen.
+
+    const fileInput = uploadContainer.querySelector('input[type="file"]');
+    // Elemento input para seleccionar archivos.
+
+    const placeholderImage = preview.getAttribute('data-placeholder');
+    // Imagen de marcador de posición que se mostrará por defecto.
+
+    let currentBlobUrl = null;
+    // Variable para almacenar la URL del blob de la imagen actual.
+
+    /**
+     * Actualiza la vista previa de la imagen con la imagen proporcionada.
+     *
+     * Si se pasa un objeto Blob, se crea una URL para el mismo. Si ya hay una URL activa, se revoca para liberar recursos.
+     *
+     * @param {(string|Blob)} imageUrl - Fuente de la imagen, ya sea una URL o un objeto Blob.
+     */
+    function setImage(imageUrl) {
+        if (currentBlobUrl) {
+            URL.revokeObjectURL(currentBlobUrl);
+            // Revoca la URL previa para liberar memoria.
+        }
+        currentBlobUrl = imageUrl instanceof Blob ? URL.createObjectURL(imageUrl) : imageUrl;
+        // Crea una URL para el Blob o utiliza la URL proporcionada.
+        preview.src = currentBlobUrl;
+        // Actualiza la propiedad src del elemento de vista previa.
+    }
+
+    /**
+     * Restaura la imagen de vista previa a la imagen de marcador de posición.
+     *
+     * Revoca cualquier URL de blob activa y asigna la imagen placeholder.
+     */
+    function resetImage() {
+        if (currentBlobUrl) {
+            URL.revokeObjectURL(currentBlobUrl);
+            currentBlobUrl = null;
+        }
+        preview.src = placeholderImage;
+    }
+
+    resetImage();
+    // Inicializa la vista previa con la imagen de marcador de posición.
+
+    fileInput.addEventListener('change', function(event) {
+        // Detecta cuando se selecciona un archivo mediante el input.
+        const file = event.target.files[0];
+        if (file) {
+            setImage(file);
+        } else {
+            resetImage();
+        }
+    });
+
+    preview.addEventListener('dragover', function(event) {
+        const label = fileInput.nextElementSibling; // Obtiene el label asociado al input
+        if (label.hidden) {
+            event.preventDefault(); // Evita el comportamiento predeterminado
+            return;
+        }
+        event.preventDefault();
+        preview.classList.add('hb-dragover');
+    });
+
+    preview.addEventListener('drop', function(event) {
+        const label = fileInput.nextElementSibling; // Obtiene el label asociado al input
+        if (label.hidden) {
+            event.preventDefault(); // Evita la carga de archivos si el label está oculto
+            return;
+        }
+        event.preventDefault();
+        preview.classList.remove('hb-dragover');
+        const file = event.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            setImage(file);
+            fileInput.files = event.dataTransfer.files;
+        }
+    });
+}

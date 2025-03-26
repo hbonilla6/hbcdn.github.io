@@ -1,0 +1,91 @@
+/* Contenedor principal para la carga de imágenes */
+.hb-image-upload {
+    position: relative; /* Permite posicionar elementos hijos de manera absoluta */
+    width: 100%; /* Se ajusta al ancho completo del contenedor padre */
+    max-width: 250px; /* Limita el ancho máximo a 250px */
+}
+
+/* Estilos para la previsualización de la imagen cargada */
+.hb-image-preview {
+    width: 100%; /* La imagen ocupará todo el ancho disponible */
+    aspect-ratio: 1/1; /* Mantiene una relación de aspecto cuadrada */
+    object-fit: cover; /* Ajusta la imagen para cubrir el contenedor sin deformarse */
+    border-radius: 12px; /* Bordes redondeados para un diseño más suave */
+    transition: all 0.3s ease; /* Suaviza las animaciones al cambiar propiedades */
+    border: 1px solid lightgray; /* Borde delgado de color gris claro */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1), 
+                0 6px 10px rgba(0, 0, 0, 0.05); /* Agrega sombras para dar efecto elevado */
+    background-color: white; /* Color de fondo en caso de que la imagen no cargue */
+}
+
+/* Efecto al pasar el cursor sobre la imagen */
+.hb-image-preview:hover {
+    transform: scale(1.02); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.15); /* Hace la sombra más pronunciada */
+}
+
+/* Estilos cuando se arrastra un archivo sobre la previsualización */
+.hb-image-preview.hb-dragover {
+    border: 3px dashed #007bff; /* Cambia el borde a un estilo de línea discontinua azul */
+    opacity: 0.7; /* Reduce la opacidad para dar feedback visual */
+}
+
+/* Contenedor del botón de edición */
+.hb-image-edit {
+    position: absolute; /* Se posiciona sobre la imagen */
+    top: 10px; /* Distancia de 10px desde la parte superior */
+    right: 10px; /* Distancia de 10px desde el borde derecho */
+    z-index: 10; /* Se asegura de estar sobre otros elementos */
+}
+
+/* Oculta el input de archivo para personalizar su apariencia */
+.hb-image-edit input {
+    display: none;
+}
+
+/* Estilos del botón de edición */
+.hb-image-edit label {
+    display: flex; /* Activa flexbox para centrar el contenido */
+    justify-content: center; /* Centra horizontalmente el icono */
+    align-items: center; /* Centra verticalmente el icono */
+    width: 40px; /* Define el ancho del botón */
+    height: 40px; /* Define la altura del botón */
+    background-color: white; /* Fondo blanco */
+    border-radius: 50%; /* Hace el botón completamente redondo */
+    cursor: pointer; /* Cambia el cursor a una mano indicando interactividad */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra ligera para un efecto elevado */
+    transition: all 0.2s ease; /* Suaviza la animación */
+}
+
+/* Efecto al pasar el cursor sobre el botón de edición */
+.hb-image-edit label:hover {
+    transform: scale(1.1); /* Aumenta ligeramente el tamaño */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Sombra más pronunciada */
+}
+
+/* Agrega un icono de lápiz dentro del botón de edición */
+.hb-image-edit label::after {
+    content: "✏️"; /* Agrega un emoji de lápiz como icono */
+    font-size: 18px; /* Define el tamaño del icono */
+}
+
+/* Oculta el botón de edición si tiene el atributo 'hidden' */
+.hb-image-edit label[hidden] {
+    display: none !important;
+}
+
+/* Diseño responsivo para pantallas medianas */
+@media (max-width: 768px) {
+    .hb-image-edit label {
+        width: 35px; /* Reduce el tamaño del botón */
+        height: 35px;
+    }
+}
+
+/* Diseño responsivo para pantallas pequeñas */
+@media (max-width: 480px) {
+    .hb-image-edit label {
+        width: 30px; /* Reduce aún más el tamaño del botón */
+        height: 30px;
+    }
+}
