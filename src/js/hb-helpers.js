@@ -703,6 +703,7 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             h.info('completed utility modal');
 
             applyAttributes();
+            initImageUpload();
 
             initializeAjaxForm("form[hb-ajax]", hbOptions);
 
