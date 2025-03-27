@@ -296,11 +296,9 @@ function initializeAjaxForm(formSelector, options = {}) {
                             text: confirmButtonText,
                             color: confirmButtonColor 
                         },
-                        buttons: {
-                            deny: {
-                                show: false
-                            }
-                        },
+                        deny: {
+                            show: false
+                        }
                     },
                     onConfirm: function () {
                         // Mostrar indicador de carga
