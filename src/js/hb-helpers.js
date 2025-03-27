@@ -1,3 +1,153 @@
+function inicializarFormulariosHbHbx() {
+    // Obtiene todos los elementos requeridos en el formulario.
+    const requiredElements = document.querySelector('form')
+        .querySelectorAll('[data-val-required], [required]');
+    if (requiredElements.length > 0) {
+        // Muestra una notificación sobre los campos obligatorios.
+        toastR({
+            title: "Los elementos marcados con <b style='color: red; font-size: x-large;'>*</b> son obligatorios.",
+            type: tToast.info
+        });
+
+        requiredElements.forEach((element) => {
+            // Obtiene la etiqueta asociada al elemento, si existe.
+            const labelForElement = document.querySelector(`label[for="${element.id}"]:not(.label-not-required)`);
+            if (labelForElement) {
+                labelForElement.classList.add('label-required'); // Marca la etiqueta como requerida.
+            } else if (!element.id) {
+                // Muestra una advertencia si el elemento requerido no tiene un atributo "id".
+                h.warn('Elemento con `data-val-required` no tiene un atributo "id":', element);
+            }
+        });
+    }
+    // Selecciona todos los formularios con el atributo 'hb-hbx' y les asigna un evento 'submit'
+    $('form[hb-hbx]').off('submit').on('submit', function (e) {
+        e.preventDefault(); // Evita el envío tradicional del formulario
+        const form = $(this); // Guarda la referencia al formulario actual
+        const confirmMessage = form.data('hb-confirm') || '¿Estás seguro de realizar esta acción?'; // Obtiene el mensaje de confirmación personalizado o usa uno por defecto
+
+        // Obtiene todos los elementos requeridos que están vacíos o son inválidos.
+        const elemInvalids = [...this.querySelectorAll('[data-val-required], [required]')].filter((element) =>
+            !element.value.trim() || !element.checkValidity() || element.getAttribute("aria-invalid") === 'true'
+        );
+
+        if (elemInvalids.length > 0) {
+            // Si hay elementos inválidos, muestra un grupo de errores en la consola.
+            h.groupCollapsed('Campos Requeridos Inválidos:');
+            elemInvalids.forEach((element) => {
+                // Obtiene la etiqueta del elemento o usa el nombre del elemento como fallback.
+                const label = element.labels?.[0]?.textContent?.trim() || element.name?.trim() || 'Sin etiqueta';
+                h.error(`- ${label}`); // Muestra el error en la consola.
+                element.focus(); // Focaliza el primer campo inválido para la corrección del usuario.
+            });
+            h.groupEnd();
+            return false; // Previene el envío del formulario si hay errores.
+        }
+
+        // Muestra una alerta de confirmación con SweetAlert
+        Swal.fire({
+            title: confirmMessage,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) { // Si el usuario confirma, ejecuta la petición AJAX
+                ejecutarAjax(form);
+            } else {
+                toast({ title: '&#161;Acci&oacute;n cancelada!', icon: tToast.info });
+            }
+        });
+
+        return false; // Previene el envío del formulario hasta que se confirme.
+    });
+
+    // Función para ejecutar la petición AJAX
+    // Función para ejecutar la petición AJAX
+    function ejecutarAjax(form) {
+        $.ajax({
+            url: form.attr('action'),
+            method: form.attr('method'),
+            data: form.serialize(),
+            beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
+            success: getCallback(form, 'hb-success', successDefault),
+            error: getCallback(form, 'hb-error', errorDefault),
+            complete: getCallback(form, 'hb-complete', completeDefault)
+        });
+    }
+
+    // Función especial para manejar beforeSend
+    function getBeforeSendCallback(form) {
+        return function (jqXHR, settings) {
+            const functionName = form.data('hb-before');
+            if (typeof window[functionName] === 'function') {
+                // Ejecuta la función personalizada con jqXHR, settings y form
+                window[functionName](jqXHR, settings, form);
+            } else {
+                // Ejecuta la función por defecto con form
+                beforeDefault(form);
+            }
+        };
+    }
+
+    // Función para obtener el callback adecuado (personalizado o por defecto)
+    function getCallback(form, attribute, defaultCallback) {
+        const functionName = form.data(attribute);
+        return function (...args) {
+            if (typeof window[functionName] === 'function') {
+                // Ejecuta la función personalizada con los argumentos de jQuery AJAX y el formulario
+                window[functionName](...args, form);
+            } else {
+                // Ejecuta la función por defecto con los argumentos de jQuery AJAX y el formulario
+                defaultCallback(...args, form);
+            }
+        };
+    }
+
+    // Función por defecto que se ejecuta antes de enviar la petición
+    function beforeDefault(form) {
+        form.find('button').prop('disabled', true); // Deshabilita el botón de envío
+        //Swal.showLoading(); // Muestra un loader de SweetAlert
+    }
+
+    // Función por defecto que se ejecuta en caso de éxito
+    function successDefault(response, status, xhr, form) {
+        toast({
+            icon: tToast.success,
+            title: 'Operación realizada correctamente'
+        });
+
+        cerrarModal(form); // Cierra el modal que contiene el formulario
+    }
+
+    // Función por defecto que se ejecuta en caso de error
+    function errorDefault(xhr, status, error, form) {
+        toastR({ title: "Error", msg: xhr.responseJSON?.message || 'Error en la solicitud' }); // Muestra una alerta de error
+        cerrarModal(form); // Cierra el modal que contiene el formulario
+    }
+
+    // Función por defecto que se ejecuta al completar la petición
+    function completeDefault(xhr, status, form) {
+        form.find('button').prop('disabled', false); // Habilita el botón de envío
+    }
+
+    // Función para cerrar el modal que contiene el formulario
+    function cerrarModal(form) {
+        const modal = $(form).closest('.modal'); // Busca el modal más cercano al formulario
+        if (modal.length) {
+            // Ocultar cualquier modal abierto
+            modal.modal('hide');
+            modal.removeClass('show');
+            modal.css('display', 'none'); // Corregido: usar css() en lugar de asignación directa
+            // Eliminar la clase 'modal-open' del cuerpo para restablecer el estado de la interfaz
+            $('body').removeClass('modal-open');
+            // Eliminar los elementos de fondo de modal
+            $('.modal-backdrop').remove();
+            // Eliminar el padding-right que Bootstrap añade
+            $('body').css('padding-right', '');
+        }
+    }
+}
 
 /**
  * Inicializa el manejo de formularios AJAX con validación y confirmación.
@@ -705,7 +855,8 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             applyAttributes();
             initImageUpload();
 
-            initializeAjaxForm("form[hb-ajax]", hbOptions);
+            initializeAjaxForm("form[hb-catalog]", hbOptions);
+            inicializarFormulariosHbHbx("form[hb-hbx]");
 
             h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
