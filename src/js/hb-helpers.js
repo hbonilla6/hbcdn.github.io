@@ -152,14 +152,45 @@ function inicializarFormulariosHbHbx() {
 }
 
 /**
- * Inicializa el manejo de formularios AJAX con validación y confirmación.
+ * Configuraciones predefinidas para diferentes tipos de acciones
+ */
+const actionPresets = {
+    agregar: {
+        successTitle: 'Registro Agregado',
+        errorTitle: 'Error al Agregar',
+        confirmTitle: '¿Deseas agregar este registro?',
+        confirmText: 'Esta acción agregará un nuevo elemento',
+        confirmColor: '#28a745', // Verde
+        cancelColor: '#6c757d', // Gris
+        confirmButtonText: 'Agregar',
+        cancelButtonText: 'Cancelar'
+    },
+    modificar: {
+        successTitle: 'Registro Modificado',
+        errorTitle: 'Error al Modificar',
+        confirmTitle: '¿Deseas modificar este registro?',
+        confirmText: 'Esta acción actualizará la información existente',
+        confirmColor: '#17a2b8', // Azul cyan
+        cancelColor: '#6c757d', // Gris
+        confirmButtonText: 'Modificar',
+        cancelButtonText: 'Cancelar'
+    },
+    eliminar: {
+        successTitle: 'Registro Eliminado',
+        errorTitle: 'Error al Eliminar',
+        confirmTitle: '¿Estás seguro de eliminar?',
+        confirmText: 'Esta acción no se puede deshacer',
+        confirmColor: '#dc3545', // Rojo
+        cancelColor: '#6c757d', // Gris
+        confirmButtonText: 'Eliminar',
+        cancelButtonText: 'Cancelar'
+    }
+};
+
+/**
+ * Inicializa el manejo de formularios AJAX con validación y confirmación personalizable.
  * @param {string} formSelector - Selector CSS del formulario (ej. '#formAjax')
  * @param {Object} options - Opciones de configuración opcional
- * @param {string} options.successTitle - Título para el mensaje de éxito
- * @param {string} options.errorTitle - Título para el mensaje de error
- * @param {string} options.confirmTitle - Título para el mensaje de confirmación
- * @param {string} options.confirmText - Texto para el mensaje de confirmación
- * @param {string} options.renderTarget - Selector donde renderizar la respuesta (ej. '#renderBody')
  */
 function initializeAjaxForm(formSelector, options = {}) {
     // Configuración por defecto
@@ -176,14 +207,23 @@ function initializeAjaxForm(formSelector, options = {}) {
     $(formSelector).each(function () {
         const form = $(this)[0]; // Obtener el elemento DOM del objeto jQuery
 
-        // Obtener el mensaje de éxito desde el atributo data-msj-success del formulario
-        const successTitle = $(form).attr("hb-success-title");
-        config.successTitle = successTitle || config.successTitle;
-        const confirmtitle = $(form).attr("hb-confirm-msg");
-        config.confirmTitle = confirmtitle || config.confirmTitle;
-        const successMsg = $(form).attr("hb-success-msg");
-        config.successMsg = successMsg || config.successMsg;
+        // Obtener la acción predefinida desde el atributo hb-action
+        const actionType = $(form).attr("hb-action");
+        const actionPreset = actionPresets[actionType] || {};
 
+        // Personalización de títulos y mensajes desde atributos
+        const successTitle = $(form).attr("hb-success-title") || actionPreset.successTitle || config.successTitle;
+        const errorTitle = $(form).attr("hb-error-title") || actionPreset.errorTitle || config.errorTitle;
+        const confirmTitle = $(form).attr("hb-confirm-title") || actionPreset.confirmTitle || config.confirmTitle;
+        const confirmText = $(form).attr("hb-confirm-text") || actionPreset.confirmText || config.confirmText;
+
+        // Personalización de colores de botones
+        const confirmButtonColor = $(form).attr("hb-confirm-color") || actionPreset.confirmColor || '#4caf50';
+        const cancelButtonColor = $(form).attr("hb-cancel-color") || actionPreset.cancelColor || '#d33';
+
+        // Personalización de texto de botones
+        const confirmButtonText = $(form).attr("hb-confirm-button-text") || actionPreset.confirmButtonText || 'Confirmar';
+        const cancelButtonText = $(form).attr("hb-cancel-button-text") || actionPreset.cancelButtonText || 'Cancelar';
 
         // Obtener todos los elementos requeridos en el formulario
         const requiredElements = form.querySelectorAll('[data-val-required], [required]');
@@ -243,12 +283,19 @@ function initializeAjaxForm(formSelector, options = {}) {
 
             swalConfirmation({
                 type: tToast.confirm, // Tipo de notificación
-                title: config.confirmTitle,
-                // text: config.confirmText,
+                title: confirmTitle,
+                text: confirmText,
                 options: {
                     buttons: {
-                        deny: { show: false }, // Ocultar el botón denegar
-                        confirm: { color: '#4caf50' } // Configurar el color del botón de confirmación
+                        deny: { 
+                            show: true, 
+                            text: cancelButtonText,
+                            color: cancelButtonColor
+                        },
+                        confirm: { 
+                            text: confirmButtonText,
+                            color: confirmButtonColor 
+                        }
                     },
                     onConfirm: function () {
                         // Mostrar indicador de carga
@@ -269,16 +316,18 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 processData: false, // Crucial para FormData
                                 contentType: false, // Crucial para FormData
                                 success: function (response) {
-                                    onSuccessAlert(config);
+                                    onSuccessAlert({
+                                        successTitle: successTitle
+                                    });
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores
-                                    console.error("Error en la solicitud AJAX:", error);
+                                    h.error("Error en la solicitud AJAX:", error);
 
                                     // Mostrar alerta de error usando SweetAlert2
                                     Swal.fire({
                                         icon: 'error',
-                                        title: config.errorTitle,
+                                        title: errorTitle,
                                         text: xhr.responseText || 'Error desconocido',
                                         showConfirmButton: true
                                     });
@@ -291,7 +340,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                         } else {
                             // Si alguna validación falla, habilitar los botones de envío nuevamente
                             showLoadingAlert(false);
-                            console.warn("Falló la validación de convertCase() o verifyIntlTelInput()");
+                            h.warn("Falló la validación de convertCase() o verifyIntlTelInput()");
                         }
                     }
                 }
@@ -609,7 +658,7 @@ function getFullPath() {
 // Función para agregar la ruta al formulario
 function addCurrentPathToForm(form) {
     if (!form || !(form instanceof HTMLFormElement)) {
-        console.error('Se requiere un elemento form válido');
+        h.error('Se requiere un elemento form válido');
         return;
     }
 
@@ -1148,7 +1197,7 @@ function addActionFunction(functionName, functionImplementation) {
         actionFunctions[functionName] = functionImplementation;
     } else {
         // Si hay algún error, lo mostramos en la consola
-        console.error('El nombre de la función debe ser un string y la implementación debe ser una función.');
+        h.error('El nombre de la función debe ser un string y la implementación debe ser una función.');
     }
 }
 // Función para manejar el estado de las cartas (si deben ser abiertas o cerradas)
@@ -1237,7 +1286,7 @@ function handleEnterAsTab(e) {
                 // Intentamos convertir el string a un array de parámetros de forma segura
                 functionParams = JSON.parse(paramsAttr.replace(/'/g, '"'));
             } catch (error) {
-                console.error('Error parsing function parameters:', error);
+                h.error('Error parsing function parameters:', error);
             }
         }
 
