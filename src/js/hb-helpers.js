@@ -68,7 +68,7 @@ function inicializarFormulariosHbHbx() {
         $.ajax({
             url: form.attr('action'),
             method: form.attr('method'),
-            data: new FormData(form[0]), // Convertir a FormData
+            data: new FormData(form), // Convertir a FormData
             processData: false, // Importante para FormData
             contentType: false, // Importante para FormData
             beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
@@ -265,7 +265,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                             $.ajax({
                                 url: $(submittedForm).attr('action'),
                                 type: $(submittedForm).attr('method'),
-                                data: new FormData(submittedForm[0]), // Convertir a FormData
+                                data: new FormData(submittedForm), // Convertir a FormData
                                 processData: false, // Crucial para FormData
                                 contentType: false, // Crucial para FormData
                                 success: function (response) {
