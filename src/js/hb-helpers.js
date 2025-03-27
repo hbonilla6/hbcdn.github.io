@@ -287,7 +287,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                 text: confirmText,
                 options: {
                     buttons: {
-                        deny: { 
+                        cancel: { 
                             show: true, 
                             text: cancelButtonText,
                             color: cancelButtonColor
