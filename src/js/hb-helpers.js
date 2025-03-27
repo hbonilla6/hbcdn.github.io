@@ -320,9 +320,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 processData: false, // Crucial para FormData
                                 contentType: false, // Crucial para FormData
                                 success: function (response) {
-                                    onSuccessAlert({
-                                        successTitle: successTitle
-                                    });
+                                    onSuccessAlert(config);
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores
