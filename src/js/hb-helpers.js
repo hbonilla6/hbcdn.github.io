@@ -65,6 +65,7 @@ function inicializarFormulariosHbHbx() {
     // Función para ejecutar la petición AJAX
     // Función para ejecutar la petición AJAX
     function ejecutarAjax(form) {
+        addCurrentPathToForm(form);
         $.ajax({
             url: form.attr('action'),
             method: form.attr('method'),
