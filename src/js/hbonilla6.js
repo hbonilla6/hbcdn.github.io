@@ -177,10 +177,72 @@ H.prototype.data = function (dataName, value) {
  * @returns {boolean} `true` si algún elemento coincide con el selector, `false` en caso contrario.
  */
 H.prototype.is = function (selector) {
+    // Función para manejar pseudo-selectores personalizados
+    const checkPseudoSelector = (element, pseudo) => {
+        switch (pseudo) {
+            case ':hidden':
+                return (
+                    element.hidden || 
+                    element.style.display === 'none' || 
+                    window.getComputedStyle(element).display === 'none' ||
+                    window.getComputedStyle(element).visibility === 'hidden' ||
+                    element.offsetParent === null
+                );
+            
+            case ':visible':
+                return (
+                    !element.hidden && 
+                    window.getComputedStyle(element).display !== 'none' &&
+                    window.getComputedStyle(element).visibility !== 'hidden' &&
+                    element.offsetParent !== null
+                );
+            
+            case ':checked':
+                return element.checked === true;
+            
+            case ':selected':
+                return element.selected === true;
+            
+            case ':enabled':
+                return !element.disabled;
+            
+            case ':disabled':
+                return element.disabled === true;
+            
+            case ':input':
+                return ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(element.tagName);
+            
+            case ':parent':
+                return element.children.length > 0;
+            
+            case ':empty':
+                return element.children.length === 0;
+            
+            default:
+                return false;
+        }
+    };
+
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
-            if (this[key].matches(selector)) {
-                return true;
+            const element = this[key];
+            
+            // Manejar pseudo-selectores personalizados
+            if (selector.startsWith(':')) {
+                if (checkPseudoSelector(element, selector)) {
+                    return true;
+                }
+            } 
+            // Usar matches para selectores estándar
+            else {
+                try {
+                    if (element.matches(selector)) {
+                        return true;
+                    }
+                } catch {
+                    // Manejar selectores inválidos sin romper la ejecución
+                    return false;
+                }
             }
         }
     }
