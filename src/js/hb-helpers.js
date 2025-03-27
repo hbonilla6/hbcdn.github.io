@@ -155,7 +155,7 @@ function inicializarFormulariosHbHbx() {
  * Configuraciones predefinidas para diferentes tipos de acciones
  */
 const actionPresets = {
-    agregar: {
+    post: {
         successTitle: 'Registro Agregado',
         errorTitle: 'Error al Agregar',
         confirmTitle: '¿Deseas agregar este registro?',
@@ -165,7 +165,7 @@ const actionPresets = {
         confirmButtonText: 'Agregar',
         cancelButtonText: 'Cancelar'
     },
-    modificar: {
+    put: {
         successTitle: 'Registro Modificado',
         errorTitle: 'Error al Modificar',
         confirmTitle: '¿Deseas modificar este registro?',
@@ -175,7 +175,7 @@ const actionPresets = {
         confirmButtonText: 'Modificar',
         cancelButtonText: 'Cancelar'
     },
-    eliminar: {
+    delete: {
         successTitle: 'Registro Eliminado',
         errorTitle: 'Error al Eliminar',
         confirmTitle: '¿Estás seguro de eliminar?',
