@@ -1369,7 +1369,7 @@ function initImageUpload() {
         }
         event.preventDefault();
         $preview.removeClass('hb-dragover');
-        const file = event.originalEvent.dataTransfer.files[0];
+        const file = event?.originalEvent?.dataTransfer?.files[0];
         if (file && file.type.startsWith('image/')) {
             setImage(file);
             $fileInput.prop('files', event.originalEvent.dataTransfer.files);
