@@ -1384,3 +1384,11 @@ function initImageUpload() {
         }
     });
 }
+// Cuando el DOM está completamente cargado
+document.addEventListener("DOMContentLoaded", function () {
+    try {
+        initialFunctions();
+    } catch (e) {
+        h.error(e);
+    }
+});
