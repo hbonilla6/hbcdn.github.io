@@ -839,6 +839,15 @@ function onSelect2Individual(id) {
 //#endregion
 
 function initialFunctions() {
+    h("form[data-verify-form='true']").each(form => checkRequiredElements(form));
+
+    // Agregar evento a todos los elementos editables
+    h('input:not([data-exclude-apply]), select:not([data-exclude-apply]), textarea:not([data-exclude-apply]), [contenteditable]:not([data-exclude-apply])').on('keydown', handleEnterAsTab);
+
+    // Llamar a la función para manejar la validación de inputs de tipo number
+    handleNumberInput();
+
+    // Aplicar atributos inicialmente
     applyAttributes();
     initImageUpload();
 
@@ -868,9 +877,6 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             h.info('completed utility modal');
 
             initialFunctions();
-
-            h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
-
 
             // Muestra el modal después de cargar el contenido
             const modal = document.querySelector('#modal-overlay');
