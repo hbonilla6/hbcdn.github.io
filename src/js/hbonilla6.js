@@ -962,14 +962,12 @@ H.prototype.parent = function () {
 H.prototype.next = function () {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
-            // Obtiene el hermano siguiente del elemento actual
-            this[key].nextElementSibling;
+            // Reemplaza el elemento actual con su hermano siguiente
+            this[key] = this[key].nextElementSibling;
         }
     }
-    // Retorna la instancia para permitir el encadenamiento de métodos.
     return this;
 };
-
 
 /**
  * Actualiza cada elemento en la instancia de H para que sea el ancestro más cercano que cumpla con el selector dado.
