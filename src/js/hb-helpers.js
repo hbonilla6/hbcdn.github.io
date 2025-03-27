@@ -838,7 +838,7 @@ function onSelect2Individual(id) {
 }
 //#endregion
 
-function initialFunctions() {
+function initialFunctions(hbOptions = {}) {
     h("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
     // Agregar evento a todos los elementos editables
@@ -876,7 +876,7 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
-            initialFunctions();
+            initialFunctions(hbOptions);
 
             // Muestra el modal después de cargar el contenido
             const modal = document.querySelector('#modal-overlay');
