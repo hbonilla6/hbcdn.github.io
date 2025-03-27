@@ -68,7 +68,9 @@ function inicializarFormulariosHbHbx() {
         $.ajax({
             url: form.attr('action'),
             method: form.attr('method'),
-            data: form.serialize(),
+            data: new FormData(form[0]), // Convertir a FormData
+            processData: false, // Importante para FormData
+            contentType: false, // Importante para FormData
             beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
             success: getCallback(form, 'hb-success', successDefault),
             error: getCallback(form, 'hb-error', errorDefault),
@@ -263,14 +265,16 @@ function initializeAjaxForm(formSelector, options = {}) {
                             $.ajax({
                                 url: $(submittedForm).attr('action'),
                                 type: $(submittedForm).attr('method'),
-                                data: $(submittedForm).serialize(),
+                                data: new FormData(submittedForm[0]), // Convertir a FormData
+                                processData: false, // Crucial para FormData
+                                contentType: false, // Crucial para FormData
                                 success: function (response) {
                                     onSuccessAlert(config);
                                 },
                                 error: function (xhr, status, error) {
                                     // Manejar errores
                                     console.error("Error en la solicitud AJAX:", error);
-
+                            
                                     // Mostrar alerta de error usando SweetAlert2
                                     Swal.fire({
                                         icon: 'error',
