@@ -184,7 +184,7 @@ function initializeAjaxForm(formSelector, options = {}) {
         const successMsg = $(form).attr("hb-success-msg");
         config.successMsg = successMsg || config.successMsg;
 
-        
+
         // Obtener todos los elementos requeridos en el formulario
         const requiredElements = form.querySelectorAll('[data-val-required], [required]');
 
@@ -274,7 +274,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 error: function (xhr, status, error) {
                                     // Manejar errores
                                     console.error("Error en la solicitud AJAX:", error);
-                            
+
                                     // Mostrar alerta de error usando SweetAlert2
                                     Swal.fire({
                                         icon: 'error',
@@ -747,8 +747,8 @@ function checkRequiredElements(form) {
         });
     }
 
-        // Asigna el manejador de confirmación al evento de envío del formulario.
-        form.addEventListener("submit", confirmForm);
+    // Asigna el manejador de confirmación al evento de envío del formulario.
+    form.addEventListener("submit", confirmForm);
 }
 
 /**
@@ -838,6 +838,17 @@ function onSelect2Individual(id) {
 }
 //#endregion
 
+function initialFunctions() {
+    applyAttributes();
+    initImageUpload();
+
+    initializeAjaxForm("form[hb-catalog]", hbOptions);
+    inicializarFormulariosHbHbx("form[hb-hbx]");
+
+    // Inicializa los elementos select2 en el contenido del modal
+    onSelect2();
+}
+
 //#region Función utilityModal
 /**
  * Muestra un modal de utilidad y ejecuta las acciones configuradas al cargar su contenido de manera asincrónica.
@@ -856,16 +867,10 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             // Muestra un mensaje en la consola indicando que el modal se completó
             h.info('completed utility modal');
 
-            applyAttributes();
-            initImageUpload();
-
-            initializeAjaxForm("form[hb-catalog]", hbOptions);
-            inicializarFormulariosHbHbx("form[hb-hbx]");
+            initialFunctions();
 
             h("#modalContent").find("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
-            // Configura los elementos con `data-post-simple` para habilitar peticiones Ajax unobtrusive
-            simplePostUnobtrusiveAjax();
 
             // Muestra el modal después de cargar el contenido
             const modal = document.querySelector('#modal-overlay');
@@ -878,9 +883,6 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
                     // Muestra el modal
                     bsModal.show();
                 }
-
-                // Inicializa los elementos select2 en el contenido del modal
-                onSelect2();
 
                 // Obtiene el primer elemento de entrada en el formulario del modal
                 const firstInput = modal.querySelector('input[type="text"]:not([type="hidden"]):not([disabled]), textarea:not([disabled])');
@@ -1294,7 +1296,7 @@ function handleNumberInput() {
 function initImageUpload() {
     const $uploadContainer = h('.hb-image-upload');
     // Contenedor principal que envuelve la subida y vista previa de la imagen.
-    
+
     const $preview = $uploadContainer.find('.hb-image-preview');
     // Elemento que muestra la vista previa de la imagen.
 
@@ -1341,7 +1343,7 @@ function initImageUpload() {
     resetImage();
     // Inicializa la vista previa con la imagen de marcador de posición.
 
-    $fileInput.on('change', function(event) {
+    $fileInput.on('change', function (event) {
         // Detecta cuando se selecciona un archivo mediante el input.
         const file = event.target.files[0];
         if (file) {
@@ -1351,7 +1353,7 @@ function initImageUpload() {
         }
     });
 
-    $preview.on('dragover', function(event) {
+    $preview.on('dragover', function (event) {
         const $label = $fileInput.next('label'); // Obtiene el label asociado al input
         if ($label.is(':hidden')) {
             event.preventDefault(); // Evita el comportamiento predeterminado
@@ -1361,7 +1363,7 @@ function initImageUpload() {
         $preview.addClass('hb-dragover');
     });
 
-    $preview.on('drop', function(event) {
+    $preview.on('drop', function (event) {
         const $label = $fileInput.next('label'); // Obtiene el label asociado al input
         if ($label.is(':hidden')) {
             event.preventDefault(); // Evita la carga de archivos si el label está oculto
