@@ -1185,8 +1185,7 @@ function evaluateSelector(selector) {
             return [document.createElement(tagName)];
         } else {
             // Si el selector es un selector CSS, intenta encontrar elementos en el DOM.
-            let elements = document.querySelectorAll(selector) ?? [];
-            return Array.from(elements);
+            return Array.from(document.querySelectorAll(selector));
         }
     } else {
         throw new TypeError("El selector proporcionado debe ser una cadena, un HTMLElement, un NodeList o un Array.");
