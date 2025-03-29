@@ -53,8 +53,8 @@ function inicializarFormulariosHbHbx() {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) { // Si el usuario confirma, ejecuta la petición AJAX
-                addCurrentPathToForm(form[0]);
-                ejecutarAjax(form[0]);
+                addCurrentPathToForm(form);
+                ejecutarAjax(form);
             } else {
                 toast({ title: '&#161;Acci&oacute;n cancelada!', icon: tToast.info });
             }
@@ -69,7 +69,7 @@ function inicializarFormulariosHbHbx() {
         $.ajax({
             url: form.attr('action'),
             method: form.attr('method'),
-            data: new FormData(form), // Convertir a FormData
+            data: new FormData(form[0]), // Convertir a FormData
             processData: false, // Importante para FormData
             contentType: false, // Importante para FormData
             beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
