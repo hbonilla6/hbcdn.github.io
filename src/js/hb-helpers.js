@@ -1,15 +1,15 @@
 function inicializarFormulariosHbHbx() {
     // Obtiene todos los elementos requeridos en el formulario.
-    const requiredElements = document.querySelector('form')
-        .querySelectorAll('[data-val-required], [required]');
-    if (requiredElements.length > 0) {
+    const requiredElements = h('form')
+        .find('[data-val-required], [required]');
+    if (requiredElements.count > 0) {
         // Muestra una notificación sobre los campos obligatorios.
         toastR({
             title: "Los elementos marcados con <b style='color: red; font-size: x-large;'>*</b> son obligatorios.",
             type: tToast.info
         });
 
-        requiredElements.forEach((element) => {
+        requiredElements.each((element) => {
             // Obtiene la etiqueta asociada al elemento, si existe.
             const labelForElement = document.querySelector(`label[for="${element.id}"]:not(.label-not-required)`);
             if (labelForElement) {
