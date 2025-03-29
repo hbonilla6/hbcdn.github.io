@@ -53,8 +53,8 @@ function inicializarFormulariosHbHbx() {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) { // Si el usuario confirma, ejecuta la petición AJAX
-                addCurrentPathToForm(form);
-                ejecutarAjax(form);
+                addCurrentPathToForm(form[0]);
+                ejecutarAjax(form[0]);
             } else {
                 toast({ title: '&#161;Acci&oacute;n cancelada!', icon: tToast.info });
             }
