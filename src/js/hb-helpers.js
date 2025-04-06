@@ -288,14 +288,14 @@ function initializeAjaxForm(formSelector, options = {}) {
                 text: confirmText,
                 options: {
                     buttons: {
-                        cancel: { 
-                            show: true, 
+                        cancel: {
+                            show: true,
                             text: cancelButtonText,
                             color: cancelButtonColor
                         },
-                        confirm: { 
+                        confirm: {
                             text: confirmButtonText,
-                            color: confirmButtonColor 
+                            color: confirmButtonColor
                         },
                         deny: {
                             show: false
@@ -966,7 +966,11 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             }
 
             // Reinicializa las validaciones unobtrusive de jQuery en el contenido dinámicamente cargado del modal
-            $.validator.unobtrusive.parse('#modalContent');
+            if ($ && $.validator && $.validator.unobtrusive) {
+                $.validator.unobtrusive.parse('#modalContent');
+            } else {
+                h.log("No se pudo ejecutar la validación porque falta alguna dependencia");
+            }
 
             // Ejecuta el callback si se proporciona uno (función que puede ser pasada como parámetro)
             if (actionCallBack) actionCallBack();
