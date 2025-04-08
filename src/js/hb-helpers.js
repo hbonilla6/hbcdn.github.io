@@ -288,14 +288,14 @@ function initializeAjaxForm(formSelector, options = {}) {
                 text: confirmText,
                 options: {
                     buttons: {
-                        cancel: { 
-                            show: true, 
+                        cancel: {
+                            show: true,
                             text: cancelButtonText,
                             color: cancelButtonColor
                         },
-                        confirm: { 
+                        confirm: {
                             text: confirmButtonText,
-                            color: confirmButtonColor 
+                            color: confirmButtonColor
                         },
                         deny: {
                             show: false
@@ -935,9 +935,11 @@ function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
             if (modal) {
                 // Muestra el modal utilizando Bootstrap si está disponible
                 if (typeof bootstrap !== 'undefined') {
+                    // Elimina cualquier backdrop existente antes de mostrar un nuevo modal
+                    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+
                     // Crea una instancia de Bootstrap Modal y la muestra
                     const bsModal = new bootstrap.Modal(modal);
-                    // Muestra el modal
                     bsModal.show();
                 }
 
