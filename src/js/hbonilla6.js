@@ -1183,12 +1183,16 @@ H.prototype.each = function (callback) {
  * Si el selector es una etiqueta HTML (e.g., '<div>'), crea un nuevo elemento de ese tipo.
  * Si es un selector CSS, selecciona los elementos que coincidan con el selector.
  * Si es un objeto (puede ser HTMLElement, NodeList, o Array), lo maneja adecuadamente.
+ * Si es el objeto document, lo maneja como un caso especial.
  *
- * @param {HTMLElement|string|NodeList|Array} selector - El objeto HTMLElement, NodeList, Array, selector CSS, o etiqueta HTML.
+ * @param {HTMLElement|string|NodeList|Array|Document} selector - El objeto HTMLElement, Document, NodeList, Array, selector CSS, o etiqueta HTML.
  * @returns {Array<Element>} Retorna un arreglo de elementos que son creados, seleccionados, o manejados.
  */
 function evaluateSelector(selector) {
-    if (selector instanceof HTMLElement) {
+    if (selector === document) {
+        // Si el selector es el objeto document, lo retornamos en un array
+        return [document];
+    } else if (selector instanceof HTMLElement) {
         // Si el selector es un objeto HTMLElement, se retorna dentro de un array.
         return [selector];
     } else if (selector instanceof NodeList || Array.isArray(selector)) {
