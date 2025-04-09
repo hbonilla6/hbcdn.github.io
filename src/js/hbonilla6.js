@@ -357,6 +357,22 @@ H.prototype.on = function (eventName, handler) {
 };
 
 /**
+ * Elimina un manejador de eventos de los elementos.
+ * @param {EventNames} eventName - Nombre del evento a dejar de escuchar.
+ * @param {(this: HTMLElement, ev: GlobalEventHandlersEventMap[EventNames]) => void} handler - Función manejadora del evento a eliminar.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.off = function (eventName, handler) {
+    // Elimina el manejador de eventos especificado de todos los elementos.
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            this[key].removeEventListener(eventName, handler);
+        }
+    }
+    return this;
+};
+
+/**
  * Crea un nuevo elemento y lo agrega como hijo de los elementos seleccionados.
  * @typedef {'a' | 'abbr' | 'address' | 'area' | 'article' | 'aside' | 'audio' | 'b' | 'base' | 'bdi' | 'bdo' | 'blockquote' | 'body' | 'br' | 'button' | 'canvas' | 'caption' | 'cite' | 'code' | 'col' | 'colgroup' | 'data' | 'datalist' | 'dd' | 'del' | 'details' | 'dfn' | 'dialog' | 'div' | 'dl' | 'dt' | 'em' | 'embed' | 'fieldset' | 'figcaption' | 'figure' | 'footer' | 'form' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'head' | 'header' | 'hr' | 'html' | 'i' | 'iframe' | 'img' | 'input' | 'ins' | 'kbd' | 'label' | 'legend' | 'li' | 'link' | 'main' | 'map' | 'mark' | 'menu' | 'meta' | 'meter' | 'nav' | 'noscript' | 'object' | 'ol' | 'optgroup' | 'option' | 'output' | 'p' | 'param' | 'picture' | 'pre' | 'progress' | 'q' | 'rp' | 'rt' | 'ruby' | 's' | 'samp' | 'script' | 'section' | 'select' | 'small' | 'source' | 'span' | 'strong' | 'style' | 'sub' | 'summary' | 'sup' | 'table' | 'tbody' | 'td' | 'template' | 'textarea' | 'tfoot' | 'th' | 'thead' | 'time' | 'title' | 'tr' | 'track' | 'u' | 'ul' | 'var' | 'video' | 'wbr'} TagName
  * @typedef {TagName | TagName[]} TagNameParameters
