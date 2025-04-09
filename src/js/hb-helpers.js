@@ -1,6 +1,6 @@
-function inicializarFormulariosHbHbx() {
+function inicializarFormulariosHbHbx(elements) {
     // Obtiene todos los elementos requeridos en el formulario.
-    const requiredElements = h('form')
+    const requiredElements = h(elements)
         .find('[data-val-required], [required]');
     if (requiredElements.count > 0) {
         // Muestra una notificación sobre los campos obligatorios.
