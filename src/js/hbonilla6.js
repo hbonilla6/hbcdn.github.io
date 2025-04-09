@@ -305,6 +305,74 @@ H.prototype.text = function (newText) {
 };
 
 /**
+ * Adjunta un manejador de eventos que se ejecuta solo una vez.
+ * @param {string} eventName - Nombre del evento a escuchar.
+ * @param {Function} handler - Función manejadora del evento.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.one = function(eventName, handler) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            const oneTimeHandler = function(e) {
+                // Eliminar el controlador después de ejecutarlo
+                element.removeEventListener(eventName, oneTimeHandler);
+                // Llamar al controlador original
+                handler.call(this, e);
+            };
+            element.addEventListener(eventName, oneTimeHandler);
+        }
+    }
+    return this;
+};
+
+/**
+ * Obtiene los elementos hermanos de cada elemento en la colección.
+ * @returns {H} Una nueva instancia de H con los elementos hermanos.
+ */
+H.prototype.siblings = function() {
+    const result = new H();
+    let index = 0;
+    
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            const parent = element.parentElement;
+            
+            if (parent) {
+                const siblings = parent.children;
+                for (let i = 0; i < siblings.length; i++) {
+                    if (siblings[i] !== element) {
+                        result[index++] = siblings[i];
+                    }
+                }
+            }
+        }
+    }
+    
+    return result;
+};
+
+/**
+ * Alterna la visibilidad de los elementos.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.toggle = function() {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            const style = window.getComputedStyle(element);
+            if (style.display === 'none') {
+                element.style.display = '';
+            } else {
+                element.style.display = 'none';
+            }
+        }
+    }
+    return this;
+};
+
+/**
  * Obtiene o establece estilos CSS de los elementos.
  * @param {string|Object} property - Nombre de la propiedad CSS o un objeto con propiedades y valores.
  * @param {string} [value] - Valor para la propiedad CSS, si 'property' es un string.
@@ -351,6 +419,66 @@ H.prototype.on = function (eventName, handler) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             this[key].addEventListener(eventName, handler);
+        }
+    }
+    return this;
+};
+
+/**
+ * Inserta contenido después de cada elemento en la colección.
+ * @param {string|HTMLElement|H} content - El contenido a insertar después de cada elemento.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.after = function(content) {
+    // Itera sobre todos los elementos HTML en la instancia
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            
+            // Maneja diferentes tipos de contenido
+            if (typeof content === 'string') {
+                // Si es una cadena, la convierte a un nodo de texto
+                element.insertAdjacentHTML('afterend', content);
+            } else if (content instanceof HTMLElement) {
+                // Si es un elemento HTML, lo inserta directamente
+                element.parentNode.insertBefore(content, element.nextSibling);
+            } else if (content instanceof H) {
+                // Si es una instancia de H, inserta cada elemento HTML que contiene
+                for (let contentKey in content) {
+                    if (content.hasOwnProperty(contentKey) && content[contentKey] instanceof HTMLElement) {
+                        // Clona el elemento para poder insertarlo después de cada elemento en la colección
+                        const clone = content[contentKey].cloneNode(true);
+                        element.parentNode.insertBefore(clone, element.nextSibling);
+                    }
+                }
+            }
+        }
+    }
+    return this;
+};
+
+/**
+ * Inserta contenido antes de cada elemento en la colección.
+ * @param {string|HTMLElement|H} content - El contenido a insertar antes de cada elemento.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.before = function(content) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            
+            if (typeof content === 'string') {
+                element.insertAdjacentHTML('beforebegin', content);
+            } else if (content instanceof HTMLElement) {
+                element.parentNode.insertBefore(content, element);
+            } else if (content instanceof H) {
+                for (let contentKey in content) {
+                    if (content.hasOwnProperty(contentKey) && content[contentKey] instanceof HTMLElement) {
+                        const clone = content[contentKey].cloneNode(true);
+                        element.parentNode.insertBefore(clone, element);
+                    }
+                }
+            }
         }
     }
     return this;
@@ -443,8 +571,6 @@ H.prototype.hide = function () {
     return this;
 };
 
-'use strict';
-
 /**
  * Añade elementos DOM como hijos a los elementos actuales.
  * @param {string|HTMLElement|NodeList|Array|H} childObj - Elementos para añadir como hijos.
@@ -481,6 +607,46 @@ H.prototype.append = function (childObj) {
     }
 
     return this; // Devuelve la instancia para permitir encadenamiento.
+};
+
+/**
+ * Agrega contenido al inicio de cada elemento en la colección.
+ * @param {string|HTMLElement|H} content - El contenido a agregar.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.prepend = function(content) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+            
+            if (typeof content === 'string') {
+                element.insertAdjacentHTML('afterbegin', content);
+            } else if (content instanceof HTMLElement) {
+                element.insertBefore(content, element.firstChild);
+            } else if (content instanceof H) {
+                for (let contentKey in content) {
+                    if (content.hasOwnProperty(contentKey) && content[contentKey] instanceof HTMLElement) {
+                        const clone = content[contentKey].cloneNode(true);
+                        element.insertBefore(clone, element.firstChild);
+                    }
+                }
+            }
+        }
+    }
+    return this;
+};
+
+/**
+ * Vacía el contenido de los elementos en la colección.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.empty = function() {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            this[key].innerHTML = '';
+        }
+    }
+    return this;
 };
 
 /**
@@ -702,6 +868,20 @@ H.prototype.html = function (newHtml) {
             }
         }
     }
+};
+
+/**
+ * Verifica si el primer elemento tiene la clase especificada.
+ * @param {string} className - La clase CSS a verificar.
+ * @returns {boolean} Verdadero si el elemento tiene la clase, falso en caso contrario.
+ */
+H.prototype.hasClass = function(className) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            return this[key].classList.contains(className);
+        }
+    }
+    return false;
 };
 
 /**
