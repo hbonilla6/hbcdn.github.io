@@ -1109,6 +1109,8 @@ function onSuccessAlert(options) {
 
             // Ocultar cualquier modal abierto
             $('.modal').modal('hide');
+            $('.modal').hide();
+
             // Eliminar la clase 'modal-open' del cuerpo para restablecer el estado de la interfaz
             $('body').removeClass('modal-open');
             // Eliminar los elementos de fondo de modal
