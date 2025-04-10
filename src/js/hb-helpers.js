@@ -119,7 +119,7 @@ function inicializarFormulariosHbHbx(elements) {
             icon: tToast.success,
             title: 'Operación realizada correctamente'
         });
-        if(!(form.attr("data-close-modal") === "false")){
+        if(!(form.attr("data-hb-close-modal") === "false")){
             cerrarModal(form); // Cierra el modal que contiene el formulario
         }
     }
