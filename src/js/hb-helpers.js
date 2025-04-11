@@ -1251,6 +1251,28 @@ function handleCards(cardToOpen, cardsToClose = []) {
     });
 }
 
+// Función para manejar el estado de una carta (solo para abrir)
+function openCard(cardToOpen) {
+    // Si se especifica una carta para abrir
+    if (cardToOpen) {
+        const cardElementToOpen = document.getElementById(cardToOpen);
+        if (cardElementToOpen) {
+            cardElementToOpen.classList.remove('collapsed-card');
+            // Mostramos el card-body
+            const cardBody = cardElementToOpen.querySelector('.card-body');
+            if (cardBody) {
+                cardBody.style.display = 'block';  // Muestra el card-body cuando está abierto
+            }
+            // Actualizamos el ícono de la carta abierta
+            const buttonIcon = cardElementToOpen.querySelector('.card-tools .btn-tool i');
+            if (buttonIcon) {
+                buttonIcon.classList.remove('fa-plus');
+                buttonIcon.classList.add('fa-minus');
+            }
+        }
+    }
+}
+
 // 4. Función que devuelve todos los elementos que se pueden enfocar (input, select, textarea)
 function getFocusableElements() {
     // Definimos los selectores para los elementos enfocados
