@@ -326,12 +326,20 @@ function initializeAjaxForm(formSelector, options = {}) {
                                 error: function (xhr, status, error) {
                                     // Manejar errores
                                     h.error("Error en la solicitud AJAX:", error);
-
+                                    
+                                    // Verificar si la respuesta contiene HTML
+                                    let htmlContent = xhr.responseText;
+                                    
+                                    // Método 1: Usar un elemento div para asegurarse que se interprete como HTML
+                                    let tempDiv = document.createElement('div');
+                                    tempDiv.innerHTML = htmlContent;
+                                    htmlContent = tempDiv.innerHTML;
+                                    
                                     // Mostrar alerta de error usando SweetAlert2
                                     Swal.fire({
                                         icon: 'error',
                                         title: errorTitle,
-                                        html: xhr.responseText || 'Error desconocido',
+                                        html: htmlContent || 'Error desconocido',
                                         showConfirmButton: true
                                     });
                                 },
