@@ -331,7 +331,7 @@ function initializeAjaxForm(formSelector, options = {}) {
                                     Swal.fire({
                                         icon: 'error',
                                         title: errorTitle,
-                                        text: xhr.responseText || 'Error desconocido',
+                                        html: xhr.responseText || 'Error desconocido',
                                         showConfirmButton: true
                                     });
                                 },
