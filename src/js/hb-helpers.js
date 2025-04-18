@@ -1605,7 +1605,7 @@ function initMultiHBFiles() {
       fileDetails.style.bottom = '15px'; // Coloca el área de detalles del archivo 15px desde el fondo.
   
       // Rehabilitar scroll del fondo al cerrar el modal
-      document.body.classList.remove('body-no-scroll'); // Elimina la clase que bloquea el desplazamiento en el fondo.
+      document.body.classList.remove('hb-body-no-scroll'); // Elimina la clase que bloquea el desplazamiento en el fondo.
     }
   
     // Función para implementar el arrastre del botón de cerrar modal
