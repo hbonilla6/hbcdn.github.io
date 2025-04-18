@@ -1499,9 +1499,6 @@ function initMultiHBFiles() {
     // Obtener el elemento del DOM con el id 'hb-dragHandle' (manejador de arrastre para mover el modal)
     const dragHandle = document.getElementById('hb-dragHandle');
   
-    // Obtener el primer elemento que coincida con el selector '.hb-upload-header' (encabezado de la carga de archivos)
-    const uploadHeader = document.querySelector('.hb-upload-header');
-  
     // Mantener un array de objetos File para gestionar todos los archivos
     // Este array almacenará todos los archivos seleccionados o arrastrados por el usuario.
     let uploadedFiles = [];
@@ -1594,10 +1591,7 @@ function initMultiHBFiles() {
       closeModal.style.top = '15px'; // Coloca el botón de cerrar en la parte superior de 15px.
       closeModal.style.left = 'auto'; // Restablece la posición izquierda del botón de cerrar.
       closeModal.style.right = '15px'; // Coloca el botón de cerrar a 15px del borde derecho.
-  
-      // Restablecer posición del título
-      uploadHeader.style.transform = 'translateY(0)'; // Restablece el título a su posición inicial.
-  
+    
       // Restablecer detalles del archivo
       fileDetails.style.top = 'auto'; // Elimina cualquier valor top en el área de detalles del archivo.
       fileDetails.style.left = '0'; // Coloca el área de detalles del archivo en la parte izquierda.
