@@ -1797,9 +1797,9 @@ function initMultiHBFiles() {
         // Asignar los archivos al input
         fileInput.files = dataTransfer.files;
   
-        console.log(`Input actualizado con ${fileInput.files.length} archivos.`);
+        h.log(`Input actualizado con ${fileInput.files.length} archivos.`);
       } catch (error) {
-        console.error("Error al actualizar el input de archivo:", error);
+        h.error("Error al actualizar el input de archivo:", error);
       }
     }
   
@@ -2155,7 +2155,7 @@ function initMultiHBFiles() {
               parseFloat(iframeDoc.document.body.style.zoom || '1') + 0.1;
           }
         } catch (e) {
-          console.log('No se pudo aplicar zoom: ', e);
+          h.log('No se pudo aplicar zoom: ', e);
         }
       });
   
@@ -2172,7 +2172,7 @@ function initMultiHBFiles() {
             );
           }
         } catch (e) {
-          console.log('No se pudo aplicar zoom: ', e);
+          h.log('No se pudo aplicar zoom: ', e);
         }
       });
   
@@ -2186,7 +2186,7 @@ function initMultiHBFiles() {
             iframeDoc.document.body.style.zoom = '1'; // Restaurar zoom a 1
           }
         } catch (e) {
-          console.log('No se pudo aplicar zoom: ', e);
+          h.log('No se pudo aplicar zoom: ', e);
         }
       });
   
