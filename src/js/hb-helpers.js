@@ -1516,7 +1516,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
             const lastModifiedDate = new Date(fileInfo.LastModified);
 
             // Crear un objeto Blob que simulará el archivo
-            fetch(fileInfo.Url)
+            fetch(fileInfo?.url)
                 .then(response => response.blob())
                 .then(blob => {
                     // Crear un objeto File a partir del Blob
