@@ -1846,6 +1846,7 @@ function initMultiHBFiles() {
       // Crear botón de pantalla completa solo si es previsualizable
       if (isPreviewable) {
         const fullscreenBtn = document.createElement('button');
+        fullscreenBtn.type = 'button';
         fullscreenBtn.className = 'hb-fullscreen-button';
         fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
         fullscreenBtn.addEventListener('click', function (e) {
@@ -2043,9 +2044,7 @@ function initMultiHBFiles() {
         iframe.src = URL.createObjectURL(file); // Crear una URL para el PDF
         pdfContainer.appendChild(iframe); // Agregar el iframe con el PDF al contenedor
         modalContent.appendChild(pdfContainer); // Agregar el contenedor al modal
-  
-        // Agregar controles de zoom para el PDF
-        addPdfControls(iframe);
+
       } else if (file.type.startsWith('video/')) {
         // Si es un archivo de video
         const video = document.createElement('video');
@@ -2115,6 +2114,7 @@ function initMultiHBFiles() {
   
         // Botón para abrir en nueva ventana (si es posible)
         const openButton = document.createElement('button');
+        openButton.type = 'button';
         openButton.className = 'hb-external-open-button';
         openButton.innerHTML =
           '<i class="fas fa-external-link-alt"></i> Abrir en nueva ventana';
@@ -2132,78 +2132,6 @@ function initMultiHBFiles() {
   
       // Mostrar modal
       fullscreenModal.style.display = 'flex';
-    }
-  
-    // Agregar controles de zoom para PDF
-    /**
-     * Agrega controles de zoom a un iframe que muestra un PDF.
-     *
-     * @param {HTMLIFrameElement} iframe El iframe donde se muestra el PDF.
-     */
-    function addPdfControls(iframe) {
-      const pdfControls = document.createElement('div');
-      pdfControls.className = 'hb-pdf-controls';
-      pdfControls.id = 'hb-pdfControls';
-  
-      // Botón de zoom in (aumentar tamaño)
-      const zoomInBtn = document.createElement('button');
-      zoomInBtn.innerHTML = '<i class="fas fa-search-plus"></i> Zoom +';
-      zoomInBtn.addEventListener('click', function () {
-        try {
-          const iframeDoc = iframe.contentWindow || iframe.contentDocument;
-          if (iframeDoc.document) {
-            iframeDoc.document.body.style.zoom =
-              parseFloat(iframeDoc.document.body.style.zoom || '1') + 0.1;
-          }
-        } catch (e) {
-          h.log('No se pudo aplicar zoom: ', e);
-        }
-      });
-  
-      // Botón de zoom out (disminuir tamaño)
-      const zoomOutBtn = document.createElement('button');
-      zoomOutBtn.innerHTML = '<i class="fas fa-search-minus"></i> Zoom -';
-      zoomOutBtn.addEventListener('click', function () {
-        try {
-          const iframeDoc = iframe.contentWindow || iframe.contentDocument;
-          if (iframeDoc.document) {
-            iframeDoc.document.body.style.zoom = Math.max(
-              0.1,
-              parseFloat(iframeDoc.document.body.style.zoom || '1') - 0.1
-            );
-          }
-        } catch (e) {
-          h.log('No se pudo aplicar zoom: ', e);
-        }
-      });
-  
-      // Botón de reset (restaurar zoom)
-      const resetZoomBtn = document.createElement('button');
-      resetZoomBtn.innerHTML = '<i class="fas fa-undo"></i> Reset';
-      resetZoomBtn.addEventListener('click', function () {
-        try {
-          const iframeDoc = iframe.contentWindow || iframe.contentDocument;
-          if (iframeDoc.document) {
-            iframeDoc.document.body.style.zoom = '1'; // Restaurar zoom a 1
-          }
-        } catch (e) {
-          h.log('No se pudo aplicar zoom: ', e);
-        }
-      });
-  
-      pdfControls.appendChild(zoomOutBtn); // Agregar botón de zoom out
-      pdfControls.appendChild(resetZoomBtn); // Agregar botón de reset
-      pdfControls.appendChild(zoomInBtn); // Agregar botón de zoom in
-  
-      document.body.appendChild(pdfControls); // Agregar los controles al cuerpo del documento
-  
-      // Eliminar los controles cuando se cierre el modal
-      closeModal.addEventListener('click', function () {
-        const controlsElement = document.getElementById('hb-pdfControls');
-        if (controlsElement) {
-          document.body.removeChild(controlsElement); // Eliminar los controles
-        }
-      });
     }
   
     /**
