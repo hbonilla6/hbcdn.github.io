@@ -1516,30 +1516,55 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
             const lastModifiedDate = new Date(fileInfo.LastModified);
 
             // Crear un objeto Blob que simulará el archivo
-            fetch(fileInfo?.url)
-                .then(response => response.blob())
-                .then(blob => {
-                    // Crear un objeto File a partir del Blob
+            $.ajax({
+                url: fileInfo?.url,
+                method: 'GET',
+                xhrFields: {
+                    responseType: 'blob'
+                },
+                success: function(blob) {
                     const file = new File([blob], fileInfo.FileName, {
                         type: blob.type,
                         lastModified: lastModifiedDate.getTime()
                     });
-
-                    // Generar ID y verificar si ya existe
+            
                     const fileId = generateFileId(file);
-
+            
                     if (!uploadedFileIds.has(fileId)) {
-                        // Añadir a la lista de archivos
                         uploadedFiles.push(file);
                         uploadedFileIds.add(fileId);
-
-                        // Mostrar la previsualización
                         displayFilePreview(file);
                     }
-                })
-                .catch(error => {
-                    console.error(`Error al cargar el archivo existente ${fileInfo.FileName}:`, error);
-                });
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    console.error(`Error al cargar el archivo existente ${fileInfo.FileName}:`, errorThrown);
+                }
+            });
+            
+            // fetch(fileInfo?.url)
+            //     .then(response => response.blob())
+            //     .then(blob => {
+            //         // Crear un objeto File a partir del Blob
+            //         const file = new File([blob], fileInfo.FileName, {
+            //             type: blob.type,
+            //             lastModified: lastModifiedDate.getTime()
+            //         });
+
+            //         // Generar ID y verificar si ya existe
+            //         const fileId = generateFileId(file);
+
+            //         if (!uploadedFileIds.has(fileId)) {
+            //             // Añadir a la lista de archivos
+            //             uploadedFiles.push(file);
+            //             uploadedFileIds.add(fileId);
+
+            //             // Mostrar la previsualización
+            //             displayFilePreview(file);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error(`Error al cargar el archivo existente ${fileInfo.FileName}:`, error);
+            //     });
         });
 
         // Actualizar el input después de procesar todos los archivos existentes
