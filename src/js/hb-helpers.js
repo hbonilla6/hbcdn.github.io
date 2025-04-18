@@ -1820,6 +1820,7 @@ function initMultiHBFiles() {
   
       // Crear botón de eliminación
       const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
       deleteBtn.className = 'hb-delete-button';
       deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
       deleteBtn.addEventListener('click', function (e) {
