@@ -1992,6 +1992,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
         const fileName = document.createElement('div');
         fileName.className = 'hb-file-name';
         fileName.textContent = file.name;
+        fileName.title = file.name;
         previewItem.appendChild(fileName);
 
         // Evento de click para vista previa completa solo si es previsualizable
