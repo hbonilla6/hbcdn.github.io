@@ -2041,17 +2041,33 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
      * @returns {string} - El tipo de archivo simplificado.
      */
     function getSimpleFileType(file) {
+        // First check if it has a type property
         if (file.type) {
+            // Handle specific MIME types for Office documents
+            if (file.type.includes('spreadsheetml') || 
+                file.type.includes('excel')) {
+                return 'EXCEL';
+            } 
+            if (file.type.includes('wordprocessingml') || 
+                file.type.includes('document')) {
+                return 'WORD';
+            }
+            if (file.type.includes('presentationml') || 
+                file.type.includes('powerpoint')) {
+                return 'POWERPOINT';
+            }
+            
+            // General MIME type handling
             const parts = file.type.split('/');
             if (parts.length > 1) {
                 return parts[1].toUpperCase();
             }
             return parts[0].toUpperCase();
         }
-
-        // Si no tiene tipo MIME, intentar determinar por extensión
+    
+        // If no MIME type, try to determine by extension
         const ext = file.name.split('.').pop().toLowerCase();
-
+    
         const extensionMap = {
             pdf: 'PDF',
             doc: 'WORD',
@@ -2064,7 +2080,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
             rar: 'RAR',
             txt: 'TEXT',
         };
-
+    
         return extensionMap[ext] || 'FILE';
     }
 
