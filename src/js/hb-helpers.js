@@ -1555,44 +1555,6 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
         });
     }
 
-    // function processExistingFiles() {
-    //     if (!existingFiles || existingFiles.length === 0) return;
-
-    //     existingFiles.forEach(fileInfo => {
-    //         // Crear un objeto File a partir de la información proporcionada
-    //         const lastModifiedDate = new Date(fileInfo.LastModified);
-
-    //         // Crear un objeto Blob que simulará el archivo
-    //         fetch(fileInfo?.url)
-    //             .then(response => response.blob())
-    //             .then(blob => {
-    //                 // Crear un objeto File a partir del Blob
-    //                 const file = new File([blob], fileInfo?.fileName, {
-    //                     type: blob.type,
-    //                     lastModified: lastModifiedDate.getTime()
-    //                 });
-
-    //                 // Generar ID y verificar si ya existe
-    //                 const fileId = generateFileId(file);
-
-    //                 if (!uploadedFileIds.has(fileId)) {
-    //                     // Añadir a la lista de archivos
-    //                     uploadedFiles.push(file);
-    //                     uploadedFileIds.add(fileId);
-
-    //                     // Mostrar la previsualización
-    //                     displayFilePreview(file);
-    //                 }
-    //             })
-    //             .catch(error => {
-    //                 console.error(`Error al cargar el archivo existente ${fileInfo?.fileName}:`, error);
-    //             });
-    //     });
-
-    //     // Actualizar el input después de procesar todos los archivos existentes
-    //     setTimeout(updateFileInput, 500);
-    // }
-
     // Llamar a esta función después de definir todas las funciones necesarias
     processExistingFiles();
 
@@ -1836,7 +1798,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
      * @returns {string} - El ID único generado para el archivo.
      */
     function generateFileId(file) {
-        return `${file.name}-${file.size}-${file.lastModified}`;
+        return `${file.name}-${file.size}`;
     }
 
     /**
