@@ -1990,7 +1990,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
 
         // Agregar nombre del archivo
         const fileName = document.createElement('div');
-        fileName.className = 'file-name';
+        fileName.className = 'hb-file-name';
         fileName.textContent = file.name;
         previewItem.appendChild(fileName);
 
