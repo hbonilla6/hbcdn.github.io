@@ -1507,11 +1507,11 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
     // Usamos un Set para almacenar solo los identificadores únicos de los archivos subidos.
     let uploadedFileIds = new Set();
 
-    // Añadir esta función para procesar archivos existentes
+    // Función para procesar archivos existentes
     function processExistingFiles() {
         if (!existingFiles || existingFiles.length === 0) return;
 
-        existingFiles.forEach(fileInfo => {
+        existingFiles.forEach((fileInfo, index) => {
             // Crear un objeto File a partir de la información proporcionada
             const lastModifiedDate = new Date(fileInfo.LastModified);
 
@@ -1533,8 +1533,8 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
                         uploadedFiles.push(file);
                         uploadedFileIds.add(fileId);
 
-                        // Mostrar la previsualización
-                        displayFilePreview(file);
+                        // Mostrar la previsualización pasando el índice original
+                        displayFilePreview(file, index);
                     }
                 })
                 .catch(error => {
@@ -1545,6 +1545,53 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
         // Actualizar el input después de procesar todos los archivos existentes
         setTimeout(updateFileInput, 500);
     }
+
+    // Función para actualizar los índices de los inputs ocultos
+    function updateFileToKeepIndices() {
+        const fileToKeepInputs = document.querySelectorAll('.file-to-keep');
+        fileToKeepInputs.forEach((input, index) => {
+            // Actualizar el name con el nuevo índice
+            input.name = `FilesToKeep[${index}]`;
+        });
+    }
+
+    // function processExistingFiles() {
+    //     if (!existingFiles || existingFiles.length === 0) return;
+
+    //     existingFiles.forEach(fileInfo => {
+    //         // Crear un objeto File a partir de la información proporcionada
+    //         const lastModifiedDate = new Date(fileInfo.LastModified);
+
+    //         // Crear un objeto Blob que simulará el archivo
+    //         fetch(fileInfo?.url)
+    //             .then(response => response.blob())
+    //             .then(blob => {
+    //                 // Crear un objeto File a partir del Blob
+    //                 const file = new File([blob], fileInfo?.fileName, {
+    //                     type: blob.type,
+    //                     lastModified: lastModifiedDate.getTime()
+    //                 });
+
+    //                 // Generar ID y verificar si ya existe
+    //                 const fileId = generateFileId(file);
+
+    //                 if (!uploadedFileIds.has(fileId)) {
+    //                     // Añadir a la lista de archivos
+    //                     uploadedFiles.push(file);
+    //                     uploadedFileIds.add(fileId);
+
+    //                     // Mostrar la previsualización
+    //                     displayFilePreview(file);
+    //                 }
+    //             })
+    //             .catch(error => {
+    //                 console.error(`Error al cargar el archivo existente ${fileInfo?.fileName}:`, error);
+    //             });
+    //     });
+
+    //     // Actualizar el input después de procesar todos los archivos existentes
+    //     setTimeout(updateFileInput, 500);
+    // }
 
     // Llamar a esta función después de definir todas las funciones necesarias
     processExistingFiles();
@@ -1852,13 +1899,23 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
      *
      * @param {File} file - El archivo para el que se desea mostrar una previsualización.
      */
-    function displayFilePreview(file) {
+    function displayFilePreview(file, originalIndex = null) {
         const fileId = generateFileId(file);
 
         const previewItem = document.createElement('div');
         previewItem.className = 'hb-preview-item';
         previewItem.id = `hb-preview-${fileId}`;
         previewItem.dataset.filename = file.name;
+
+        // Si viene de archivos existentes, añadir input oculto
+        if (originalIndex !== null) {
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `FilesToKeep[${originalIndex}]`; // Formato correcto para List<string> en C#
+            hiddenInput.value = file.name;
+            hiddenInput.className = 'file-to-keep';
+            previewItem.appendChild(hiddenInput);
+        }
 
         // Crear botón de eliminación
         const deleteBtn = document.createElement('button');
@@ -1879,6 +1936,9 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
 
             // Actualizar el input después de eliminar un archivo
             updateFileInput();
+
+            // Actualizar los índices de los inputs ocultos
+            updateFileToKeepIndices();
         });
         previewItem.appendChild(deleteBtn);
 
@@ -2274,7 +2334,6 @@ function initMultiHBFiles(fileInputId = 'hb-file-input', existingFiles = []) {
     fileDetails.style.cursor = 'ns-resize'; // Cambiar el cursor para indicar que se puede redimensionar en el eje vertical
     fileDetails.style.zIndex = '102'; // Asegurar que el elemento esté por encima de otros elementos en la pantalla
 }
-
 
 // Cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", function () {
