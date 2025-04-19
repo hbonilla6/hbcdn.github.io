@@ -196,6 +196,7 @@
     white-space: nowrap;
     overflow: hidden;
     z-index: 5;
+    text-align: center;
   }
   
   .hb-delete-button {
