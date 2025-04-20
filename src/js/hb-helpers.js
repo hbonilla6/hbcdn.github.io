@@ -1485,7 +1485,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   const previewContainer = document.getElementById('hb-previewContainer');
 
   // Convierte la cadena JSON almacenada en el atributo 'data-files' del contenedor 'previewContainer' en un objeto JavaScript.
-  const existingFiles = JSON.parse(previewContainer.getAttribute("data-files") || "[]");
+  const existingFiles = JSON.parse(previewContainer.getAttribute("hb-files") || "[]");
 
   // Obtener el elemento del DOM con el id 'hb-fullscreenModal' (modal que se abrirá en pantalla completa)
   const fullscreenModal = document.getElementById('hb-fullscreenModal');
@@ -1515,7 +1515,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     if (!existingFiles || existingFiles.length === 0) return;
 
     // Elimina el atributo 'data-files' del elemento 'previewContainer'.
-    previewContainer.removeAttribute("data-files");
+    previewContainer.removeAttribute("hb-files");
 
     existingFiles.forEach((fileInfo, index) => {
       // Crear un objeto File a partir de la información proporcionada
