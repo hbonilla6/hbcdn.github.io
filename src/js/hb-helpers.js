@@ -1157,7 +1157,7 @@ function showLoadingAlert(loading = true) {
         document.head.appendChild(style);
       }
     });
-    
+
     // Deshabilita todos los inputs y botones de tipo submit
     document.querySelectorAll("input[type='submit'], button[type='submit']").forEach(el => {
       el.setAttribute("disabled", true);
@@ -1167,7 +1167,7 @@ function showLoadingAlert(loading = true) {
     if (alertLoading) {
       Swal.close();
     }
-    
+
     // Habilitar nuevamente los inputs y botones
     document.querySelectorAll("input[type='submit'], button[type='submit']").forEach(el => {
       el.removeAttribute("disabled");
@@ -1596,12 +1596,27 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     // Elimina el atributo 'data-files' del elemento 'previewContainer'.
     previewContainer.removeAttribute("hb-files");
 
-    existingFiles.forEach((fileInfo, index) => {
+    // Crear y mostrar indicador de carga
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.className = 'hb-loading-indicator';
+    loadingIndicator.innerHTML = `
+    <div class="hb-spinner"></div>
+    <p>Cargando archivos, por favor espere...</p>
+    <p class="hb-loading-count">0/${existingFiles.length} archivos cargados</p>
+  `;
+    previewContainer.appendChild(loadingIndicator);
+
+    // Contador para seguir el progreso
+    let loadedFilesCount = 0;
+    const loadingCountElement = loadingIndicator.querySelector('.hb-loading-count');
+
+    // Procesar cada archivo
+    const promises = existingFiles.map((fileInfo, index) => {
       // Crear un objeto File a partir de la información proporcionada
       const lastModifiedDate = new Date(fileInfo.LastModified);
 
       // Crear un objeto Blob que simulará el archivo
-      fetch(fileInfo?.url)
+      return fetch(fileInfo?.url)
         .then(response => response.blob())
         .then(blob => {
           // Crear un objeto File a partir del Blob
@@ -1621,14 +1636,29 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
             // Mostrar la previsualización pasando el índice original
             displayFilePreview(file, index);
           }
+
+          // Actualizar contador de carga
+          loadedFilesCount++;
+          loadingCountElement.textContent = `${loadedFilesCount}/${existingFiles.length} archivos cargados`;
         })
         .catch(error => {
           console.error(`Error al cargar el archivo existente ${fileInfo?.fileName}:`, error);
+
+          // También actualizamos el contador en caso de error
+          loadedFilesCount++;
+          loadingCountElement.textContent = `${loadedFilesCount}/${existingFiles.length} archivos cargados`;
         });
     });
 
-    // Actualizar el input después de procesar todos los archivos existentes
-    setTimeout(updateFileInput, 500);
+    // Cuando todos los archivos terminen de cargarse
+    Promise.all(promises)
+      .finally(() => {
+        // Eliminar indicador de carga
+        loadingIndicator.remove();
+
+        // Actualizar el input después de procesar todos los archivos existentes
+        updateFileInput();
+      });
   }
 
   // Función para actualizar los índices de los inputs ocultos
