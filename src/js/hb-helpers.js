@@ -1596,6 +1596,18 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     // Elimina el atributo 'data-files' del elemento 'previewContainer'.
     previewContainer.removeAttribute("hb-files");
 
+    // Limpiar cualquier indicador de carga existente
+    const existingIndicator = document.querySelector('.hb-loading-indicator');
+    if (existingIndicator) {
+      existingIndicator.remove();
+    }
+
+    // Crear contenedor específico para el indicador de carga (fuera del grid)
+    const loadingContainer = document.createElement('div');
+    loadingContainer.style.width = '100%';
+    loadingContainer.style.marginBottom = '20px';
+    previewContainer.parentNode.insertBefore(loadingContainer, previewContainer);
+
     // Crear y mostrar indicador de carga
     const loadingIndicator = document.createElement('div');
     loadingIndicator.className = 'hb-loading-indicator';
@@ -1604,7 +1616,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     <p>Cargando archivos, por favor espere...</p>
     <p class="hb-loading-count">0/${existingFiles.length} archivos cargados</p>
   `;
-    previewContainer.appendChild(loadingIndicator);
+    loadingContainer.appendChild(loadingIndicator);
 
     // Contador para seguir el progreso
     let loadedFilesCount = 0;
@@ -1653,8 +1665,8 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     // Cuando todos los archivos terminen de cargarse
     Promise.all(promises)
       .finally(() => {
-        // Eliminar indicador de carga
-        loadingIndicator.remove();
+        // Eliminar todo el contenedor de carga
+        loadingContainer.remove();
 
         // Actualizar el input después de procesar todos los archivos existentes
         updateFileInput();
