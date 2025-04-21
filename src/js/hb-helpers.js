@@ -2353,9 +2353,6 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     return uploadedFiles; // Retorna la variable global de archivos subidos
   };
 
-  // Hacer que el detalle del archivo en el modal sea arrastrable
-  makeElementDraggable(fileDetails);
-
   /**
    * Función para hacer que un elemento sea arrastrable solo verticalmente.
    * @param {HTMLElement} element - El elemento HTML que se hará arrastrable.
@@ -2426,6 +2423,9 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   // Implementar funcionalidad para el botón de cerrar
   // Llama a la función que permite arrastrar el botón de cerrar dentro del modal.
   implementDragForCloseButton();
+
+  // Hacer que el detalle del archivo en el modal sea arrastrable
+  makeElementDraggable(fileDetails);
 }
 
 // Cuando el DOM está completamente cargado
