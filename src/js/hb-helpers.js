@@ -342,10 +342,6 @@ function initializeAjaxForm(formSelector, options = {}) {
                     html: htmlContent || 'Error desconocido',
                     showConfirmButton: true
                   });
-                },
-                complete: function () {
-                  // Asegurar que el indicador de carga se oculte en todos los casos
-                  showLoadingAlert(false);
                 }
               });
             } else {
@@ -1203,6 +1199,8 @@ function onSuccessAlert(options) {
       $('body').removeClass('modal-open');
       // Eliminar los elementos de fondo de modal
       $('.modal-backdrop').remove();
+
+      showLoadingAlert(false);
 
       // Mostrar una alerta de éxito utilizando SweetAlert2
       Swal.fire({
