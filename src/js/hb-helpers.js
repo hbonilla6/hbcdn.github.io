@@ -1901,10 +1901,6 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
     });
   }
 
-  // Implementar funcionalidad para el botón de cerrar
-  // Llama a la función que permite arrastrar el botón de cerrar dentro del modal.
-  implementDragForCloseButton();
-
   /**
    * Genera un ID único para un archivo basado en su nombre, tamaño y última fecha de modificación.
    * Este ID se usa para identificar archivos de manera única.
@@ -2427,6 +2423,9 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   // Modificar el estilo de 'fileDetails' para que sea más claro que se puede arrastrar
   fileDetails.style.cursor = 'ns-resize'; // Cambiar el cursor para indicar que se puede redimensionar en el eje vertical
   fileDetails.style.zIndex = '102'; // Asegurar que el elemento esté por encima de otros elementos en la pantalla
+  // Implementar funcionalidad para el botón de cerrar
+  // Llama a la función que permite arrastrar el botón de cerrar dentro del modal.
+  implementDragForCloseButton();
 }
 
 // Cuando el DOM está completamente cargado
