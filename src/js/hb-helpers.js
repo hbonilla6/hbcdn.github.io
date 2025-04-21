@@ -1065,34 +1065,113 @@ function onBegin() {
 }
 
 let alertLoading;
+
 /**
- * Muestra una alerta de carga y deshabilita los botones de envío.
+ * Muestra una alerta de carga animada con círculos rebotando y texto con puntos secuenciales.
  * @param {boolean} [loading=true] - Indica si se debe mostrar el estado de carga (true) o no (false).
  */
 function showLoadingAlert(loading = true) {
-  // Si 'loading' es true, muestra el mensaje de "Cargando..." y deshabilita los botones de envío.
   if (loading) {
-    // Mostrar un toast de carga con mensaje "Cargando..."
-    alertLoading = toast({
-      icon: tToast.info, // Ícono informativo
-      position: tToasPosition.bottomStart, // Posición del toast
-      title: "Cargando...", // Título del mensaje de carga
-      timer: 10000 // Tiempo de espera del toast (10 segundos)
-    });
-
-    // Deshabilita todos los inputs y botones de tipo submit.
-    h("input[type='submit'], button[type='submit']").attr("disabled", true);
-  } else {
-    if (alertLoading) {
-      // Cerrar el toast de carga
-      const toastInstance = toastMap.get(alertLoading); // Obtener la instancia del toast por su uuid
-      if (toastInstance) {
-        toastInstance.close(); // Cerrar el toast si está presente
-        toastMap.delete(alertLoading); // Eliminar el uuid de la lista de toasts
+    // Mostrar SweetAlert con ambas animaciones usando etiquetas semánticamente correctas
+    alertLoading = Swal.fire({
+      html: `
+        <div class="loading-container">
+          <p class="loading-text">Cargando<span class="dots"></span></p>
+          <div class="loading-animation">
+            <div class="spinner">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
+          </div>
+        </div>
+      `,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      didOpen: () => {
+        // Agregar estilos CSS para las animaciones
+        const style = document.createElement('style');
+        style.innerHTML = `
+          .loading-container {
+            padding: 10px;
+          }
+          .loading-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+          }
+          .dots:after {
+            content: '.';
+            animation: dots 1.5s steps(5, end) infinite;
+          }
+          @keyframes dots {
+            0%, 20% {
+              content: '.';
+            }
+            40% {
+              content: '..';
+            }
+            60%, 80% {
+              content: '...';
+            }
+            100% {
+              content: '';
+            }
+          }
+          .loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+          }
+          .spinner {
+            margin: 0 auto;
+            width: 70px;
+            text-align: center;
+          }
+          .spinner > div {
+            width: 18px;
+            height: 18px;
+            background-color: #3085d6;
+            border-radius: 100%;
+            display: inline-block;
+            margin: 0 3px;
+            animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+          }
+          .spinner .bounce1 {
+            animation-delay: -0.32s;
+          }
+          .spinner .bounce2 {
+            animation-delay: -0.16s;
+          }
+          @keyframes sk-bouncedelay {
+            0%, 80%, 100% { 
+              transform: scale(0);
+            } 
+            40% { 
+              transform: scale(1.0);
+            }
+          }
+        `;
+        document.head.appendChild(style);
       }
+    });
+    
+    // Deshabilita todos los inputs y botones de tipo submit
+    document.querySelectorAll("input[type='submit'], button[type='submit']").forEach(el => {
+      el.setAttribute("disabled", true);
+    });
+  } else {
+    // Cerrar la alerta si existe
+    if (alertLoading) {
+      Swal.close();
     }
-    // Si 'loading' es false, habilita nuevamente los inputs y botones de tipo submit.
-    h("input[type='submit'], button[type='submit']").removeAttr("disabled");
+    
+    // Habilitar nuevamente los inputs y botones
+    document.querySelectorAll("input[type='submit'], button[type='submit']").forEach(el => {
+      el.removeAttribute("disabled");
+    });
   }
 }
 
