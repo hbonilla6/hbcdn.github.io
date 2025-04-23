@@ -125,11 +125,26 @@ function inicializarFormulariosHbHbx(formSelector) {
   }
 
   function errorDefault(xhr, status, error, form) {
-    console.log('Error status:', status);
-    console.log('Error response:', xhr.responseText);
-    console.log('Error object:', xhr.responseJSON);
-    toastR({ title: "Error", msg: xhr.responseJSON?.message || 'Error en la solicitud' });
     cerrarModal(form);
+
+    // Manejar errores
+    h.error("Error en la solicitud AJAX:", error);
+
+    // Verificar si la respuesta contiene HTML
+    let htmlContent = xhr.responseText;
+
+    // Método 1: Usar un elemento div para asegurarse que se interprete como HTML
+    let tempDiv = document.createElement('div');
+    tempDiv.innerHTML = htmlContent;
+    htmlContent = tempDiv.innerHTML;
+
+    // Mostrar alerta de error usando SweetAlert2
+    Swal.fire({
+      icon: 'error',
+      title: errorTitle,
+      html: htmlContent || 'Error desconocido',
+      showConfirmButton: true
+    });
   }
   // // Función por defecto que se ejecuta en caso de error
   // function errorDefault(xhr, status, error, form) {
