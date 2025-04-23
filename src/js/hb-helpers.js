@@ -2459,6 +2459,571 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   makeElementDraggable(fileDetails);
 }
 
+class HBFormValidator {
+  /**
+   * Constructor
+   * @param {Object} config - Configuración global para el validador
+   * @param {boolean} [config.focusOnInvalid=false] - Si debe hacer foco en el primer campo inválido
+   * @param {boolean} [config.showErrors=true] - Si debe mostrar mensajes de error en la UI
+   * @param {Function} [config.onError] - Callback que se ejecuta cuando hay errores
+   */
+  constructor(config = {}) {
+      // Configuración por defecto
+      this.config = {
+          focusOnInvalid: false,
+          showErrors: true,
+          onError: null,
+          ...config
+      };
+      
+      // Bind de métodos para mantener el contexto this
+      this.validateFields = this.validateFields.bind(this);
+      this.showFieldError = this.showFieldError.bind(this);
+  }
+  
+  /**
+   * Valida campos según los selectores proporcionados
+   * @param {Object} options - Opciones de configuración
+   * @param {string[]|Function} options.selectors - Array de selectores o función que devuelve selectores
+   * @param {boolean} [options.focusOnInvalid] - Si es true, hace foco en el primer campo inválido
+   * @param {boolean} [options.showErrors] - Si es true, muestra mensajes de error en la UI
+   * @param {Function} [options.onError] - Callback que se ejecuta cuando hay errores, recibe array de errores
+   * @returns {boolean} - Devuelve true si todos los campos son válidos, false en caso contrario
+   */
+  validateFields(options) {
+      // Valores predeterminados combinados con la configuración global
+      const settings = { 
+          ...this.config,
+          selectors: [],
+          ...options
+      };
+      
+      // Array para almacenar información de errores
+      const errors = [];
+      
+      // Obtiene los selectores a validar
+      let selectorsToValidate = [];
+      
+      // Si es una función, la ejecuta para obtener los selectores
+      if (typeof settings.selectors === 'function') {
+          selectorsToValidate = settings.selectors();
+      } 
+      // Si es un string, lo convierte en array
+      else if (typeof settings.selectors === 'string') {
+          selectorsToValidate = [settings.selectors];
+      }
+      // Si ya es un array, lo usa directamente
+      else if (Array.isArray(settings.selectors)) {
+          selectorsToValidate = settings.selectors;
+      }
+      
+      // Evalúa todos los campos y retorna true solo si cada uno de ellos es válido
+      const isValid = selectorsToValidate.every((selector) => {
+          // Selecciona el elemento DOM usando el helper 'h' (similar a jQuery)
+          const field = h(selector);
+          
+          // Obtiene el valor actual del campo
+          const value = field.val();
+          
+          // Obtiene el tipo de campo (text, number, date, etc.)
+          const fieldType = field.prop("type");
+          
+          // Guarda el nombre del campo para mensajes de error más descriptivos
+          const fieldName = field.attr("name") || field.attr("id") || selector;
+          
+          // Estado inicial de validación
+          let isValid = true;
+          
+          // Mensaje de error inicial vacío
+          let errorMessage = "";
+          
+          // Verifica si el elemento existe en el DOM antes de continuar
+          if (field.length === 0) {
+              // Registra error si el campo no existe y retorna falso
+              console.error(`Campo '${selector}' no encontrado en el DOM`);
+              return false;
+          }
+          
+          // Si el campo está deshabilitado o es de solo lectura, se considera válido automáticamente
+          if (field.prop("disabled") || field.prop("readonly")) {
+              return true;
+          }
+          
+          // Determina si el campo es requerido mediante varios métodos posibles
+          const isRequired = field.attr("required") !== undefined || 
+                            field.hasClass("required") || 
+                            field.closest('.form-group').find('.required-mark').length > 0;
+          
+          // Valida que campos requeridos no estén vacíos
+          if (isRequired && (value === null || value.trim() === "")) {
+              isValid = false;
+              errorMessage = `El campo ${fieldName} es obligatorio`;
+          }
+          
+          // Si ya falló la validación por requerido, no continúa con más validaciones
+          if (!isValid) {
+              // Hace foco en el campo si se solicita
+              if (settings.focusOnInvalid) field.focus();
+              
+              // Guarda el error para reportes
+              errors.push({ field: fieldName, message: errorMessage, element: field });
+              return false;
+          }
+          
+          // Si el campo está vacío pero no es requerido, se considera válido
+          if (value === null || value.trim() === "") {
+              return true;
+          }
+          
+          // Validaciones específicas según el tipo de campo usando switch
+          switch (fieldType) {
+              case "number":
+              case "range":
+                  // Convierte el valor a número decimal
+                  const numValue = toDecimal(value);
+                  
+                  // Obtiene restricciones del campo desde sus atributos
+                  const min = field.attr("min") !== undefined ? parseFloat(field.attr("min")) : null;
+                  const max = field.attr("max") !== undefined ? parseFloat(field.attr("max")) : null;
+                  const step = field.attr("step") !== undefined ? parseFloat(field.attr("step")) : null;
+                  
+                  // Valida que sea un número válido
+                  if (isNaN(numValue)) {
+                      isValid = false;
+                      errorMessage = `El campo ${fieldName} debe ser un número válido`;
+                  }
+                  // Valida el valor mínimo permitido
+                  else if (min !== null && numValue < min) {
+                      isValid = false;
+                      errorMessage = `El valor debe ser mayor o igual a ${min}`;
+                  }
+                  // Valida el valor máximo permitido
+                  else if (max !== null && numValue > max) {
+                      isValid = false;
+                      errorMessage = `El valor debe ser menor o igual a ${max}`;
+                  }
+                  // Valida que el valor cumpla con el incremento especificado
+                  else if (step !== null && step > 0) {
+                      // Considera errores de punto flotante en la división
+                      const remainder = (numValue - (min !== null ? min : 0)) % step;
+                      if (remainder > 0 && Math.abs(remainder - step) > 0.00001) {
+                          isValid = false;
+                          errorMessage = `El valor debe ser un múltiplo de ${step} desde ${min !== null ? min : 0}`;
+                      }
+                  }
+                  break;
+                  
+              case "date":
+              case "datetime":
+              case "datetime-local":
+              case "month":
+              case "week":
+              case "time":
+                  // Variables para almacenar formato y valor de fecha
+                  let dateFormat, dateValue;
+                  
+                  // Determina el formato según el tipo específico de campo de fecha/hora
+                  if (fieldType === "date") dateFormat = 'YYYY-MM-DD';
+                  else if (fieldType === "datetime" || fieldType === "datetime-local") dateFormat = 'YYYY-MM-DDTHH:mm:ss';
+                  else if (fieldType === "month") dateFormat = 'YYYY-MM';
+                  else if (fieldType === "week") dateFormat = 'YYYY-[W]WW';
+                  else if (fieldType === "time") dateFormat = 'HH:mm';
+                  
+                  // Parsea el valor usando moment.js con el formato adecuado
+                  dateValue = moment(value, dateFormat);
+                  
+                  // Verifica si la fecha es válida según el formato esperado
+                  if (!dateValue.isValid()) {
+                      isValid = false;
+                      errorMessage = `El formato de fecha/hora no es válido`;
+                  } else {
+                      // Valida contra fecha mínima si está especificada
+                      const minDate = field.attr("min") ? moment(field.attr("min"), dateFormat) : null;
+                      if (minDate !== null && minDate.isValid() && dateValue.isBefore(minDate)) {
+                          isValid = false;
+                          errorMessage = `La fecha debe ser igual o posterior a ${minDate.format(dateFormat)}`;
+                      }
+                      
+                      // Valida contra fecha máxima si está especificada
+                      const maxDate = field.attr("max") ? moment(field.attr("max"), dateFormat) : null;
+                      if (maxDate !== null && maxDate.isValid() && dateValue.isAfter(maxDate)) {
+                          isValid = false;
+                          errorMessage = `La fecha debe ser igual o anterior a ${maxDate.format(dateFormat)}`;
+                      }
+                  }
+                  break;
+                  
+              case "email":
+                  // Expresión regular para validar emails según RFC 5322
+                  const emailPattern = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+                  
+                  // Valida el formato del email
+                  if (!emailPattern.test(value)) {
+                      isValid = false;
+                      errorMessage = `El email no tiene un formato válido`;
+                  }
+                  
+                  // Validación adicional para campos que permiten múltiples emails
+                  if (isValid && field.attr("multiple") !== undefined) {
+                      // Divide la cadena en emails individuales separados por comas
+                      const emails = value.split(/\s*,\s*/);
+                      for (let email of emails) {
+                          // Valida cada email individualmente
+                          if (!emailPattern.test(email)) {
+                              isValid = false;
+                              errorMessage = `Uno o más emails no tienen un formato válido`;
+                              break;
+                          }
+                      }
+                  }
+                  break;
+                  
+              case "url":
+                  // Valida URLs usando el constructor URL nativo
+                  try {
+                      new URL(value);
+                  } catch (e) {
+                      isValid = false;
+                      errorMessage = `La URL no tiene un formato válido`;
+                  }
+                  break;
+                  
+              case "tel":
+                  // Usa un patrón definido en el atributo pattern o un patrón predeterminado para teléfonos
+                  const telPattern = field.attr("pattern") || /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+                  
+                  // Valida el formato de teléfono
+                  if (typeof telPattern === "string") {
+                      // Si el patrón es una cadena, crea una expresión regular
+                      if (!new RegExp(telPattern).test(value)) {
+                          isValid = false;
+                          errorMessage = `El teléfono no tiene un formato válido`;
+                      }
+                  } else if (!telPattern.test(value)) {
+                      // Si ya es una expresión regular, la usa directamente
+                      isValid = false;
+                      errorMessage = `El teléfono no tiene un formato válido`;
+                  }
+                  break;
+                  
+              case "password":
+                  // Obtiene la longitud mínima o usa 8 como predeterminado
+                  const minLength = field.attr("minlength") ? parseInt(field.attr("minlength")) : 8;
+                  
+                  // Patrón para validar fuerza de contraseña (contiene mayúsculas, minúsculas, números y caracteres especiales)
+                  const strengthPattern = field.attr("data-strength-pattern") || 
+                                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+                  
+                  // Valida longitud mínima
+                  if (value.length < minLength) {
+                      isValid = false;
+                      errorMessage = `La contraseña debe tener al menos ${minLength} caracteres`;
+                  } 
+                  // Valida fuerza si se solicita
+                  else if (field.attr("data-validate-strength") && typeof strengthPattern === "string") {
+                      if (!new RegExp(strengthPattern).test(value)) {
+                          isValid = false;
+                          errorMessage = field.attr("data-strength-message") || 
+                                       `La contraseña debe incluir mayúsculas, minúsculas, números y caracteres especiales`;
+                      }
+                  }
+                  
+                  // Verifica coincidencia con otro campo (confirm password)
+                  const matchField = field.attr("data-match-field");
+                  if (matchField) {
+                      const matchValue = h(matchField).val();
+                      if (value !== matchValue) {
+                          isValid = false;
+                          errorMessage = `Las contraseñas no coinciden`;
+                      }
+                  }
+                  break;
+                  
+              case "file":
+                  // Obtiene la colección de archivos seleccionados
+                  const files = field[0].files;
+                  
+                  // Valida si se seleccionó un archivo cuando es requerido
+                  if (isRequired && (!files || files.length === 0)) {
+                      isValid = false;
+                      errorMessage = `Debe seleccionar un archivo`;
+                  } else if (files && files.length > 0) {
+                      // Valida número máximo de archivos permitidos
+                      const maxFiles = field.attr("data-max-files") ? parseInt(field.attr("data-max-files")) : 
+                                      (field.attr("multiple") ? null : 1);
+                      if (maxFiles !== null && files.length > maxFiles) {
+                          isValid = false;
+                          errorMessage = `Puede seleccionar máximo ${maxFiles} archivo(s)`;
+                      }
+                      
+                      // Valida tipos de archivo permitidos según el atributo accept
+                      const accept = field.attr("accept");
+                      if (accept) {
+                          // Divide la lista de tipos aceptados
+                          const acceptedTypes = accept.split(',').map(type => type.trim().toLowerCase());
+                          
+                          // Revisa cada archivo seleccionado
+                          for (let i = 0; i < files.length; i++) {
+                              const file = files[i];
+                              let fileMatched = false;
+                              
+                              // Compara con cada tipo aceptado
+                              for (let acceptType of acceptedTypes) {
+                                  if (acceptType.startsWith('.')) {
+                                      // Si es extensión de archivo (p.ej. .pdf)
+                                      const extension = '.' + file.name.split('.').pop().toLowerCase();
+                                      if (extension === acceptType) {
+                                          fileMatched = true;
+                                          break;
+                                      }
+                                  } else if (acceptType.includes('/')) {
+                                      // Si es tipo MIME (p.ej. image/png o image/*)
+                                      const [type, subtype] = acceptType.split('/');
+                                      const [fileType, fileSubtype] = file.type.split('/');
+                                      
+                                      // Compara tipo y subtipo, considerando comodines (*)
+                                      if ((type === '*' || fileType === type) && 
+                                          (subtype === '*' || fileSubtype === subtype)) {
+                                          fileMatched = true;
+                                          break;
+                                      }
+                                  }
+                              }
+                              
+                              // Si algún archivo no coincide, marca como inválido
+                              if (!fileMatched) {
+                                  isValid = false;
+                                  errorMessage = `Uno o más archivos no tienen un formato permitido`;
+                                  break;
+                              }
+                          }
+                      }
+                      
+                      // Valida tamaño máximo de archivos
+                      const maxSize = field.attr("data-max-size") ? parseInt(field.attr("data-max-size")) : null;
+                      if (maxSize !== null) {
+                          for (let i = 0; i < files.length; i++) {
+                              if (files[i].size > maxSize) {
+                                  isValid = false;
+                                  // Convierte bytes a MB para mostrar mensaje más amigable
+                                  const sizeMB = Math.round(maxSize / (1024 * 1024) * 100) / 100;
+                                  errorMessage = `El tamaño máximo por archivo es de ${sizeMB} MB`;
+                                  break;
+                              }
+                          }
+                      }
+                  }
+                  break;
+                  
+              case "checkbox":
+                  // Valida checkbox requerido (debe estar marcado)
+                  if (isRequired && !field.prop("checked")) {
+                      isValid = false;
+                      errorMessage = `Este campo es obligatorio`;
+                  }
+                  
+                  // Validación para grupos de checkboxes que comparten un atributo data-group
+                  const checkGroup = field.attr("data-group");
+                  if (checkGroup) {
+                      // Obtiene restricciones de selección mínima y máxima
+                      const minChecked = field.attr("data-min-checked") ? parseInt(field.attr("data-min-checked")) : null;
+                      const maxChecked = field.attr("data-max-checked") ? parseInt(field.attr("data-max-checked")) : null;
+                      
+                      // Si hay restricciones, valida la cantidad de checkboxes seleccionados del mismo grupo
+                      if (minChecked !== null || maxChecked !== null) {
+                          const checkedCount = document.querySelectorAll(`input[type="checkbox"][data-group="${checkGroup}"]:checked`).length;
+                          
+                          // Valida selección mínima
+                          if (minChecked !== null && checkedCount < minChecked) {
+                              isValid = false;
+                              errorMessage = `Debe seleccionar al menos ${minChecked} opciones`;
+                          } 
+                          // Valida selección máxima
+                          else if (maxChecked !== null && checkedCount > maxChecked) {
+                              isValid = false;
+                              errorMessage = `Puede seleccionar máximo ${maxChecked} opciones`;
+                          }
+                      }
+                  }
+                  break;
+                  
+              case "radio":
+                  // Valida que se haya seleccionado un radio button del grupo cuando es requerido
+                  if (isRequired) {
+                      // Obtiene el nombre del grupo de radio buttons
+                      const radioGroup = field.attr("name");
+                      
+                      // Verifica si algún radio button del grupo está seleccionado
+                      const anyChecked = document.querySelector(`input[type="radio"][name="${radioGroup}"]:checked`);
+                      if (!anyChecked) {
+                          isValid = false;
+                          errorMessage = `Debe seleccionar una opción`;
+                      }
+                  }
+                  break;
+                  
+              default:
+                  // Para otros tipos de campos (text, textarea, select, etc.)
+                  
+                  // Obtiene restricciones de longitud
+                  const minLen = field.attr("minlength") ? parseInt(field.attr("minlength")) : null;
+                  const maxLength = field.attr("maxlength") ? parseInt(field.attr("maxlength")) : null;
+                  
+                  // Valida longitud mínima
+                  if (minLength !== null && value.length < minLength) {
+                      isValid = false;
+                      errorMessage = `Debe tener al menos ${minLength} caracteres`;
+                  }
+                  // Valida longitud máxima
+                  else if (maxLength !== null && value.length > maxLength) {
+                      isValid = false;
+                      errorMessage = `Debe tener máximo ${maxLength} caracteres`;
+                  }
+                  
+                  // Valida contra patrón regex definido en el atributo pattern
+                  const pattern = field.attr("pattern");
+                  if (pattern && !new RegExp(`^${pattern}$`).test(value)) {
+                      isValid = false;
+                      // Usa el atributo title como mensaje de error si está disponible
+                      errorMessage = field.attr("title") || `El formato no es válido`;
+                  }
+                  
+                  // Valida contra lista de valores permitidos en un datalist
+                  const dataListId = field.attr("list");
+                  if (dataListId) {
+                      const dataList = document.getElementById(dataListId);
+                      if (dataList) {
+                          // Extrae todos los valores permitidos del datalist
+                          const allowedValues = Array.from(dataList.querySelectorAll('option')).map(opt => opt.value);
+                          
+                          // Si se requiere estrictamente un valor de la lista y no coincide, marca como inválido
+                          if (!allowedValues.includes(value) && field.attr("data-strict-datalist")) {
+                              isValid = false;
+                              errorMessage = `Debe seleccionar un valor de la lista`;
+                          }
+                      }
+                  }
+                  
+                  // Ejecuta función de validación personalizada si está definida
+                  if (field.attr("data-validation-function")) {
+                      try {
+                          // Crea y ejecuta la función de validación definida en el atributo
+                          const validationFn = new Function('value', 'element', field.attr("data-validation-function"));
+                          const customResult = validationFn(value, field[0]);
+                          
+                          // Si no devuelve true, considera que falló la validación
+                          if (customResult !== true) {
+                              isValid = false;
+                              // Usa el resultado como mensaje si es un string, o el mensaje predeterminado
+                              errorMessage = typeof customResult === 'string' ? customResult : 
+                                          field.attr("data-validation-message") || `Validación personalizada fallida`;
+                          }
+                      } catch (e) {
+                          // Registra errores en la función de validación
+                          console.error(`Error en la validación personalizada del campo ${fieldName}:`, e);
+                      }
+                  }
+                  break;
+          }
+          
+          // Utiliza la API nativa de validación HTML5 como último recurso
+          if (isValid && field[0] && typeof field[0].checkValidity === "function" && !field[0].checkValidity()) {
+              isValid = false;
+              // Usa el mensaje de validación nativo o uno genérico
+              errorMessage = field[0].validationMessage || `El campo no es válido`;
+          }
+          
+          // Si hay un error, realiza acciones finales
+          if (!isValid) {
+              // Guarda el error para posible reporte
+              errors.push({ field: fieldName, message: errorMessage, element: field });
+              
+              // Hace foco en el campo inválido si se solicitó
+              if (settings.focusOnInvalid) {
+                  field.focus();
+              }
+              
+              // Muestra el error visualmente si está habilitado
+              if (settings.showErrors) {
+                  this.showFieldError(field, errorMessage);
+              }
+              
+              return false;
+          }
+          
+          // Si pasó todas las validaciones, retorna true
+          return true;
+      });
+      
+      // Si hay errores y se proporcionó una función de callback, la ejecuta
+      if (!isValid && errors.length > 0 && typeof settings.onError === 'function') {
+          settings.onError(errors);
+      }
+      
+      return isValid;
+  }
+  
+  /**
+   * Método de compatibilidad para adaptar el método original
+   * @param {string[]|Function} selectors - Array de selectores o función que devuelve selectores
+   * @param {boolean} focusOnInvalid - Si es true, hace foco en el primer campo inválido
+   * @returns {boolean} - Devuelve true si todos los campos son válidos
+   */
+  areFieldsValid(selectors, focusOnInvalid = false) {
+      return this.validateFields({
+          selectors: selectors,
+          focusOnInvalid: focusOnInvalid
+      });
+  }
+  
+  /**
+   * Muestra visualmente un mensaje de error asociado a un campo
+   * @param {Object} field - El elemento DOM o jQuery del campo
+   * @param {string} message - El mensaje de error a mostrar
+   */
+  showFieldError(field, message) {
+      // Encuentra el contenedor del campo (normalmente un div.form-group)
+      const formGroup = field.closest('.form-group');
+      
+      // Elimina mensajes de error previos para evitar duplicados
+      formGroup.find('.validation-error').remove();
+      
+      // Añade clase de error al campo para estilizarlo
+      field.addClass('is-invalid');
+      
+      // Crea el elemento para el mensaje de error
+      const errorDiv = $(`<div class="validation-error text-danger small mt-1">${message}</div>`);
+      
+      // Decide dónde insertar el mensaje de error
+      if (formGroup.find('label').length > 0) {
+          // Si hay etiqueta, inserta después del campo
+          errorDiv.insertAfter(field);
+      } else {
+          // Si no hay etiqueta, añade al final del grupo
+          formGroup.append(errorDiv);
+      }
+      
+      // Configuración para remover el mensaje cuando el usuario corrija el error
+      field.one('input change', function() {
+          // Quita la clase de error
+          field.removeClass('is-invalid');
+          
+          // Elimina el mensaje con animación
+          formGroup.find('.validation-error').fadeOut(300, function() {
+              $(this).remove();
+          });
+      });
+  }
+  
+  /**
+   * Método estático para crear una instancia con configuración predeterminada
+   * @returns {HBFormValidator} - Nueva instancia del validador
+   */
+  static create(config = {}) {
+      return new HBFormValidator(config);
+  }
+}
+
 // Cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", function () {
   try {
