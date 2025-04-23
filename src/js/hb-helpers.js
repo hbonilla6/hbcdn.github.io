@@ -141,7 +141,6 @@ function inicializarFormulariosHbHbx(formSelector) {
     // Mostrar alerta de error usando SweetAlert2
     Swal.fire({
       icon: 'error',
-      title: errorTitle,
       html: htmlContent || 'Error desconocido',
       showConfirmButton: true
     });
