@@ -1388,7 +1388,7 @@ function evaluateSelector(selector) {
             return Array.from(document.querySelectorAll(selector));
         }
     } else {
-        throw new TypeError("El selector proporcionado debe ser una cadena, un HTMLElement, un NodeList o un Array.");
+        throw new TypeError("El selector proporcionado debe ser una cadena, un HTMLElement, un NodeList o un Array.", selector);
     }
 }
 
