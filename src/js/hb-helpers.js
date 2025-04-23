@@ -3063,6 +3063,73 @@ class HBFormValidator {
   }
 }
 
+/**
+ * @function createInputField
+ * @description Crea elementos input HTML con escape de caracteres para prevenir XSS
+ * @param {Object} config - Configuración del campo de entrada
+ * @param {string} config.type - Tipo de input
+ * @param {string} config.className - Clases CSS
+ * @param {string} config.name - Nombre del campo
+ * @param {string} config.value - Valor del campo
+ * @param {number} config.min - Valor mínimo (para inputs numéricos)
+ * @param {number} config.max - Valor máximo (para inputs numéricos)
+ * @param {boolean} config.readonly - Si el campo es de solo lectura
+ * @returns {string} Elemento input HTML como string
+ */
+function createInputField({ type, className, name, value, min, max, readonly }) {
+  // Sanitiza las entradas para prevenir XSS
+  type = type ? escapeHTML(type) : 'text';
+  className = className ? escapeHTML(className) : '';
+  name = name ? escapeHTML(name) : '';
+  value = value !== undefined && value !== null ? escapeHTML(value.toString()) : '';
+
+  // Comienza a construir el elemento input
+  let inputField = `<input type="${type}"`;
+
+  // Agrega atributos si existen
+  if (className) inputField += ` class="${className}"`;
+  if (name) inputField += ` name="${name}"`;
+  if (value !== '') inputField += ` value="${value}"`;
+  if (min !== undefined) inputField += ` min="${min}"`;
+  if (max !== undefined) inputField += ` max="${max}"`;
+  if (readonly) inputField += ` readonly="readonly"`;
+
+  // Cierra la etiqueta de input
+  inputField += '>';
+  return inputField;
+}
+
+/**
+ * @function escapeHTML
+ * @description Escapa caracteres especiales para prevenir ataques XSS
+ * @param {string} str - Cadena a escapar
+ * @returns {string} Cadena con caracteres especiales escapados
+ */
+function escapeHTML(str) {
+  // Reemplaza caracteres especiales con entidades HTML
+  return str.replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+}
+
+/**
+ * @function reindexTable
+ * @description Actualiza los índices de las filas y nombres de campos después de eliminar o modificar filas
+ * @param {string} tbodyId - El id del tbody que se va a reindexar
+ */
+function reindexTable(tbodyId) { // Reindexa la tabla de detalles de venta
+  h(`#${tbodyId} tr`).each(function (index, element) { // Itera sobre cada fila de la tabla usando el ID proporcionado
+      h(element).find(`input[name^="${dtoName}["]`).each(function () { // Busca los campos de entrada con nombre que comienza con el nombre del DTO
+          const name = h(this).attr('name'); // Obtiene el nombre del campo
+          // Reemplaza correctamente la parte del nombre que contiene el índice
+          const newName = name.replace(new RegExp(`${dtoName}\\[\\d+\\]`), `${dtoName}[${index}]`);
+          h(this).attr('name', newName); // Establece el nuevo nombre del campo
+      });
+  });
+}
+
 // Cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", function () {
   try {
