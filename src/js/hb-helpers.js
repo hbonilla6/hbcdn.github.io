@@ -124,11 +124,18 @@ function inicializarFormulariosHbHbx(formSelector) {
     }
   }
 
-  // Función por defecto que se ejecuta en caso de error
   function errorDefault(xhr, status, error, form) {
-    toastR({ title: "Error", msg: xhr.responseJSON?.message || 'Error en la solicitud' }); // Muestra una alerta de error
-    cerrarModal(form); // Cierra el modal que contiene el formulario
+    console.log('Error status:', status);
+    console.log('Error response:', xhr.responseText);
+    console.log('Error object:', xhr.responseJSON);
+    toastR({ title: "Error", msg: xhr.responseJSON?.message || 'Error en la solicitud' });
+    cerrarModal(form);
   }
+  // // Función por defecto que se ejecuta en caso de error
+  // function errorDefault(xhr, status, error, form) {
+  //   toastR({ title: "Error", msg: xhr.responseJSON?.message || 'Error en la solicitud' }); // Muestra una alerta de error
+  //   cerrarModal(form); // Cierra el modal que contiene el formulario
+  // }
 
   // Función por defecto que se ejecuta al completar la petición
   function completeDefault(xhr, status, form) {
