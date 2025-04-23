@@ -2459,6 +2459,45 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   makeElementDraggable(fileDetails);
 }
 
+
+
+// // Crear instancia con configuración por defecto
+// const validator = new HBFormValidator();
+
+// // Validar campos con selectores específicos
+// validator.validateFields({
+//     selectors: ['#nombre', '#email', '#telefono'],
+//     focusOnInvalid: true
+// });
+
+// // O crear instancia con configuración personalizada
+// const formValidator = new FormValidator({
+//     focusOnInvalid: true,
+//     showErrors: true,
+//     onError: (errors) => {
+//         console.log('Se encontraron errores:', errors);
+//     }
+// });
+
+// // Usar para validar un formulario completo
+// const isValid = formValidator.validateFields({
+//     selectors: () => {
+//         // Obtener todos los campos del formulario activo
+//         return $('#myForm').find('input, select, textarea').map(function() {
+//             return '#' + $(this).attr('id');
+//         }).get();
+//     }
+// });
+
+// // Validar antes de enviar un formulario
+// $('#myForm').on('submit', function(e) {
+//     if (!validator.validateFields({
+//         selectors: ['#email', '#password']
+//     })) {
+//         e.preventDefault();
+//     }
+// });
+
 class HBFormValidator {
   /**
    * Constructor
