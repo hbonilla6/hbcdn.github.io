@@ -1,6 +1,6 @@
-function inicializarFormulariosHbHbx(elements) {
+function inicializarFormulariosHbHbx(formSelector) {
   // Obtiene todos los elementos requeridos en el formulario.
-  const requiredElements = h(elements)
+  const requiredElements = h(formSelector)
     .find('[data-val-required], [required]');
   if (requiredElements.count > 0) {
     // Muestra una notificación sobre los campos obligatorios.
@@ -21,7 +21,7 @@ function inicializarFormulariosHbHbx(elements) {
     });
   }
   // Selecciona todos los formularios con el atributo 'hb-hbx' y les asigna un evento 'submit'
-  $('form[hb-hbx]').off('submit').on('submit', function (e) {
+  $(formSelector).off('submit').on('submit', function (e) {
     e.preventDefault(); // Evita el envío tradicional del formulario
     const form = $(this); // Guarda la referencia al formulario actual
     const confirmMessage = form.data('hb-confirm') || '¿Estás seguro de realizar esta acción?'; // Obtiene el mensaje de confirmación personalizado o usa uno por defecto
@@ -53,7 +53,7 @@ function inicializarFormulariosHbHbx(elements) {
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) { // Si el usuario confirma, ejecuta la petición AJAX
-        addCurrentPathToForm(form);
+        addCurrentPathToForm(form[0]);
         ejecutarAjax(form);
       } else {
         toast({ title: '&#161;Acci&oacute;n cancelada!', icon: tToast.info });
