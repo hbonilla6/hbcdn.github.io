@@ -2909,9 +2909,9 @@ class HBFormValidator {
                   const maxLength = field.attr("maxlength") ? parseInt(field.attr("maxlength")) : null;
                   
                   // Valida longitud mínima
-                  if (minLength !== null && value.length < minLength) {
+                  if (minLen !== null && value.length < minLen) {
                       isValid = false;
-                      errorMessage = `Debe tener al menos ${minLength} caracteres`;
+                      errorMessage = `Debe tener al menos ${minLen} caracteres`;
                   }
                   // Valida longitud máxima
                   else if (maxLength !== null && value.length > maxLength) {
