@@ -1583,7 +1583,7 @@ function initMultiHBFiles(fileInputId = 'hb-file-input') {
   const previewContainer = document.getElementById('hb-previewContainer');
 
   // Obtener el elemento del DOM con el id 'hb-fileInputContainer' (contenedor del input de archivos)
-  const fileInputContainer = document.querySelector("#hb-file-input-container")
+  const fileInputContainer = document.querySelector(".hb-file-input-container")
 
   // Convierte la cadena JSON almacenada en el atributo 'data-files' del contenedor 'previewContainer' en un objeto JavaScript.
   const existingFiles = JSON.parse(previewContainer.getAttribute("hb-files") || "[]");
