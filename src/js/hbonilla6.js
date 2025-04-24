@@ -182,42 +182,42 @@ H.prototype.is = function (selector) {
         switch (pseudo) {
             case ':hidden':
                 return (
-                    element.hidden || 
-                    element.style.display === 'none' || 
+                    element.hidden ||
+                    element.style.display === 'none' ||
                     window.getComputedStyle(element).display === 'none' ||
                     window.getComputedStyle(element).visibility === 'hidden' ||
                     element.offsetParent === null
                 );
-            
+
             case ':visible':
                 return (
-                    !element.hidden && 
+                    !element.hidden &&
                     window.getComputedStyle(element).display !== 'none' &&
                     window.getComputedStyle(element).visibility !== 'hidden' &&
                     element.offsetParent !== null
                 );
-            
+
             case ':checked':
                 return element.checked === true;
-            
+
             case ':selected':
                 return element.selected === true;
-            
+
             case ':enabled':
                 return !element.disabled;
-            
+
             case ':disabled':
                 return element.disabled === true;
-            
+
             case ':input':
                 return ['INPUT', 'SELECT', 'TEXTAREA', 'BUTTON'].includes(element.tagName);
-            
+
             case ':parent':
                 return element.children.length > 0;
-            
+
             case ':empty':
                 return element.children.length === 0;
-            
+
             default:
                 return false;
         }
@@ -226,13 +226,13 @@ H.prototype.is = function (selector) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
-            
+
             // Manejar pseudo-selectores personalizados
             if (selector.startsWith(':')) {
                 if (checkPseudoSelector(element, selector)) {
                     return true;
                 }
-            } 
+            }
             // Usar matches para selectores estándar
             else {
                 try {
@@ -310,11 +310,11 @@ H.prototype.text = function (newText) {
  * @param {Function} handler - Función manejadora del evento.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.one = function(eventName, handler) {
+H.prototype.one = function (eventName, handler) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
-            const oneTimeHandler = function(e) {
+            const oneTimeHandler = function (e) {
                 // Eliminar el controlador después de ejecutarlo
                 element.removeEventListener(eventName, oneTimeHandler);
                 // Llamar al controlador original
@@ -327,18 +327,64 @@ H.prototype.one = function(eventName, handler) {
 };
 
 /**
+ * Desvanece gradualmente un elemento hasta que desaparece completamente.
+ * @param {number} duration - Duración de la animación en milisegundos (por defecto: 400ms).
+ * @param {Function} callback - Función opcional que se ejecuta al finalizar la animación.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.fadeOut = function (duration = 400, callback) {
+    for (let key in this) {
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            const element = this[key];
+
+            // Guardar la opacidad original y el display
+            const originalOpacity = window.getComputedStyle(element).opacity || 1;
+            const originalDisplay = window.getComputedStyle(element).display;
+
+            // Asegurarnos que el elemento es visible inicialmente
+            if (originalDisplay === 'none') {
+                element.style.opacity = originalOpacity;
+                element.style.display = 'block';
+            }
+
+            // Configurar la transición
+            element.style.transition = `opacity ${duration}ms ease`;
+
+            // Iniciar la animación en el siguiente frame para asegurar que la transición funcione
+            setTimeout(() => {
+                element.style.opacity = 0;
+
+                // Cuando la transición termine, ocultar el elemento y ejecutar el callback
+                const onTransitionEnd = () => {
+                    element.style.display = 'none';
+                    element.style.transition = '';
+                    element.removeEventListener('transitionend', onTransitionEnd);
+
+                    if (typeof callback === 'function') {
+                        callback.call(element);
+                    }
+                };
+
+                element.addEventListener('transitionend', onTransitionEnd);
+            }, 10);
+        }
+    }
+    return this;
+};
+
+/**
  * Obtiene los elementos hermanos de cada elemento en la colección.
  * @returns {H} Una nueva instancia de H con los elementos hermanos.
  */
-H.prototype.siblings = function() {
+H.prototype.siblings = function () {
     const result = new H();
     let index = 0;
-    
+
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
             const parent = element.parentElement;
-            
+
             if (parent) {
                 const siblings = parent.children;
                 for (let i = 0; i < siblings.length; i++) {
@@ -349,7 +395,7 @@ H.prototype.siblings = function() {
             }
         }
     }
-    
+
     return result;
 };
 
@@ -357,7 +403,7 @@ H.prototype.siblings = function() {
  * Alterna la visibilidad de los elementos.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.toggle = function() {
+H.prototype.toggle = function () {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
@@ -407,7 +453,7 @@ H.prototype.css = function (property, value) {
     }
 };
 
- 
+
 /**
  * Agrega un manejador de eventos a los elementos.
  * @param {EventNames} eventName - Nombre del evento a escuchar.
@@ -429,12 +475,12 @@ H.prototype.on = function (eventName, handler) {
  * @param {string|HTMLElement|H} content - El contenido a insertar después de cada elemento.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.after = function(content) {
+H.prototype.after = function (content) {
     // Itera sobre todos los elementos HTML en la instancia
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
-            
+
             // Maneja diferentes tipos de contenido
             if (typeof content === 'string') {
                 // Si es una cadena, la convierte a un nodo de texto
@@ -462,11 +508,11 @@ H.prototype.after = function(content) {
  * @param {string|HTMLElement|H} content - El contenido a insertar antes de cada elemento.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.before = function(content) {
+H.prototype.before = function (content) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
-            
+
             if (typeof content === 'string') {
                 element.insertAdjacentHTML('beforebegin', content);
             } else if (content instanceof HTMLElement) {
@@ -535,7 +581,7 @@ H.prototype.create = function (tagName, options) {
  */
 H.prototype.onMany = function (eventNames, handler) {
     // Convierte a array si no lo es
-        if (!Array.isArray(eventNames)) {
+    if (!Array.isArray(eventNames)) {
         eventNames = [eventNames];
     }
 
@@ -614,11 +660,11 @@ H.prototype.append = function (childObj) {
  * @param {string|HTMLElement|H} content - El contenido a agregar.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.prepend = function(content) {
+H.prototype.prepend = function (content) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
-            
+
             if (typeof content === 'string') {
                 element.insertAdjacentHTML('afterbegin', content);
             } else if (content instanceof HTMLElement) {
@@ -640,7 +686,7 @@ H.prototype.prepend = function(content) {
  * Vacía el contenido de los elementos en la colección.
  * @returns {H} La instancia de H para encadenar.
  */
-H.prototype.empty = function() {
+H.prototype.empty = function () {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             this[key].innerHTML = '';
@@ -875,7 +921,7 @@ H.prototype.html = function (newHtml) {
  * @param {string} className - La clase CSS a verificar.
  * @returns {boolean} Verdadero si el elemento tiene la clase, falso en caso contrario.
  */
-H.prototype.hasClass = function(className) {
+H.prototype.hasClass = function (className) {
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             return this[key].classList.contains(className);
@@ -1107,7 +1153,7 @@ H.prototype.addClassName = function (className) {
         // Verifica si la propiedad es realmente una propiedad del objeto (no heredada)
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             // Añade cada clase
-                this[key].className = className.trim(); // Uso de trim() para eliminar espacios en blanco
+            this[key].className = className.trim(); // Uso de trim() para eliminar espacios en blanco
         }
     }
     // Retorna la instancia para permitir encadenamiento de métodos

@@ -3036,7 +3036,7 @@ class HBFormValidator {
     field.addClass('is-invalid');
 
     // Crea el elemento para el mensaje de error
-    const errorDiv = $(`<div class="validation-error text-danger small mt-1">${message}</div>`);
+    const errorDiv = h(`<div class="validation-error text-danger small mt-1">${message}</div>`);
 
     // Decide dónde insertar el mensaje de error
     if (formGroup.find('label').length > 0) {
@@ -3054,7 +3054,7 @@ class HBFormValidator {
 
       // Elimina el mensaje con animación
       formGroup.find('.validation-error').fadeOut(300, function () {
-        $(this).remove();
+        h(this).remove();
       });
     });
   }
