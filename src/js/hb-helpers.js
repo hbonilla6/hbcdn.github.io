@@ -3048,7 +3048,7 @@ class HBFormValidator {
     }
 
     // Configuración para remover el mensaje cuando el usuario corrija el error
-    field.one('input change', function () {
+    field.one('input', function () {
       // Quita la clase de error
       field.removeClass('is-invalid');
 
