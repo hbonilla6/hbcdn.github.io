@@ -1406,7 +1406,7 @@ H.prototype.each = function (callback) {
  * Evalúa el selector proporcionado para determinar si se debe crear un nuevo elemento
  * HTML, seleccionar elementos existentes en el DOM, o usar directamente un objeto que
  * pueda ser un HTMLElement o una colección de ellos (como un NodeList o un array de HTMLElements).
- * Si el selector es una etiqueta HTML (e.g., '<div>'), crea un nuevo elemento de ese tipo.
+ * Si el selector es una etiqueta HTML (e.g., '<div>', '<span>'), crea un nuevo elemento de ese tipo.
  * Si es un selector CSS, selecciona los elementos que coincidan con el selector.
  * Si es un objeto (puede ser HTMLElement, NodeList, o Array), lo maneja adecuadamente.
  * Si es el objeto document, lo maneja como un caso especial.
@@ -1425,13 +1425,29 @@ function evaluateSelector(selector) {
         // Si el selector es un NodeList o un Array, se convierte a Array si es necesario y se retorna.
         return Array.from(selector);
     } else if (typeof selector === 'string') {
-        if (selector.startsWith('<') && selector.endsWith('>')) {
-            // Si el selector es una etiqueta HTML, crea un nuevo elemento.
-            const tagName = selector.slice(1, -1);
-            return [document.createElement(tagName)];
+        const trimmedSelector = selector.trim();
+        
+        if (trimmedSelector.startsWith('<') && trimmedSelector.endsWith('>')) {
+            // Detectar si es un elemento HTML completo o solo una etiqueta
+            const htmlContent = trimmedSelector;
+            
+            // Comprobar si es solo una etiqueta simple como <span> o <div>
+            const simpleTagRegex = /^<([a-z][a-z0-9]*)([\s\/>]{1})?(.*?)?>$/i;
+            const match = htmlContent.match(simpleTagRegex);
+            
+            if (match && !match[3]) {
+                // Es una etiqueta simple como <span> o <div>
+                const tagName = match[1];
+                return [document.createElement(tagName)];
+            } else {
+                // Es HTML completo con atributos, clases y/o contenido
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = htmlContent;
+                return Array.from(tempDiv.childNodes);
+            }
         } else {
             // Si el selector es un selector CSS, intenta encontrar elementos en el DOM.
-            return Array.from(document.querySelectorAll(selector));
+            return Array.from(document.querySelectorAll(trimmedSelector));
         }
     } else {
         throw new TypeError("El selector proporcionado " + selector + " debe ser una cadena, un HTMLElement, un NodeList o un Array.");
