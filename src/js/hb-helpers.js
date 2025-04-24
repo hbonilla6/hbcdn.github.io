@@ -2564,7 +2564,7 @@ class HBFormValidator {
     // Evalúa todos los campos y retorna true solo si cada uno de ellos es válido
     const isValid = selectorsToValidate.every((selector) => {
       // Selecciona el elemento DOM usando el helper 'h' (similar a jQuery)
-      const field = h(selector);
+      const field = $(selector);
 
       // Obtiene el valor actual del campo
       const value = field.val();
@@ -3036,7 +3036,7 @@ class HBFormValidator {
     field.addClass('is-invalid');
 
     // Crea el elemento para el mensaje de error
-    const errorDiv = h(`<div class="validation-error text-danger small mt-1">${message}</div>`);
+    const errorDiv = $(`<div class="validation-error text-danger small mt-1">${message}</div>`);
 
     // Decide dónde insertar el mensaje de error
     if (formGroup.find('label').length > 0) {
@@ -3048,13 +3048,13 @@ class HBFormValidator {
     }
 
     // Configuración para remover el mensaje cuando el usuario corrija el error
-    field.one('input', function () {
+    field.one('input change', function () {
       // Quita la clase de error
       field.removeClass('is-invalid');
 
       // Elimina el mensaje con animación
       formGroup.find('.validation-error').fadeOut(300, function () {
-        h(this).remove();
+        $(this).remove();
       });
     });
   }
