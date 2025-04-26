@@ -2594,8 +2594,8 @@ class HBFormValidator {
       }
 
       // Determina si el campo es requerido mediante varios métodos posibles
-      const isRequired = field.attr("required") !== undefined ||
-        field.hasClass("required") ||
+      const isRequired = field.attr("hb-required") !== undefined ||
+        field.hasClass("hb-required") ||
         field.closest('.form-group').find('.required-mark').length > 0;
 
       // Valida que campos requeridos no estén vacíos
