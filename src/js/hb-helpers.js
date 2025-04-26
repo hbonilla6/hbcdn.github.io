@@ -3123,10 +3123,11 @@ function escapeHTML(str) {
  * @function reindexTable
  * @description Actualiza los índices de las filas y nombres de campos después de eliminar o modificar filas
  * @param {string} tbodyId - El id del tbody que se va a reindexar
+ * @param {string} dtoName - El nombre del DTO que se usa en los campos de entrada
  */
-function reindexTable(tbodyId) { // Reindexa la tabla de detalles de venta
+function reindexTable(tbodyId, dtoName) { // Recibe el id del tbody y el nombre del DTO
   h(`#${tbodyId} tr`).each(function (index, element) { // Itera sobre cada fila de la tabla usando el ID proporcionado
-    h(element).find(`input[name^="${dtoName}["]`).each(function () { // Busca los campos de entrada con nombre que comienza con el nombre del DTO
+    h(element).find(`input[name^="${dtoName}["]`).each(function () { // Busca los campos de entrada con nombre que empieza con el nombre del DTO
       const name = h(this).attr('name'); // Obtiene el nombre del campo
       // Reemplaza correctamente la parte del nombre que contiene el índice
       const newName = name.replace(new RegExp(`${dtoName}\\[\\d+\\]`), `${dtoName}[${index}]`);
