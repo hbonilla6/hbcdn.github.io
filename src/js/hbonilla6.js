@@ -32,7 +32,64 @@ function H(elements) {
 
 // Definición de métodos en el prototipo de H para permitir encadenamiento de métodos.
 
-c
+/**
+ * Obtiene o establece el valor de los elementos de formulario.
+ * @param {string} [newValue] - Valor para establecer a los elementos.
+ * @returns {H|string} La instancia de H para encadenar o el valor del primer elemento si no se pasa un nuevo valor.
+ */
+H.prototype.val = function (newValue) {
+    if (newValue !== undefined) {
+        // Si se proporciona un nuevo valor, lo asigna a todos los elementos que contienen la propiedad 'value'.
+        for (let key in this) {
+            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement && 'value' in this[key]) {
+                this[key].value = newValue;
+            }
+        }
+        return this;
+    } else {
+        // Si no se proporciona un nuevo valor, retorna el valor del primer elemento que contenga la propiedad 'value'.
+        for (let key in this) {
+            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement && 'value' in this[key]) {
+                return this[key].value.trim();
+            }
+        }
+    }
+};
+
+/**
+
+Suma los valores numéricos devueltos por una función aplicada a elementos tipo H.
+
+@param {Function} extractor - Función que recibe un elemento envuelto en H: (hEl) => number|string
+
+@returns {number} La suma de los valores numéricos extraídos.
+*/
+H.prototype.sum = function (extractor) {
+    // Inicializa la variable acumuladora para la suma
+    let total = 0;
+
+    // Itera sobre todas las propiedades del objeto actual (instancia de H)
+    for (let key in this) {
+        // Verifica que la propiedad pertenezca directamente a la instancia y que sea un elemento del DOM
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            // Envuelve el elemento individual en una nueva instancia de H
+            const hElement = new H(this[key]);
+            // Llama a la función extractora, pasando el elemento H como argumento, para obtener su valor
+            let value = extractor(hElement);
+
+            // Intenta convertir el valor a número (por si viene como string)
+            let num = parseFloat(value);
+
+            // Si es un número válido, lo suma al total
+            if (!isNaN(num)) {
+                total += num;
+            }
+        }
+    }
+
+    // Retorna la suma total acumulada
+    return total;
+};
 
 /**
  * Establece el foco en el primer elemento, posiciona el cursor al final o selecciona todo el contenido si se habilita.
@@ -1381,49 +1438,6 @@ H.prototype.each = function (callback) {
 };
 
 /**
- * Suma los valores numéricos devueltos por una función de extracción sobre los elementos.
- * @param {Function} extractor - Función que puede recibir uno o dos parámetros:
- *                              - Un parámetro: (element) => number|string
- *                              - Dos parámetros: (index, element) => number|string
- * @returns {number} La suma total de los valores numéricos.
- */
-H.prototype.sum = function (extractor) {
-    // Determina cuántos argumentos espera la función 'extractor'
-    const expectedArgs = extractor.length;
-
-    // Variable para acumular el total
-    let total = 0;
-
-    // Itera sobre todas las propiedades del objeto 'H' actual
-    for (let key in this) {
-        // Verifica que la propiedad sea propia del objeto y que sea un elemento HTML
-        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
-            let val; // Variable para almacenar el valor extraído del elemento
-
-            // Si la función extractor espera dos argumentos, se le pasan índice y elemento
-            if (expectedArgs === 2) {
-                val = extractor.call(this[key], key, this[key]);
-            }
-            // Si espera solo uno, se le pasa el elemento
-            else {
-                val = extractor.call(this[key], this[key]);
-            }
-
-            // Intenta convertir el valor a número flotante
-            let num = parseFloat(val);
-
-            // Si el resultado es un número válido (no NaN), lo suma al total
-            if (!isNaN(num)) {
-                total += num;
-            }
-        }
-    }
-
-    // Devuelve el total acumulado
-    return total;
-};
-
-/**
  * Evalúa el selector proporcionado para determinar si se debe crear un nuevo elemento
  * HTML, seleccionar elementos existentes en el DOM, o usar directamente un objeto que
  * pueda ser un HTMLElement o una colección de ellos (como un NodeList o un array de HTMLElements).
@@ -1447,15 +1461,15 @@ function evaluateSelector(selector) {
         return Array.from(selector);
     } else if (typeof selector === 'string') {
         const trimmedSelector = selector.trim();
-        
+
         if (trimmedSelector.startsWith('<') && trimmedSelector.endsWith('>')) {
             // Detectar si es un elemento HTML completo o solo una etiqueta
             const htmlContent = trimmedSelector;
-            
+
             // Comprobar si es solo una etiqueta simple como <span> o <div>
             const simpleTagRegex = /^<([a-z][a-z0-9]*)([\s\/>]{1})?(.*?)?>$/i;
             const match = htmlContent.match(simpleTagRegex);
-            
+
             if (match && !match[3]) {
                 // Es una etiqueta simple como <span> o <div>
                 const tagName = match[1];
