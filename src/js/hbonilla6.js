@@ -32,29 +32,7 @@ function H(elements) {
 
 // Definición de métodos en el prototipo de H para permitir encadenamiento de métodos.
 
-/**
- * Obtiene o establece el valor de los elementos de formulario.
- * @param {string} [newValue] - Valor para establecer a los elementos.
- * @returns {H|string} La instancia de H para encadenar o el valor del primer elemento si no se pasa un nuevo valor.
- */
-H.prototype.val = function (newValue) {
-    if (newValue !== undefined) {
-        // Si se proporciona un nuevo valor, lo asigna a todos los elementos que contienen la propiedad 'value'.
-        for (let key in this) {
-            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement && 'value' in this[key]) {
-                this[key].value = newValue;
-            }
-        }
-        return this;
-    } else {
-        // Si no se proporciona un nuevo valor, retorna el valor del primer elemento que contenga la propiedad 'value'.
-        for (let key in this) {
-            if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement && 'value' in this[key]) {
-                return this[key].value.trim();
-            }
-        }
-    }
-};
+c
 
 /**
  * Establece el foco en el primer elemento, posiciona el cursor al final o selecciona todo el contenido si se habilita.
@@ -1400,6 +1378,49 @@ H.prototype.each = function (callback) {
         }
     }
     return this; // Retorna 'this' para permitir encadenamiento
+};
+
+/**
+ * Suma los valores numéricos devueltos por una función de extracción sobre los elementos.
+ * @param {Function} extractor - Función que puede recibir uno o dos parámetros:
+ *                              - Un parámetro: (element) => number|string
+ *                              - Dos parámetros: (index, element) => number|string
+ * @returns {number} La suma total de los valores numéricos.
+ */
+H.prototype.sum = function (extractor) {
+    // Determina cuántos argumentos espera la función 'extractor'
+    const expectedArgs = extractor.length;
+
+    // Variable para acumular el total
+    let total = 0;
+
+    // Itera sobre todas las propiedades del objeto 'H' actual
+    for (let key in this) {
+        // Verifica que la propiedad sea propia del objeto y que sea un elemento HTML
+        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
+            let val; // Variable para almacenar el valor extraído del elemento
+
+            // Si la función extractor espera dos argumentos, se le pasan índice y elemento
+            if (expectedArgs === 2) {
+                val = extractor.call(this[key], key, this[key]);
+            }
+            // Si espera solo uno, se le pasa el elemento
+            else {
+                val = extractor.call(this[key], this[key]);
+            }
+
+            // Intenta convertir el valor a número flotante
+            let num = parseFloat(val);
+
+            // Si el resultado es un número válido (no NaN), lo suma al total
+            if (!isNaN(num)) {
+                total += num;
+            }
+        }
+    }
+
+    // Devuelve el total acumulado
+    return total;
 };
 
 /**
