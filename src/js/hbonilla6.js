@@ -73,7 +73,7 @@ H.prototype.sum = function (extractor) {
         // Verifica que la propiedad pertenezca directamente a la instancia y que sea un elemento del DOM
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             // Envuelve el elemento individual en una nueva instancia de H
-            const hElement = new H(this[key]);
+            const hElement = new H([this[key]]);
             // Llama a la función extractora, pasando el elemento H como argumento, para obtener su valor
             let value = extractor(hElement);
 
