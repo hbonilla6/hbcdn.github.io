@@ -654,37 +654,36 @@ H.prototype.hide = function () {
 
 /**
  * Añade elementos DOM como hijos a los elementos actuales.
- * @param {string|HTMLElement|NodeList|Array|H} childObj - Elementos para añadir como hijos.
+ * @param {string|HTMLElement|Node|NodeList|Array|H} childObj - Elementos para añadir como hijos.
  * @returns {H} La instancia de H para encadenar.
  */
 H.prototype.append = function (childObj) {
     // Normaliza `childObj` a un array de nodos DOM.
     let children;
     if (childObj instanceof H) {
-        // Si es una instancia de H, conviértelo en un array de elementos.
         children = childObj.toArray();
     } else if (typeof childObj === 'string') {
-        // Si es una cadena HTML, crea nodos DOM.
         const template = document.createElement('template');
         template.innerHTML = childObj.trim();
         children = Array.from(template.content.childNodes);
-    } else if (childObj instanceof HTMLElement || childObj instanceof NodeList || Array.isArray(childObj)) {
-        // Si es un HTMLElement, NodeList o Array, conviértelo en un array.
-        children = Array.isArray(childObj) ? childObj : Array.from(childObj);
+    } else if (childObj instanceof Node) {
+        children = [childObj];
+    } else if (childObj instanceof NodeList || Array.isArray(childObj)) {
+        children = Array.from(childObj);
     } else {
         throw new TypeError("El argumento proporcionado no es válido para append.");
     }
 
-    // Itera sobre los elementos de la instancia de H.
-    for (let key in this) {
-        if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
-            // Clona los nodos para este elemento específico
-            const clones = children.map(child => child.cloneNode(true));
-            clones.forEach(clone => this[key].appendChild(clone));
-        }
-    }    
+    const targets = this.toArray(); // Obtener todos los elementos de la instancia H
 
-    return this; // Devuelve la instancia para permitir encadenamiento.
+    targets.forEach((targetEl, i) => {
+        children.forEach(child => {
+            const toAppend = (i === 0) ? child : child.cloneNode(true);
+            targetEl.appendChild(toAppend);
+        });
+    });
+
+    return this;
 };
 
 /**
