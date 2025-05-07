@@ -678,14 +678,11 @@ H.prototype.append = function (childObj) {
     // Itera sobre los elementos de la instancia de H.
     for (let key in this) {
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
-            // Añade cada nodo hijo al elemento actual.
-            for (let j = 0; j < children.length; j++) {
-                if (children[j] instanceof Node) {
-                    this[key].appendChild(children[j].cloneNode(true)); // Clona el nodo para evitar referencias únicas.
-                }
-            }
+            // Clona los nodos para este elemento específico
+            const clones = children.map(child => child.cloneNode(true));
+            clones.forEach(clone => this[key].appendChild(clone));
         }
-    }
+    }    
 
     return this; // Devuelve la instancia para permitir encadenamiento.
 };
