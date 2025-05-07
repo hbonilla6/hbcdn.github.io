@@ -934,7 +934,7 @@ function initialFunctions(hbOptions = {}) {
   // Inicializa los elementos select2 en el contenido del modal
   onSelect2();
 
-  generateQRCodes();
+  generatehbqrs();
 }
 
 //#region Función utilityModal
@@ -3139,45 +3139,42 @@ function reindexTable(tbodyId, dtoName) { // Recibe el id del tbody y el nombre 
 }
 
 /**
-       * Genera códigos QR para todos los elementos con el atributo hbQR.
-       *
-       * Esta función recorre todos los elementos que tienen el atributo `hbQR` y genera un código QR
-       * basado en el valor de ese atributo. También utiliza los atributos `size` y `level` para personalizar
-       * el tamaño del QR y el nivel de corrección de errores.
-       *
-       * @function generateQRCodes
-       * @returns {void} Esta función no devuelve ningún valor. Actualiza el DOM añadiendo los códigos QR
-       *                 a los elementos especificados.
-       */
-function generateQRCodes() {
-  // Recorre todos los elementos con el atributo hbQR
-  h('[hbQR]').each(function () {
-    const $element = h(this); // Selecciona el div actual
-    const value = $element.attr('hbQR'); // Obtiene el valor del atributo hbQR (URL o texto)
-    const size = parseInt($element.attr('size')) || 200; // Obtiene el tamaño desde el atributo `size` (por defecto 200px)
-    const level = $element.attr('level') || 'M'; // Obtiene el nivel de corrección desde el atributo `level` (por defecto 'M')
+ * Genera códigos QR para todos los elementos con el atributo `hbQR` usando la librería hbqr-generator.
+ *
+ * Esta función recorre todos los elementos con el atributo `hbQR`, toma los atributos `size` y `level`,
+ * genera un código QR con esa información, y reemplaza el contenido del elemento con una imagen `<img>`.
+ * 
+ * Requiere la librería `hbqr-generator` y una función tipo jQuery (`h` o `$`).
+ * 
+ * Si `hbqr` no está definido, no hace nada y muestra un mensaje de advertencia en la consola.
+ *
+ * @function generatehbqrs
+ * @returns {void} No retorna ningún valor. Actualiza el DOM.
+ */
+function generatehbqrs() {
+  // Validar que la librería hbqr-generator esté cargada
+  if (typeof hbqr !== 'function') {
+    console.warn('hbqr-generator no está disponible. ¿Olvidaste cargar hbqr.js?');
+    return;
+  }
 
-    /**
-     * Crea un código QR usando la librería hbQR.
-     *
-     * Esta instancia de hbQR se genera con los valores proporcionados para el código QR,
-     * como el contenido (`value`), tamaño y nivel de corrección de errores (`level`).
-     *
-     * @param {Object} options - Objeto de configuración para crear el código QR.
-     * @param {HTMLCanvasElement} options.element - El elemento canvas donde se mostrará el código QR.
-     * @param {string} options.value - El dato (URL o texto) que se codificará en el código QR.
-     * @param {number} options.size - El tamaño del código QR.
-     * @param {string} options.level - El nivel de corrección de errores (L, M, Q, H).
-     * @returns {hbQR} La instancia de hbQR que contiene el código QR generado.
-     */
-    const qr = new hbQR({
-      element: document.createElement('canvas'), // Creamos un canvas donde se mostrará el código QR
-      value: value, // Establecemos el valor (URL o texto) que se codificará en el código QR
-      size: size, // Establecemos el tamaño del código QR
-      level: level, // Establecemos el nivel de corrección de errores del código QR
-    });
-    // Limpiamos el div y añadimos el código QR generado
-    $element.empty().append(qr.element);
+  // Buscar todos los elementos que tengan el atributo personalizado "hbQR"
+  h('[hbQR]').each(function () {
+    const $element = h(this); // Seleccionar el elemento actual
+
+    const value = $element.attr('hbQR'); // Contenido que se codificará en el QR
+    const size = parseInt($element.attr('size')) || 200; // Tamaño del QR (por defecto 200px)
+    const level = $element.attr('level') || 'M'; // Nivel de corrección de errores (L, M, Q, H)
+
+    // Crear una nueva instancia del generador de QR
+    const qr = hbqr(0, level);
+    qr.addData(value);  // Agregar el valor a codificar
+    qr.make();          // Generar el QR
+
+    const moduleSize = Math.max(1, Math.floor(size / 25)); // Calcular tamaño del módulo
+    const imgHtml = qr.createImgTag(moduleSize); // Generar <img> como HTML
+
+    $element.html(imgHtml); // Reemplazar contenido con el QR
   });
 }
 
