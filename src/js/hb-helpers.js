@@ -3154,7 +3154,7 @@ function reindexTable(tbodyId, dtoName) { // Recibe el id del tbody y el nombre 
 function generatehbqrs() {
   // Validar que la librería hbqr-generator esté cargada
   if (typeof hbqr !== 'function') {
-    console.warn('hbqr-generator no está disponible. ¿Olvidaste cargar hbqr.js?');
+    // console.warn('hbqr-generator no está disponible. ¿Olvidaste cargar hbqr.js?');
     return;
   }
 
