@@ -63,23 +63,59 @@ function inicializarFormulariosHbHbx(formSelector) {
     return false; // Previene el envío del formulario hasta que se confirme.
   });
 
-  // Función para ejecutar la petición AJAX
-  // Función para ejecutar la petición AJAX
-  function ejecutarAjax(form) {
-    const dataForm = new FormData(form[0]);
-
-    $.ajax({
-      url: form.attr('action'),
-      method: form.attr('method'),
-      data: dataForm, // Convertir a FormData
-      processData: false, // Importante para FormData
-      contentType: false, // Importante para FormData
-      beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
-      success: getCallback(form, 'hb-success', successDefault),
-      error: getCallback(form, 'hb-error', errorDefault),
-      complete: getCallback(form, 'hb-complete', completeDefault)
-    });
+ // Método 1: Imprimir todos los valores de FormData
+function mostrarValoresFormData(formData) {
+  console.log("Contenido de FormData:");
+  
+  // Iterar sobre todas las entradas del FormData
+  for (let par of formData.entries()) {
+    console.log(par[0] + ": " + par[1]);
   }
+}
+
+// Método 2: Obtener los valores como objeto
+function formDataToObject(formData) {
+  const objeto = {};
+  
+  formData.forEach((valor, clave) => {
+    // Manejo de campos múltiples (como checkboxes)
+    if (objeto[clave]) {
+      if (!Array.isArray(objeto[clave])) {
+        objeto[clave] = [objeto[clave]];
+      }
+      objeto[clave].push(valor);
+    } else {
+      objeto[clave] = valor;
+    }
+  });
+  
+  return objeto;
+}
+
+// Modificación de tu función para mostrar los valores
+function ejecutarAjax(form) {
+  const dataForm = new FormData(form[0]);
+  
+  // Mostrar valores usando el Método 1
+  mostrarValoresFormData(dataForm);
+  
+  // Mostrar valores como objeto usando el Método 2
+  const formDataComoObjeto = formDataToObject(dataForm);
+  h.log("FormData como objeto:", formDataComoObjeto);
+  
+  // Continuar con la petición AJAX
+  $.ajax({
+    url: form.attr('action'),
+    method: form.attr('method'),
+    data: dataForm,
+    processData: false,
+    contentType: false,
+    beforeSend: getBeforeSendCallback(form),
+    success: getCallback(form, 'hb-success', successDefault),
+    error: getCallback(form, 'hb-error', errorDefault),
+    complete: getCallback(form, 'hb-complete', completeDefault)
+  });
+}
 
   // Función especial para manejar beforeSend
   function getBeforeSendCallback(form) {
