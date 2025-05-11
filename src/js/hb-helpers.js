@@ -66,10 +66,12 @@ function inicializarFormulariosHbHbx(formSelector) {
   // Función para ejecutar la petición AJAX
   // Función para ejecutar la petición AJAX
   function ejecutarAjax(form) {
+    const dataForm = new FormData(form[0]);
+
     $.ajax({
       url: form.attr('action'),
       method: form.attr('method'),
-      data: new FormData(form[0]), // Convertir a FormData
+      data: dataForm, // Convertir a FormData
       processData: false, // Importante para FormData
       contentType: false, // Importante para FormData
       beforeSend: getBeforeSendCallback(form), // Manejo especial para beforeSend
