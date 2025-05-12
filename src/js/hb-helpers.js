@@ -153,6 +153,7 @@ function ejecutarAjax(form) {
 
   // Función por defecto que se ejecuta en caso de éxito
   function successDefault(response, status, xhr, form) {
+    showLoadingAlert(true);
     //toast({
       //icon: tToast.success,
       //title: 'Operación realizada correctamente'
