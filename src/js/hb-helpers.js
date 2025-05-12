@@ -1254,7 +1254,7 @@ function onSuccessAlert(options) {
     data: { isPartial: true }, // Datos enviados en la solicitud para indicar que es una carga parcial
     success: function (response) {
       // Reemplazar el contenido del elemento con id 'renderBody' con la respuesta del servidor
-      $(options.renderTarget).html(response);
+      h(options.renderTarget).empty().append(response);
 
       // Ocultar cualquier modal abierto
       $('.modal').modal('hide');
