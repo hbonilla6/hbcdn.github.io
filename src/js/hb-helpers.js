@@ -94,6 +94,8 @@ function formDataToObject(formData) {
 
 // Modificación de tu función para mostrar los valores
 function ejecutarAjax(form) {
+  showLoadingAlert(true);
+
   const dataForm = new FormData(form[0]);
   
   // Mostrar valores usando el Método 1
@@ -153,7 +155,6 @@ function ejecutarAjax(form) {
 
   // Función por defecto que se ejecuta en caso de éxito
   function successDefault(response, status, xhr, form) {
-    showLoadingAlert(true);
     //toast({
       //icon: tToast.success,
       //title: 'Operación realizada correctamente'
@@ -168,6 +169,8 @@ function ejecutarAjax(form) {
   }
 
   function errorDefault(xhr, status, error, form) {
+    showLoadingAlert(false);
+
     cerrarModal(form);
 
     // Manejar errores
@@ -214,6 +217,7 @@ function ejecutarAjax(form) {
       // Eliminar el padding-right que Bootstrap añade
       $('body').css('padding-right', '');
     }
+    showLoadingAlert(false);
   }
 }
 
