@@ -153,13 +153,17 @@ function ejecutarAjax(form) {
 
   // Función por defecto que se ejecuta en caso de éxito
   function successDefault(response, status, xhr, form) {
-    toast({
-      icon: tToast.success,
-      title: 'Operación realizada correctamente'
+    //toast({
+      //icon: tToast.success,
+      //title: 'Operación realizada correctamente'
+    //});
+    onSuccessAlert({
+      successTitle: 'Operación exitosa',
+      renderTarget: '#renderBody'
     });
-    if (!(form.attr("data-hb-close-modal") === "false")) {
-      cerrarModal(form); // Cierra el modal que contiene el formulario
-    }
+    //if (!(form.attr("data-hb-close-modal") === "false")) {
+      //cerrarModal(form); // Cierra el modal que contiene el formulario
+    //}
   }
 
   function errorDefault(xhr, status, error, form) {
@@ -1274,7 +1278,7 @@ function onSuccessAlert(options) {
     },
     error: function (e) {
       // Mostrar una alerta en caso de error en la solicitud Ajax
-      alert('Error', e);
+      h.error('Error', e);
     }
   });
   return false;
