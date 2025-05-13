@@ -488,6 +488,23 @@ H.prototype.css = function (property, value) {
     }
 };
 
+/**
+ * Atajo para agregar un manejador del evento 'click'.
+ * @param {(this: HTMLElement, ev: MouseEvent) => void} handler - Función manejadora del evento.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.click = function (handler) {
+    return this.on('click', handler);
+};
+
+/**
+ * Atajo para agregar un manejador del evento 'change'.
+ * @param {(this: HTMLElement, ev: Event) => void} handler - Función manejadora del evento.
+ * @returns {H} La instancia de H para encadenar.
+ */
+H.prototype.change = function (handler) {
+    return this.on('change', handler);
+};
 
 /**
  * Agrega un manejador de eventos a los elementos.
