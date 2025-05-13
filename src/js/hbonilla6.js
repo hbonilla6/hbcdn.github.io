@@ -435,21 +435,46 @@ H.prototype.siblings = function () {
 };
 
 /**
- * Alterna la visibilidad de los elementos.
- * @returns {H} La instancia de H para encadenar.
+ * Alterna la visibilidad de los elementos, similar a jQuery.
+ * Considera tanto el atributo 'hidden' como el estilo 'display: none'.
+ * @returns {H} La instancia de H para encadenamiento.
  */
 H.prototype.toggle = function () {
+    // Iterar sobre las propiedades del objeto H (similar a un array de elementos)
     for (let key in this) {
+        // Asegurarse de que la propiedad sea propia y sea un HTMLElement
         if (this.hasOwnProperty(key) && this[key] instanceof HTMLElement) {
             const element = this[key];
+
+            // Si el elemento tiene el atributo 'hidden', se considera oculto por HTML
+            if (element.hasAttribute('hidden')) {
+                // Eliminar el atributo para mostrar el elemento
+                element.removeAttribute('hidden');
+                continue; // Pasar al siguiente elemento
+            }
+
+            // Obtener los estilos computados del navegador (lo que realmente se ve)
             const style = window.getComputedStyle(element);
+
+            // Guardar el valor original de 'display' si aún no se ha guardado
+            // Esto sirve para restaurar el estilo al volver a mostrar el elemento
+            if (!element.dataset.originalDisplay) {
+                // Si el display actual no es 'none', usarlo; si es 'none', usar 'block' como predeterminado
+                element.dataset.originalDisplay = style.display !== 'none' ? style.display : 'block';
+            }
+
+            // Si el elemento está oculto por CSS (display: none), lo mostramos
             if (style.display === 'none') {
-                element.style.display = '';
+                // Restaurar el valor original del display
+                element.style.display = element.dataset.originalDisplay;
             } else {
+                // Si el elemento está visible, lo ocultamos usando display: none
                 element.style.display = 'none';
             }
         }
     }
+
+    // Devolver la instancia de H para permitir encadenamiento de métodos
     return this;
 };
 
