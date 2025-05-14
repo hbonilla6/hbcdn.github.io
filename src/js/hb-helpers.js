@@ -162,14 +162,24 @@ function inicializarFormulariosHbHbx(formSelector) {
  * @param {jQuery} form - The form that was submitted.
  */
   function handleSuccessMessageOnly(response, status, xhr, form) {
-    // Show success toast notification
-    toast({
-      icon: tToast.success,
-      title: 'Operación completada con éxito'
-    });
+    // Ocultar cualquier modal abierto
+    $('.modal').modal('hide');
+    $('.modal').hide();
 
-    // Hide any active loading indicators
+    // Eliminar la clase 'modal-open' del cuerpo para restablecer el estado de la interfaz
+    $('body').removeClass('modal-open');
+    // Eliminar los elementos de fondo de modal
+    $('.modal-backdrop').remove();
+
     showLoadingAlert(false);
+
+    // Mostrar una alerta de éxito utilizando SweetAlert2
+    Swal.fire({
+      icon: 'success', // Tipo de icono a mostrar
+      title: 'Operación completada con éxito', // Título de la alerta
+      showConfirmButton: false, // No mostrar el botón de confirmación
+      timer: 1500 // Duración de la alerta en milisegundos
+    });
   }
 
   /**
