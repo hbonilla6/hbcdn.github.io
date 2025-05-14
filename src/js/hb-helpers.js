@@ -165,18 +165,8 @@ function inicializarFormulariosHbHbx(formSelector) {
     // Show success toast notification
     toast({
       icon: tToast.success,
-      title: 'Operation completed successfully'
+      title: 'Operación completada con éxito'
     });
-
-    // Hide any open Bootstrap modal dialogs
-    $('.modal').modal('hide');
-    $('.modal').hide();
-
-    // Remove 'modal-open' class from the body to re-enable scrolling
-    $('body').removeClass('modal-open');
-
-    // Remove modal backdrop elements from the DOM
-    $('.modal-backdrop').remove();
 
     // Hide any active loading indicators
     showLoadingAlert(false);
