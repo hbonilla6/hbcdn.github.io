@@ -133,19 +133,20 @@ function inicializarFormulariosHbHbx(formSelector) {
     };
   }
 
-  // Función para obtener el callback adecuado (personalizado o por defecto)
   function getCallback(form, attribute, defaultCallback) {
     const functionName = form.data(attribute);
+    console.log('Buscando función:', functionName, 'en window:', typeof window[functionName]);
+  
     return function (...args) {
       if (typeof window[functionName] === 'function') {
-        // Ejecuta la función personalizada con los argumentos de jQuery AJAX y el formulario
+        console.log('Ejecutando función personalizada');
         window[functionName](...args, form);
       } else {
-        // Ejecuta la función por defecto con los argumentos de jQuery AJAX y el formulario
+        console.log('Ejecutando función por defecto');
         defaultCallback(...args, form);
       }
     };
-  }
+  }  
 
   // Función por defecto que se ejecuta antes de enviar la petición
   function beforeDefault(form) {
