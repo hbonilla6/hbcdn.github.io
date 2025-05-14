@@ -63,61 +63,61 @@ function inicializarFormulariosHbHbx(formSelector) {
     return false; // Previene el envío del formulario hasta que se confirme.
   });
 
- // Método 1: Imprimir todos los valores de FormData
-function mostrarValoresFormData(formData) {
-  console.log("Contenido de FormData:");
-  
-  // Iterar sobre todas las entradas del FormData
-  for (let par of formData.entries()) {
-    console.log(par[0] + ": " + par[1]);
-  }
-}
+  // Método 1: Imprimir todos los valores de FormData
+  function mostrarValoresFormData(formData) {
+    console.log("Contenido de FormData:");
 
-// Método 2: Obtener los valores como objeto
-function formDataToObject(formData) {
-  const objeto = {};
-  
-  formData.forEach((valor, clave) => {
-    // Manejo de campos múltiples (como checkboxes)
-    if (objeto[clave]) {
-      if (!Array.isArray(objeto[clave])) {
-        objeto[clave] = [objeto[clave]];
-      }
-      objeto[clave].push(valor);
-    } else {
-      objeto[clave] = valor;
+    // Iterar sobre todas las entradas del FormData
+    for (let par of formData.entries()) {
+      console.log(par[0] + ": " + par[1]);
     }
-  });
-  
-  return objeto;
-}
+  }
 
-// Modificación de tu función para mostrar los valores
-function ejecutarAjax(form) {
-  showLoadingAlert(true);
+  // Método 2: Obtener los valores como objeto
+  function formDataToObject(formData) {
+    const objeto = {};
 
-  const dataForm = new FormData(form[0]);
-  
-  // Mostrar valores usando el Método 1
-  mostrarValoresFormData(dataForm);
-  
-  // Mostrar valores como objeto usando el Método 2
-  const formDataComoObjeto = formDataToObject(dataForm);
-  h.log("FormData como objeto:", formDataComoObjeto);
-  
-  // Continuar con la petición AJAX
-  $.ajax({
-    url: form.attr('action'),
-    method: form.attr('method'),
-    data: dataForm,
-    processData: false,
-    contentType: false,
-    beforeSend: getBeforeSendCallback(form),
-    success: getCallback(form, 'hb-success', successDefault),
-    error: getCallback(form, 'hb-error', errorDefault),
-    complete: getCallback(form, 'hb-complete', completeDefault)
-  });
-}
+    formData.forEach((valor, clave) => {
+      // Manejo de campos múltiples (como checkboxes)
+      if (objeto[clave]) {
+        if (!Array.isArray(objeto[clave])) {
+          objeto[clave] = [objeto[clave]];
+        }
+        objeto[clave].push(valor);
+      } else {
+        objeto[clave] = valor;
+      }
+    });
+
+    return objeto;
+  }
+
+  // Modificación de tu función para mostrar los valores
+  function ejecutarAjax(form) {
+    showLoadingAlert(true);
+
+    const dataForm = new FormData(form[0]);
+
+    // Mostrar valores usando el Método 1
+    mostrarValoresFormData(dataForm);
+
+    // Mostrar valores como objeto usando el Método 2
+    const formDataComoObjeto = formDataToObject(dataForm);
+    h.log("FormData como objeto:", formDataComoObjeto);
+
+    // Continuar con la petición AJAX
+    $.ajax({
+      url: form.attr('action'),
+      method: form.attr('method'),
+      data: dataForm,
+      processData: false,
+      contentType: false,
+      beforeSend: getBeforeSendCallback(form),
+      success: getCallback(form, 'hb-success', handleSuccessMessageOnly),
+      error: getCallback(form, 'hb-error', errorDefault),
+      complete: getCallback(form, 'hb-complete', completeDefault)
+    });
+  }
 
   // Función especial para manejar beforeSend
   function getBeforeSendCallback(form) {
@@ -153,19 +153,44 @@ function ejecutarAjax(form) {
     //Swal.showLoading(); // Muestra un loader de SweetAlert
   }
 
-  // Función por defecto que se ejecuta en caso de éxito
-  function successDefault(response, status, xhr, form) {
-    //toast({
-      //icon: tToast.success,
-      //title: 'Operación realizada correctamente'
-    //});
+  /**
+ * Function executed when the request is successful.
+ * Displays a toast message, hides modals, and resets UI states.
+ * @param {Object} response - The response returned by the server.
+ * @param {string} status - The status of the request.
+ * @param {XMLHttpRequest} xhr - The XMLHttpRequest object.
+ * @param {jQuery} form - The form that was submitted.
+ */
+  function handleSuccessMessageOnly(response, status, xhr, form) {
+    // Show success toast notification
+    toast({
+      icon: tToast.success,
+      title: 'Operation completed successfully'
+    });
+
+    // Hide any open Bootstrap modal dialogs
+    $('.modal').modal('hide');
+    $('.modal').hide();
+
+    // Remove 'modal-open' class from the body to re-enable scrolling
+    $('body').removeClass('modal-open');
+
+    // Remove modal backdrop elements from the DOM
+    $('.modal-backdrop').remove();
+
+    // Hide any active loading indicators
+    showLoadingAlert(false);
+  }
+
+  /**
+   * Function executed on success, only shows a success alert without UI cleanup.
+   */
+  function handleSuccessWithRedirect() {
+    // Trigger a custom success alert rendering in a specific DOM element
     onSuccessAlert({
-      successTitle: 'Operación exitosa',
+      successTitle: 'Operation successful',
       renderTarget: '#renderBody'
     });
-    //if (!(form.attr("data-hb-close-modal") === "false")) {
-      //cerrarModal(form); // Cierra el modal que contiene el formulario
-    //}
   }
 
   function errorDefault(xhr, status, error, form) {
