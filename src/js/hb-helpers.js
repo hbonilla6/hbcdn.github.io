@@ -185,13 +185,15 @@ function inicializarFormulariosHbHbx(formSelector) {
   /**
    * Function executed on success, only shows a success alert without UI cleanup.
    */
-  function handleSuccessWithRedirect() {
+  function handleSuccessCatalogo() {
     // Trigger a custom success alert rendering in a specific DOM element
     onSuccessAlert({
       successTitle: 'Operation successful',
       renderTarget: '#renderBody'
     });
   }
+
+  window.handleSuccessCatalogo = handleSuccessCatalogo;
 
   function errorDefault(xhr, status, error, form) {
     showLoadingAlert(false);
