@@ -136,7 +136,7 @@ function inicializarFormulariosHbHbx(formSelector) {
   function getCallback(form, attribute, defaultCallback) {
     const functionName = form.data(attribute);
     console.log('Buscando función:', functionName, 'en window:', typeof window[functionName]);
-  
+
     return function (...args) {
       if (typeof window[functionName] === 'function') {
         console.log('Ejecutando función personalizada');
@@ -146,7 +146,7 @@ function inicializarFormulariosHbHbx(formSelector) {
         defaultCallback(...args, form);
       }
     };
-  }  
+  }
 
   // Función por defecto que se ejecuta antes de enviar la petición
   function beforeDefault(form) {
@@ -186,15 +186,13 @@ function inicializarFormulariosHbHbx(formSelector) {
   /**
    * Function executed on success, only shows a success alert without UI cleanup.
    */
-  function handleSuccessCatalogo() {
+  window.handleSuccessCatalogo = function () {
     // Trigger a custom success alert rendering in a specific DOM element
     onSuccessAlert({
       successTitle: 'Operation successful',
       renderTarget: '#renderBody'
     });
-  }
-
-  window.handleSuccessCatalogo = handleSuccessCatalogo;
+  };
 
   function errorDefault(xhr, status, error, form) {
     showLoadingAlert(false);
