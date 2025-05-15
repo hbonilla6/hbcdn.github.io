@@ -189,7 +189,7 @@ function inicializarFormulariosHbHbx(formSelector) {
   window.handleSuccessCatalogo = function () {
     // Trigger a custom success alert rendering in a specific DOM element
     onSuccessAlert({
-      successTitle: 'Operación exitosa',
+      successTitle: 'Operación completada con éxito',
       renderTarget: '#renderBody'
     });
   };
