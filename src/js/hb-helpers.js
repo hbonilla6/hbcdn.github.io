@@ -3298,7 +3298,7 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
   }
 
   // Enviar el formulario
-  $form.submit();
+  $form[0].submit();
   return true;
 }
 
