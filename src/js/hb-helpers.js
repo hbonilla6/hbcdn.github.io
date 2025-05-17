@@ -3251,6 +3251,61 @@ function generatehbqrs() {
   });
 }
 
+/**
+ * Valida la fecha de un input tipo date y envía el formulario si es válida.
+ * Muestra mensajes toast con toastr si la fecha no es válida o está fuera de rango.
+ * 
+ * @param {HTMLElement} inputElement - El input date que dispara la validación (normalmente 'this').
+ * @param {string} formNameOrId - Nombre o id del formulario a enviar.
+ * @returns {boolean} - Retorna true si se envió el formulario, false si no.
+ */
+function validateDateAndSubmit(inputElement, formNameOrId) {
+  const $input = $(inputElement); // jQuery wrapper del input
+
+  // Obtener valor, mínimo y máximo desde atributos del input
+  const value = moment($input.val(), "YYYY-MM-DD");
+  const min = moment($input.attr("min"), "YYYY-MM-DD");
+  const max = moment($input.attr("max"), "YYYY-MM-DD");
+
+  // Validar si la fecha tiene formato válido
+  if (!value.isValid()) {
+    toastR({
+      type: 'error',
+      title: "Fecha inválida",
+      msg: "La fecha ingresada no es válida."
+    });
+    $input.val(""); // Limpiar valor
+    return false;
+  }
+
+  // Validar que la fecha esté dentro del rango permitido
+  if (value.isBefore(min) || value.isAfter(max)) {
+    toastR({
+      type: 'warning',
+      title: "Fecha fuera de rango",
+      msg: `La fecha debe estar entre ${min.format("YYYY-MM-DD")} y ${max.format("YYYY-MM-DD")}.`
+    });
+    $input.val(""); // Limpiar valor
+    return false;
+  }
+
+  // Buscar el formulario por nombre o id
+  const $form = $(`form[name='${formNameOrId}'], form#${formNameOrId}`);
+
+  if ($form.length === 0) {
+    toastR({
+      type: 'error',
+      title: "Formulario no encontrado",
+      msg: `No se encontró el formulario '${formNameOrId}'.`
+    });
+    return false;
+  }
+
+  // Enviar el formulario
+  $form.submit();
+  return true;
+}
+
 // Cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", function () {
   try {
