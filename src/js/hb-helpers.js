@@ -3274,7 +3274,6 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
       title: "Fecha inválida",
       msg: "La fecha ingresada no es válida."
     });
-    $input.val(""); // Limpiar valor
     return false;
   }
 
@@ -3285,7 +3284,6 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
       title: "Fecha fuera de rango",
       msg: `La fecha debe estar entre ${min.format("YYYY-MM-DD")} y ${max.format("YYYY-MM-DD")}.`
     });
-    $input.val(""); // Limpiar valor
     return false;
   }
 
