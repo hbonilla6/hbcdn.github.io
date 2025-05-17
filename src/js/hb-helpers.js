@@ -3271,8 +3271,7 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
   if (!value.isValid()) {
     toastR({
       type: 'error',
-      title: "Fecha inválida",
-      msg: "La fecha ingresada no es válida."
+      title: "Fecha inválida"
     });
     return false;
   }
@@ -3282,7 +3281,6 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
     toastR({
       type: 'warning',
       title: "Fecha fuera de rango",
-      msg: `La fecha debe estar entre ${min.format("YYYY-MM-DD")} y ${max.format("YYYY-MM-DD")}.`
     });
     return false;
   }
