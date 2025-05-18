@@ -1066,70 +1066,58 @@ function initialFunctions() {
  * @param {string} containerId - ID del contenedor del contenido del modal (por defecto: 'modalContent').
  */
 function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') {
-  // Realiza una solicitud asincrónica para cargar contenido HTML en un contenedor específico
+  // Realiza una solicitud asincrónica para cargar contenido en un contenedor
   requestAsync({
-    // URL desde donde se obtendrá el contenido del modal
     url: urlOptions,
-    // ID del contenedor donde se insertará el contenido cargado
     id: containerId,
-    // Función que se ejecuta cuando la carga del contenido ha sido completada
     callback: () => {
-      // Muestra un mensaje en la consola indicando que el modal se ha cargado correctamente
       h.info('completed utility modal');
-
-      // Ejecuta funciones de inicialización necesarias después de cargar contenido dinámico
       initialFunctions();
 
-      // Obtiene el contenedor del contenido cargado por su ID
       const container = document.getElementById(containerId);
-
-      // Busca el elemento modal más cercano (con clase 'modal') que contiene al contenedor
       const modal = container?.closest('.modal');
 
-      // Si no se encontró el modal, muestra una advertencia y detiene la ejecución
       if (!modal) {
         h.warn(`Modal element not found for container ID "${containerId}"`);
         return;
       }
 
-      // Si Bootstrap está disponible, se encarga de mostrar el modal
+      // Si Bootstrap está disponible
       if (typeof bootstrap !== 'undefined') {
-        // Elimina cualquier backdrop anterior que haya quedado abierto
-        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        // Solo mostrar si el modal no está visible
+        if (!modal.classList.contains('show')) {
+          // Elimina cualquier backdrop anterior
+          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
-        // Crea una instancia de Bootstrap Modal y lo muestra
-        new bootstrap.Modal(modal).show();
+          // Crea y muestra el modal usando Bootstrap
+          new bootstrap.Modal(modal).show();
+        } else {
+          h.info('Modal already open; skipping show()');
+        }
       }
 
-      // Busca el primer campo de texto o textarea enfocable dentro del modal
+      // Enfocar primer campo disponible
       const firstInput = modal.querySelector(
         'input[type="text"]:not([type="hidden"]):not([disabled]), textarea:not([disabled])'
       );
 
-      // Si se encuentra un campo enfocable
       if (firstInput) {
-        // Le da el foco al primer campo
         firstInput.focus();
-
-        // Si el campo soporta selección de texto (e.g., input), posiciona el cursor al final
         if (firstInput.setSelectionRange) {
           const length = firstInput.value.length;
           firstInput.setSelectionRange(length, length);
         }
-
-        // Asegura que el campo enfocado esté visible en pantalla
         firstInput.scrollIntoView({ behavior: 'smooth', block: 'start' });
       } else {
-        // Si no hay campos enfocables, se muestra una advertencia
         h.warn('No focusable elements found in form');
       }
 
-      // Si jQuery y sus validaciones unobtrusive están disponibles, las aplica al nuevo contenido cargado
+      // Aplicar validaciones unobtrusive de jQuery
       if (typeof $.validator !== 'undefined' && $.validator.unobtrusive) {
         $.validator.unobtrusive.parse(`#${containerId}`);
       }
 
-      // Si se proporcionó una función de callback, la ejecuta
+      // Ejecutar el callback si está definido
       if (typeof actionCallBack === 'function') {
         actionCallBack();
       }
