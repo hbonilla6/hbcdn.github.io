@@ -1699,13 +1699,13 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
   const fileInputContainer = uploadContainer.querySelector('.hb-file-input-container');
 
   // Acceder al área de drop (arrastrar y soltar archivos)
-  const dropArea = uploadContainer.querySelector('.hb-file-drop-area');
+  const dropArea = fileInputContainer.querySelector('.hb-file-drop-area');
 
   // Acceder al input de archivos oculto (de tipo file)
-  const fileInput = uploadContainer.querySelector('input[type="file"].hb-file-input');
+  const fileInput = fileInputContainer.querySelector('input[type="file"]');
 
   // Acceder al botón que permite seleccionar archivos manualmente
-  const selectFilesBtn = uploadContainer.querySelector('button.hb-select-files-btn');
+  const selectFilesBtn = fileInputContainer.querySelector('button');
 
   // Acceder al contenedor que mostrará la previsualización de los archivos
   const previewContainer = uploadContainer.querySelector('.hb-preview-container');
