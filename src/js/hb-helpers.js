@@ -1692,24 +1692,23 @@ function initImageUpload() {
 }
 
 function initMultiHBFiles(containerSelector = '.hb-upload-container') {
-  // Obtener el contenedor principal de subida de archivos usando el selector proporcionado
+  // Obtener el contenedor principal usando el selector proporcionado (por clase)
   const uploadContainer = document.querySelector(containerSelector);
 
-  // Acceder al contenedor del input de archivos dentro del contenedor principal
+  // Acceder al contenedor que envuelve el input de archivos
   const fileInputContainer = uploadContainer.querySelector('.hb-file-input-container');
 
-  // Acceder al área de arrastrar y soltar archivos
+  // Acceder al área de drop (arrastrar y soltar archivos)
   const dropArea = uploadContainer.querySelector('.hb-file-drop-area');
 
-  // Acceder al elemento <input type="file"> dentro del contenedor
-  const fileInput = uploadContainer.querySelector('.hb-file-input');
+  // Acceder al input de archivos oculto (de tipo file)
+  const fileInput = uploadContainer.querySelector('input[type="file"].hb-file-input');
 
-  // Acceder al botón para seleccionar archivos manualmente
-  const selectFilesBtn = uploadContainer.querySelector('.hb-select-files-btn');
+  // Acceder al botón que permite seleccionar archivos manualmente
+  const selectFilesBtn = uploadContainer.querySelector('button.hb-select-files-btn');
 
-  // Acceder al contenedor donde se mostrarán las previsualizaciones de los archivos seleccionados
+  // Acceder al contenedor que mostrará la previsualización de los archivos
   const previewContainer = uploadContainer.querySelector('.hb-preview-container');
-
 
   // Convierte la cadena JSON almacenada en el atributo 'data-files' del contenedor 'previewContainer' en un objeto JavaScript.
   const existingFiles = JSON.parse(previewContainer.getAttribute("hb-files") || "[]");
