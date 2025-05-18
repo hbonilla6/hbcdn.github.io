@@ -210,27 +210,26 @@ function inicializarFormulariosHbHbx(formSelector) {
 
   function closeModalAndRemoveBackdrop(modalId) {
     const $modal = $(modalId);
-    $modal.modal('hide');
   
-    // Escuchamos el evento 'hidden.bs.modal' que se dispara cuando el modal termina de cerrarse
-    $modal.on('hidden.bs.modal', () => {
-      // Verificamos cuántos modales siguen visibles
+    const onHidden = () => {
       const modalsOpen = $('.modal.show').length;
   
       if (modalsOpen === 0) {
-        // Si no queda ningún modal visible, eliminamos backdrop, clase y padding
         $('.modal-backdrop').remove();
         $('body').removeClass('modal-open');
         $('body').css('padding-right', '');
       } else {
-        // Si hay más modales, solo eliminamos un backdrop (el más reciente)
         $('.modal-backdrop').last().remove();
       }
   
-      // Desvinculamos el evento para evitar múltiples ejecuciones si se vuelve a usar este modal
-      $modal.off('hidden.bs.modal');
-    });
+      // Desvincula exactamente este manejador
+      $modal.off('hidden.bs.modal', onHidden);
+    };
+  
+    $modal.on('hidden.bs.modal', onHidden);
+    $modal.modal('hide');
   }
+  
   
 
   window.handleSuccessCloseModal3 = function () {
