@@ -684,7 +684,7 @@ function requestAsync({ url, id, method = "GET", callback }) {
         case "DIV":
           if (tag.id === "modalContent" || tag.id === "modalContent2" || tag.id === "modalContent3") {
             // Si es un modal (DIV con id "modalContent"), mostrar un ícono de carga
-            tag.innerHTML = "<div class='overlay'><i class='fas fa-2x fa-sync fa-spin'></i></div>";
+            tag.innerHTML = `<div class="overlay"><i class="fas fa-2x fa-sync fa-spin"></i></div><div class="modal-header"><h4 class="modal-title">Cargando...</h4></div>`;
           } else {
             // Si es otro tipo de DIV, mostrar una barra de progreso
             tag.innerHTML = "<progress></progress>";
