@@ -209,22 +209,29 @@ function inicializarFormulariosHbHbx(formSelector) {
   }
 
   function closeModalAndRemoveBackdrop(modalId) {
-    // Primero cerramos el modal 
     const $modal = $(modalId);
     $modal.modal('hide');
-
-    // Esperamos a que termine la animación de cierre para eliminar el backdrop
-    setTimeout(() => {
-      // Eliminamos cualquier backdrop que quedó
-      $('.modal-backdrop').remove();
-
-      // También eliminamos la clase 'modal-open' del body si existe
-      $('body').removeClass('modal-open');
-
-      // Y eliminamos cualquier padding-right inline que Bootstrap haya añadido
-      $('body').css('padding-right', '');
-    }, 300); // 300ms es generalmente la duración de las animaciones de Bootstrap
+  
+    // Escuchamos el evento 'hidden.bs.modal' que se dispara cuando el modal termina de cerrarse
+    $modal.on('hidden.bs.modal', () => {
+      // Verificamos cuántos modales siguen visibles
+      const modalsOpen = $('.modal.show').length;
+  
+      if (modalsOpen === 0) {
+        // Si no queda ningún modal visible, eliminamos backdrop, clase y padding
+        $('.modal-backdrop').remove();
+        $('body').removeClass('modal-open');
+        $('body').css('padding-right', '');
+      } else {
+        // Si hay más modales, solo eliminamos un backdrop (el más reciente)
+        $('.modal-backdrop').last().remove();
+      }
+  
+      // Desvinculamos el evento para evitar múltiples ejecuciones si se vuelve a usar este modal
+      $modal.off('hidden.bs.modal');
+    });
   }
+  
 
   window.handleSuccessCloseModal3 = function () {
     closeModalAndRemoveBackdrop('#modal-overlay3');
