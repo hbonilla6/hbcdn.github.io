@@ -213,22 +213,28 @@ function inicializarFormulariosHbHbx(formSelector) {
   
     const onHidden = () => {
       const modalsOpen = $('.modal.show').length;
+      const backdrops = $('.modal-backdrop.fade.show');
   
-      if (modalsOpen === 0) {
-        $('.modal-backdrop').remove();
-        $('body').removeClass('modal-open');
-        $('body').css('padding-right', '');
-      } else {
-        $('.modal-backdrop').last().remove();
+      // Si hay más backdrops que modales abiertos, eliminamos los sobrantes (del final al principio)
+      const excess = backdrops.length - modalsOpen;
+      if (excess > 0) {
+        backdrops.slice(-excess).remove();
       }
   
-      // Desvincula exactamente este manejador
+      // Si ya no quedan modales abiertos, limpiamos body
+      if (modalsOpen === 0) {
+        $('body').removeClass('modal-open');
+        $('body').css('padding-right', '');
+      }
+  
+      // Desvinculamos este listener
       $modal.off('hidden.bs.modal', onHidden);
     };
   
     $modal.on('hidden.bs.modal', onHidden);
     $modal.modal('hide');
   }
+  
   
   
 
