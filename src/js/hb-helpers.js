@@ -682,7 +682,7 @@ function requestAsync({ url, id, method = "GET", callback }) {
           tag.innerHTML = "<option disabled selected value=''>Cargando...</option>";
           break;
         case "DIV":
-          if (tag.id === "modalContent") {
+          if (tag.id === "modalContent" && tag.id === "modalContent2" && tag.id === "modalConten3") {
             // Si es un modal (DIV con id "modalContent"), mostrar un ícono de carga
             tag.innerHTML = "<div class='overlay'><i class='fas fa-2x fa-sync fa-spin'></i></div>";
           } else {
