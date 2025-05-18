@@ -335,9 +335,8 @@ const actionPresets = {
 /**
  * Inicializa el manejo de formularios AJAX con validación y confirmación personalizable.
  * @param {string} formSelector - Selector CSS del formulario (ej. '#formAjax')
- * @param {Object} options - Opciones de configuración opcional
  */
-function initializeAjaxForm(formSelector, options = {}) {
+function initializeAjaxForm(formSelector) {
   // Configuración por defecto
   const config = {
     successTitle: 'Operación exitosa',
@@ -1037,7 +1036,7 @@ function onSelect2Individual(id) {
 }
 //#endregion
 
-function initialFunctions(hbOptions = {}) {
+function initialFunctions() {
   h("form[data-verify-form='true']").each(form => checkRequiredElements(form));
 
   // Agregar evento a todos los elementos editables
@@ -1050,7 +1049,7 @@ function initialFunctions(hbOptions = {}) {
   applyAttributes();
   initImageUpload();
 
-  initializeAjaxForm("form[hb-catalog]", hbOptions);
+  initializeAjaxForm("form[hb-catalog]");
   inicializarFormulariosHbHbx("form[hb-hbx]");
 
   // Inicializa los elementos select2 en el contenido del modal
@@ -1064,65 +1063,77 @@ function initialFunctions(hbOptions = {}) {
  * Muestra un modal de utilidad y ejecuta las acciones configuradas al cargar su contenido de manera asincrónica.
  * @param {string} urlOptions - URL desde donde se cargará el contenido del modal.
  * @param {function} actionCallBack - Función que se ejecutará luego de que el contenido del modal sea cargado.
+ * @param {string} containerId - ID del contenedor del contenido del modal (por defecto: 'modalContent').
  */
-function utilityModal(urlOptions, actionCallBack, hbOptions = {}) {
-  // Realiza una solicitud asincrónica para cargar contenido en el modal
+function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') {
+  // Realiza una solicitud asincrónica para cargar contenido HTML en un contenedor específico
   requestAsync({
-    // URL del contenido a cargar
-    url: `${urlOptions}`,
-    // ID del contenedor donde se insertará el contenido
-    id: 'modalContent',
-    // Función de callback que se ejecuta cuando la solicitud es completada
-    callback: (function () {
-      // Muestra un mensaje en la consola indicando que el modal se completó
+    // URL desde donde se obtendrá el contenido del modal
+    url: urlOptions,
+    // ID del contenedor donde se insertará el contenido cargado
+    id: containerId,
+    // Función que se ejecuta cuando la carga del contenido ha sido completada
+    callback: () => {
+      // Muestra un mensaje en la consola indicando que el modal se ha cargado correctamente
       h.info('completed utility modal');
 
-      initialFunctions(hbOptions);
+      // Ejecuta funciones de inicialización necesarias después de cargar contenido dinámico
+      initialFunctions();
 
-      // Muestra el modal después de cargar el contenido
-      const modal = document.querySelector('#modal-overlay');
+      // Obtiene el contenedor del contenido cargado por su ID
+      const container = document.getElementById(containerId);
 
-      if (modal) {
-        // Muestra el modal utilizando Bootstrap si está disponible
-        if (typeof bootstrap !== 'undefined') {
-          // Elimina cualquier backdrop existente antes de mostrar un nuevo modal
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+      // Busca el elemento modal más cercano (con clase 'modal') que contiene al contenedor
+      const modal = container?.closest('.modal');
 
-          // Crea una instancia de Bootstrap Modal y la muestra
-          const bsModal = new bootstrap.Modal(modal);
-          bsModal.show();
-        }
-
-        // Obtiene el primer elemento de entrada en el formulario del modal
-        const firstInput = modal.querySelector('input[type="text"]:not([type="hidden"]):not([disabled]), textarea:not([disabled])');
-
-        // Verifica si se encontró un elemento de entrada en el formulario
-        if (firstInput) {
-          // Enfoca el primer elemento de entrada en el formulario
-          firstInput.focus();
-
-          // Selecciona el texto en el campo de entrada si es un campo de texto
-          if (firstInput.setSelectionRange) {
-            // Selecciona todo el texto en el campo de entrada
-            firstInput.setSelectionRange(firstInput.value.length, firstInput.value.length);
-          }
-          // Desplaza la vista al primer elemento de entrada en el formulario
-          firstInput.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-          // Muestra un mensaje en la consola si no se encontraron elementos de entrada en el formulario
-          h.warn('No focusable elements found in form');
-        }
-      } else {
-        // Muestra un mensaje en la consola si no se encuentra el modal
-        h.warn('Modal element not found');
+      // Si no se encontró el modal, muestra una advertencia y detiene la ejecución
+      if (!modal) {
+        h.warn(`Modal element not found for container ID "${containerId}"`);
+        return;
       }
 
-      // Reinicializa las validaciones unobtrusive de jQuery en el contenido dinámicamente cargado del modal
-      $.validator.unobtrusive.parse('#modalContent');
+      // Si Bootstrap está disponible, se encarga de mostrar el modal
+      if (typeof bootstrap !== 'undefined') {
+        // Elimina cualquier backdrop anterior que haya quedado abierto
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
-      // Ejecuta el callback si se proporciona uno (función que puede ser pasada como parámetro)
-      if (actionCallBack) actionCallBack();
-    })
+        // Crea una instancia de Bootstrap Modal y lo muestra
+        new bootstrap.Modal(modal).show();
+      }
+
+      // Busca el primer campo de texto o textarea enfocable dentro del modal
+      const firstInput = modal.querySelector(
+        'input[type="text"]:not([type="hidden"]):not([disabled]), textarea:not([disabled])'
+      );
+
+      // Si se encuentra un campo enfocable
+      if (firstInput) {
+        // Le da el foco al primer campo
+        firstInput.focus();
+
+        // Si el campo soporta selección de texto (e.g., input), posiciona el cursor al final
+        if (firstInput.setSelectionRange) {
+          const length = firstInput.value.length;
+          firstInput.setSelectionRange(length, length);
+        }
+
+        // Asegura que el campo enfocado esté visible en pantalla
+        firstInput.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } else {
+        // Si no hay campos enfocables, se muestra una advertencia
+        h.warn('No focusable elements found in form');
+      }
+
+      // Si jQuery y sus validaciones unobtrusive están disponibles, las aplica al nuevo contenido cargado
+      if (typeof $.validator !== 'undefined' && $.validator.unobtrusive) {
+        $.validator.unobtrusive.parse(`#${containerId}`);
+      }
+
+      // Si se proporcionó una función de callback, la ejecuta
+      if (typeof actionCallBack === 'function') {
+        actionCallBack();
+      }
+    }
   });
 }
 //#endregion
