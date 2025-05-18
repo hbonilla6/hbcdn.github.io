@@ -343,8 +343,7 @@ function initializeAjaxForm(formSelector) {
     errorTitle: 'Ocurrió un error al enviar el formulario',
     confirmTitle: '¿Estás seguro?',
     confirmText: '¿Deseas enviar el formulario?',
-    renderTarget: '#renderBody',
-    ...options
+    renderTarget: '#renderBody'
   };
 
   // Seleccionar todos los formularios que coinciden con el selector
