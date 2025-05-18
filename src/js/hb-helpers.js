@@ -182,6 +182,55 @@ function inicializarFormulariosHbHbx(formSelector) {
       timer: 1500 // Duración de la alerta en milisegundos
     });
   }
+  /**
+   * @function showNotification
+   * @description Muestra notificaciones al usuario usando SweetAlert o alert como respaldo
+   * @param {string} message - Mensaje a mostrar
+   * @param {string} type - Tipo de notificación (success, error, info, etc.)
+   */
+  window.showNotification = function (message, type = 'info') {
+    // Verifica si existe la librería SweetAlert
+    if (typeof Swal !== 'undefined') {
+      // Configura y muestra una notificación tipo toast
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+      Toast.fire({
+        icon: type,
+        title: message
+      });
+    } else {
+      // Si no existe SweetAlert, usa alert como respaldo
+      alert(message);
+    }
+  }
+
+  function closeModalAndRemoveBackdrop(modalId) {
+    // Primero cerramos el modal 
+    const $modal = $(modalId);
+    $modal.modal('hide');
+
+    // Esperamos a que termine la animación de cierre para eliminar el backdrop
+    setTimeout(() => {
+      // Eliminamos cualquier backdrop que quedó
+      $('.modal-backdrop').remove();
+
+      // También eliminamos la clase 'modal-open' del body si existe
+      $('body').removeClass('modal-open');
+
+      // Y eliminamos cualquier padding-right inline que Bootstrap haya añadido
+      $('body').css('padding-right', '');
+    }, 300); // 300ms es generalmente la duración de las animaciones de Bootstrap
+  }
+
+  window.handleSuccessCloseModal3 = function () {
+    closeModalAndRemoveBackdrop('#modal-overlay3');
+    // Muestra mensaje de éxito
+    showNotification('Operación completada con éxito', 'success');
+  }
 
   /**
    * Function executed on success, only shows a success alert without UI cleanup.
