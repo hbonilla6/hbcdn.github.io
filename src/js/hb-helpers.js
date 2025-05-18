@@ -1691,21 +1691,25 @@ function initImageUpload() {
   });
 }
 
-function initMultiHBFiles(fileInputId = 'hb-file-input') {
-  // Obtener el elemento del DOM con el id 'hb-dropArea' (área donde se puede arrastrar y soltar archivos)
-  const dropArea = document.getElementById('hb-dropArea');
+function initMultiHBFiles(containerSelector = '.hb-upload-container') {
+  // Obtener el contenedor principal de subida de archivos usando el selector proporcionado
+  const uploadContainer = document.querySelector(containerSelector);
 
-  // Obtener el elemento del DOM con el id 'hb-file-input' (campo de entrada de archivos)
-  const fileInput = document.getElementById(fileInputId);
+  // Acceder al contenedor del input de archivos dentro del contenedor principal
+  const fileInputContainer = uploadContainer.querySelector('.hb-file-input-container');
 
-  // Obtener el elemento del DOM con el id 'hb-selectFilesBtn' (botón para seleccionar archivos)
-  const selectFilesBtn = document.getElementById('hb-selectFilesBtn');
+  // Acceder al área de arrastrar y soltar archivos
+  const dropArea = uploadContainer.querySelector('.hb-file-drop-area');
 
-  // Obtener el elemento del DOM con el id 'hb-previewContainer' (contenedor para mostrar la vista previa de los archivos)
-  const previewContainer = document.getElementById('hb-previewContainer');
+  // Acceder al elemento <input type="file"> dentro del contenedor
+  const fileInput = uploadContainer.querySelector('.hb-file-input');
 
-  // Obtener el elemento del DOM con el id 'hb-fileInputContainer' (contenedor del input de archivos)
-  const fileInputContainer = document.querySelector(".hb-file-input-container")
+  // Acceder al botón para seleccionar archivos manualmente
+  const selectFilesBtn = uploadContainer.querySelector('.hb-select-files-btn');
+
+  // Acceder al contenedor donde se mostrarán las previsualizaciones de los archivos seleccionados
+  const previewContainer = uploadContainer.querySelector('.hb-preview-container');
+
 
   // Convierte la cadena JSON almacenada en el atributo 'data-files' del contenedor 'previewContainer' en un objeto JavaScript.
   const existingFiles = JSON.parse(previewContainer.getAttribute("hb-files") || "[]");
