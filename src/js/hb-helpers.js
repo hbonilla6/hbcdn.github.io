@@ -3364,6 +3364,60 @@ function validateDateAndSubmit(inputElement, formNameOrId) {
   return true;
 }
 
+/**
+ * Desactiva opciones de un select2 según el tipo de argumentos pasados.
+ *
+ * @function disableSelect2Option
+ * @param {string} selectId - ID del select2.
+ * @param {string|Array|string|Object} arg2 - Puede ser un valor string, un array de strings, o un objeto clave-valor.
+ * @param {string} [relatedSelectId] - (Opcional) Otro select2 relacionado, para futuras extensiones.
+ * @param {Array} [arrayToDisable] - (Opcional) Array de valores a deshabilitar.
+ * @param {string} [title] - (Opcional) Título o texto para tooltip.
+ */
+function disableSelect2Option(selectId, arg2, relatedSelectId, arrayToDisable, title) {
+  const $select = $(`#${selectId}`);
+
+  // Si arg2 es un string → Caso 1: valor único
+  if (typeof arg2 === 'string') {
+    const value = arg2;
+    const $option = $select.find(`option[value="${value}"]`);
+
+    if ($option.length) {
+      $option.prop('disabled', true);
+      if (title) {
+        $option.attr('title', title);
+      }
+      $select.trigger('change.select2');
+    }
+
+  // Si arg2 es un array → Caso 2: múltiples valores
+  } else if (Array.isArray(arg2)) {
+    arg2.forEach(value => {
+      const $option = $select.find(`option[value="${value}"]`);
+      if ($option.length) {
+        $option.prop('disabled', true);
+        if (title) {
+          $option.attr('title', title);
+        }
+      }
+    });
+    $select.trigger('change.select2');
+
+  // Si arg2 es un objeto → Caso 3: { valor: titulo, ... }
+  } else if (typeof arg2 === 'object' && arg2 !== null) {
+    Object.entries(arg2).forEach(([value, customTitle]) => {
+      const $option = $select.find(`option[value="${value}"]`);
+      if ($option.length) {
+        $option.prop('disabled', true);
+        if (customTitle) {
+          $option.attr('title', customTitle);
+        }
+      }
+    });
+    $select.trigger('change.select2');
+  }
+}
+
 // Cuando el DOM está completamente cargado
 document.addEventListener("DOMContentLoaded", function () {
   try {
