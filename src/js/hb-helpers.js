@@ -1428,6 +1428,7 @@ function toInt(value, defaultValue = 0) {
 function applyAttributes() {
   h("*[data-disabled='true']")?.disabled(true);
   h("*[data-checked='true']")?.checked(true);
+  h("*[data-selected='true']")?.attr("selected", "selected");
   h("*[data-readonly='true']")?.readonly(true);
   h("*[data-hidden='true']")?.hidden(true);
   h("*[data-interactive='false']")?.pointerEvents(false);
