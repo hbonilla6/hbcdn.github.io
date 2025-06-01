@@ -542,27 +542,31 @@ function normalizeText(texto, caseOption = null) {
 }
 
 /**
- * Transforma un valor en un número decimal preciso.
- * 
- * @param {any} value - El valor a convertir en decimal.
- * @param {number} defaultValue - El valor por defecto si `value` no es un número válido (por defecto es 0).
- * @param {number} decimals - La cantidad de decimales a retornar (por defecto es 2).
- * @returns {number} - El número transformado con la precisión especificada.
+ * Convierte un valor a un número decimal con precisión, controlando errores comunes.
+ *
+ * @param {any} value - El valor que se desea convertir a decimal.
+ * @param {number} [defaultValue=0] - Valor de retorno si `value` no es numérico o no se puede convertir.
+ * @param {number} [decimals=2] - Número de decimales a los que se debe redondear (mínimo 0).
+ * @returns {number} - Número redondeado con la precisión especificada.
  */
 function toDecimal(value, defaultValue = 0, decimals = 2) {
-  // Asegurarse de que `decimals` sea un número entero no negativo
-  decimals = Math.max(0, Math.trunc(decimals));
+  // Asegura que `decimals` sea un entero no negativo
+  const safeDecimals = Number.isInteger(decimals) && decimals >= 0 ? decimals : 2;
 
-  // Intentar convertir el valor en un número
-  let number = parseFloat(value);
+  // Intenta convertir el valor a número
+  const num = parseFloat(value);
 
-  // Validar si el resultado es un número válido
-  if (isNaN(number)) {
-    number = defaultValue;
+  // Si no es un número válido, usa el valor por defecto
+  if (isNaN(num)) {
+    return Number(
+      defaultValue.toExponential
+        ? Math.round(defaultValue + 'e' + safeDecimals) + 'e-' + safeDecimals
+        : defaultValue
+    );
   }
 
-  // Redondear el número a la cantidad exacta de decimales
-  return parseFloat(number.toFixed(decimals));
+  // Usa notación exponencial para evitar errores con decimales
+  return Number(Math.round(num + 'e' + safeDecimals) + 'e-' + safeDecimals);
 }
 
 /**
