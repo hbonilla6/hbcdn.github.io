@@ -2130,7 +2130,7 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
     const minSize = 10; // 10 bytes
     const maxSize = 100 * 1024 * 1024; // 100 MB en bytes
   
-    // Array para almacenar archivos válidos
+    // Array para almacenar archivos válidos de esta selección
     const validFiles = [];
     
     // Procesar cada archivo individualmente
@@ -2161,17 +2161,17 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
       console.log(`Archivo válido agregado: ${file.name} (${file.size} bytes)`);
     });
   
-    // Solo continuar si hay archivos válidos
+    // Si no hay archivos válidos en esta selección, solo actualizamos el input
+    // con los archivos que ya teníamos (elimina los inválidos de esta selección)
     if (validFiles.length === 0) {
-      console.log('No hay archivos válidos para procesar');
+      console.log('No hay archivos válidos en esta selección');
       
-      // IMPORTANTE: Limpiar el input si no hay archivos válidos
-      // Esto evita que archivos inválidos se queden en el input
-      clearFileInput();
+      // Actualizar el input solo con los archivos que ya estaban válidos
+      updateFileInput();
       return;
     }
   
-    // Añadir archivos válidos al array principal
+    // Añadir solo los archivos válidos de esta selección al array principal
     uploadedFiles = [...uploadedFiles, ...validFiles];
   
     // Mostrar preview solo para archivos válidos
@@ -2179,13 +2179,13 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
       displayFilePreview(file);
     });
   
-    // Actualizar el input file SOLO con archivos válidos
+    // Actualizar el input file con TODOS los archivos válidos (anteriores + nuevos)
     updateFileInput();
   
     console.log(`${validFiles.length} archivos válidos procesados. Total: ${uploadedFiles.length}`);
   }
   
-  // Nueva función para limpiar completamente el input
+  // Función auxiliar para limpiar completamente el input si es necesario
   function clearFileInput() {
     try {
       // Crear un nuevo DataTransfer vacío
