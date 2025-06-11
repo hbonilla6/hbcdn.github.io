@@ -210,33 +210,33 @@ function inicializarFormulariosHbHbx(formSelector) {
 
   function closeModalAndRemoveBackdrop(modalId) {
     const $modal = $(modalId);
-  
+
     const onHidden = () => {
       const modalsOpen = $('.modal.show').length;
       const backdrops = $('.modal-backdrop.fade.show');
-  
+
       // Si hay más backdrops que modales abiertos, eliminamos los sobrantes (del final al principio)
       const excess = backdrops.length - modalsOpen;
       if (excess > 0) {
         backdrops.slice(-excess).remove();
       }
-  
+
       // Si ya no quedan modales abiertos, limpiamos body
       if (modalsOpen === 0) {
         $('body').removeClass('modal-open');
         $('body').css('padding-right', '');
       }
-  
+
       // Desvinculamos este listener
       $modal.off('hidden.bs.modal', onHidden);
     };
-  
+
     $modal.on('hidden.bs.modal', onHidden);
     $modal.modal('hide');
   }
-  
-  
-  
+
+
+
 
   window.handleSuccessCloseModal3 = function () {
     closeModalAndRemoveBackdrop('#modal-overlay3');
@@ -1100,18 +1100,18 @@ function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') 
       // Si Bootstrap está disponible
       if (typeof bootstrap !== 'undefined') {
         // Verificación mejorada: revisar tanto display calculado como clase show
-        const isVisible = window.getComputedStyle(modal).display !== 'none' && 
-                         modal.classList.contains('show') &&
-                         document.querySelector('.modal-backdrop') !== null;
-        
+        const isVisible = window.getComputedStyle(modal).display !== 'none' &&
+          modal.classList.contains('show') &&
+          document.querySelector('.modal-backdrop') !== null;
+
         if (!isVisible) {
           // Limpia cualquier estado inconsistente del modal
           cleanModalState(modal);
-          
+
           // Crea y muestra el modal usando Bootstrap
           const bootstrapModal = new bootstrap.Modal(modal);
           bootstrapModal.show();
-          
+
           h.info('Modal shown successfully');
         } else {
           h.info('Modal already visible; skipping show()');
@@ -1156,10 +1156,10 @@ function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') 
 function cleanModalState(modalElement) {
   // Elimina cualquier backdrop anterior
   document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-  
+
   // Si hay clases inconsistentes, las limpia
-  if (modalElement.classList.contains('show') && 
-      window.getComputedStyle(modalElement).display === 'none') {
+  if (modalElement.classList.contains('show') &&
+    window.getComputedStyle(modalElement).display === 'none') {
     modalElement.classList.remove('show');
     modalElement.style.display = '';
     modalElement.removeAttribute('aria-modal');
@@ -2127,9 +2127,25 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
   function handleNewFiles(newFiles) {
     if (!newFiles.length) return;
 
-    // Filtrar solo los archivos que no estén ya añadidos
+    const minSize = 10; // 10 bytes
+    const maxSize = 100 * 1024 * 1024; // 100 MB en bytes
+
+    // Filtrar solo los archivos que no estén ya añadidos Y que cumplan con el peso
     const uniqueNewFiles = newFiles.filter((file) => {
       const fileId = generateFileId(file);
+
+      // Validación de peso mínimo
+      if (file.size < minSize) {
+        toastr.error(`El archivo "${file.name}" es demasiado pequeño. Tamaño mínimo: 10 bytes`);
+        return false;
+      }
+
+      // Validación de peso máximo
+      if (file.size > maxSize) {
+        toastr.error(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 100 MB`);
+        return false;
+      }
+
       if (!uploadedFileIds.has(fileId)) {
         uploadedFileIds.add(fileId);
         return true;
@@ -2634,45 +2650,6 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
   // Hacer que el detalle del archivo en el modal sea arrastrable
   makeElementDraggable(fileDetails);
 }
-
-
-
-// // Crear instancia con configuración por defecto
-// const validator = new HBFormValidator();
-
-// // Validar campos con selectores específicos
-// validator.validateFields({
-//     selectors: ['#nombre', '#email', '#telefono'],
-//     focusOnInvalid: true
-// });
-
-// // O crear instancia con configuración personalizada
-// const formValidator = new FormValidator({
-//     focusOnInvalid: true,
-//     showErrors: true,
-//     onError: (errors) => {
-//         console.log('Se encontraron errores:', errors);
-//     }
-// });
-
-// // Usar para validar un formulario completo
-// const isValid = formValidator.validateFields({
-//     selectors: () => {
-//         // Obtener todos los campos del formulario activo
-//         return $('#myForm').find('input, select, textarea').map(function() {
-//             return '#' + $(this).attr('id');
-//         }).get();
-//     }
-// });
-
-// // Validar antes de enviar un formulario
-// $('#myForm').on('submit', function(e) {
-//     if (!validator.validateFields({
-//         selectors: ['#email', '#password']
-//     })) {
-//         e.preventDefault();
-//     }
-// });
 
 class HBFormValidator {
   /**
@@ -3424,7 +3401,7 @@ function disableSelect2Option(selectId, arg2, relatedSelectId, arrayToDisable, t
       $select.trigger('change.select2');
     }
 
-  // Si arg2 es un array → Caso 2: múltiples valores
+    // Si arg2 es un array → Caso 2: múltiples valores
   } else if (Array.isArray(arg2)) {
     arg2.forEach(value => {
       const $option = $select.find(`option[value="${value}"]`);
@@ -3437,7 +3414,7 @@ function disableSelect2Option(selectId, arg2, relatedSelectId, arrayToDisable, t
     });
     $select.trigger('change.select2');
 
-  // Si arg2 es un objeto → Caso 3: { valor: titulo, ... }
+    // Si arg2 es un objeto → Caso 3: { valor: titulo, ... }
   } else if (typeof arg2 === 'object' && arg2 !== null) {
     Object.entries(arg2).forEach(([value, customTitle]) => {
       const $option = $select.find(`option[value="${value}"]`);
