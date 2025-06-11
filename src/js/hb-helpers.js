@@ -1099,16 +1099,25 @@ function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') 
 
       // Si Bootstrap está disponible
       if (typeof bootstrap !== 'undefined') {
-        // Solo mostrar si el modal no está visible
-        if (!modal.classList.contains('show')) {
-          // Elimina cualquier backdrop anterior
-          document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
-
+        // Verificación mejorada: revisar tanto display calculado como clase show
+        const isVisible = window.getComputedStyle(modal).display !== 'none' && 
+                         modal.classList.contains('show') &&
+                         document.querySelector('.modal-backdrop') !== null;
+        
+        if (!isVisible) {
+          // Limpia cualquier estado inconsistente del modal
+          cleanModalState(modal);
+          
           // Crea y muestra el modal usando Bootstrap
-          new bootstrap.Modal(modal).show();
+          const bootstrapModal = new bootstrap.Modal(modal);
+          bootstrapModal.show();
+          
+          h.info('Modal shown successfully');
         } else {
-          h.info('Modal already open; skipping show()');
+          h.info('Modal already visible; skipping show()');
         }
+      } else {
+        h.warn('Bootstrap is not available');
       }
 
       // Enfocar primer campo disponible
@@ -1138,6 +1147,26 @@ function utilityModal(urlOptions, actionCallBack, containerId = 'modalContent') 
       }
     }
   });
+}
+
+/**
+ * Limpia el estado inconsistente del modal
+ * @param {HTMLElement} modalElement - Elemento del modal a limpiar
+ */
+function cleanModalState(modalElement) {
+  // Elimina cualquier backdrop anterior
+  document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+  
+  // Si hay clases inconsistentes, las limpia
+  if (modalElement.classList.contains('show') && 
+      window.getComputedStyle(modalElement).display === 'none') {
+    modalElement.classList.remove('show');
+    modalElement.style.display = '';
+    modalElement.removeAttribute('aria-modal');
+    document.body.classList.remove('modal-open');
+    document.body.style.removeProperty('padding-right');
+    document.body.style.removeProperty('overflow');
+  }
 }
 //#endregion
 
