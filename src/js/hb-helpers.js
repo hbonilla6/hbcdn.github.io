@@ -2132,7 +2132,7 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
   
     // Array para almacenar archivos válidos
     const validFiles = [];
-  
+    
     // Procesar cada archivo individualmente
     newFiles.forEach((file) => {
       const fileId = generateFileId(file);
@@ -2164,6 +2164,10 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
     // Solo continuar si hay archivos válidos
     if (validFiles.length === 0) {
       console.log('No hay archivos válidos para procesar');
+      
+      // IMPORTANTE: Limpiar el input si no hay archivos válidos
+      // Esto evita que archivos inválidos se queden en el input
+      clearFileInput();
       return;
     }
   
@@ -2175,28 +2179,57 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
       displayFilePreview(file);
     });
   
-    // Actualizar el input file
+    // Actualizar el input file SOLO con archivos válidos
     updateFileInput();
   
     console.log(`${validFiles.length} archivos válidos procesados. Total: ${uploadedFiles.length}`);
   }
-
-  // Función para sincronizar uploadedFiles con el input de archivo
+  
+  // Nueva función para limpiar completamente el input
+  function clearFileInput() {
+    try {
+      // Crear un nuevo DataTransfer vacío
+      const emptyDataTransfer = new DataTransfer();
+      
+      // Asignar el DataTransfer vacío al input
+      fileInput.files = emptyDataTransfer.files;
+      
+      console.log('Input de archivos limpiado completamente');
+    } catch (error) {
+      console.error("Error al limpiar el input de archivo:", error);
+      
+      // Fallback: recrear el input si DataTransfer falla
+      const newFileInput = fileInput.cloneNode(true);
+      fileInput.parentNode.replaceChild(newFileInput, fileInput);
+      
+      // Reasignar la referencia al nuevo input
+      fileInput = fileInputContainer.querySelector('input[type="file"]');
+      
+      // Reasignar los event listeners
+      fileInput.addEventListener('change', function (e) {
+        if (e.target.files.length > 0) {
+          handleNewFiles(Array.from(e.target.files));
+        }
+      });
+    }
+  }
+  
+  // Función mejorada para sincronizar uploadedFiles con el input de archivo
   function updateFileInput() {
     try {
       const dataTransfer = new DataTransfer();
-
-      // Agregar cada archivo al objeto DataTransfer
+  
+      // Agregar SOLO los archivos válidos (uploadedFiles) al objeto DataTransfer
       uploadedFiles.forEach(file => {
         dataTransfer.items.add(file);
       });
-
+  
       // Asignar los archivos al input
       fileInput.files = dataTransfer.files;
-
-      h.log(`Input actualizado con ${fileInput.files.length} archivos.`);
+  
+      console.log(`Input actualizado con ${fileInput.files.length} archivos válidos.`);
     } catch (error) {
-      h.error("Error al actualizar el input de archivo:", error);
+      console.error("Error al actualizar el input de archivo:", error);
     }
   }
 
