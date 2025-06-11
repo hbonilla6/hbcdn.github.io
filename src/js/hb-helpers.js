@@ -2126,45 +2126,59 @@ function initMultiHBFiles(containerSelector = '.hb-upload-container') {
   // Reemplaza la función handleNewFiles con esta versión
   function handleNewFiles(newFiles) {
     if (!newFiles.length) return;
-
+  
     const minSize = 10; // 10 bytes
     const maxSize = 100 * 1024 * 1024; // 100 MB en bytes
-
-    // Filtrar solo los archivos que no estén ya añadidos Y que cumplan con el peso
-    const uniqueNewFiles = newFiles.filter((file) => {
+  
+    // Array para almacenar archivos válidos
+    const validFiles = [];
+  
+    // Procesar cada archivo individualmente
+    newFiles.forEach((file) => {
       const fileId = generateFileId(file);
-
+  
+      // Verificar si ya existe
+      if (uploadedFileIds.has(fileId)) {
+        console.log(`Archivo duplicado ignorado: ${file.name}`);
+        return; // Continuar con el siguiente archivo
+      }
+  
       // Validación de peso mínimo
       if (file.size < minSize) {
         toastr.error(`El archivo "${file.name}" es demasiado pequeño. Tamaño mínimo: 10 bytes`);
-        return false;
+        return; // Continuar con el siguiente archivo
       }
-
+  
       // Validación de peso máximo
       if (file.size > maxSize) {
         toastr.error(`El archivo "${file.name}" es demasiado grande. Tamaño máximo: 100 MB`);
-        return false;
+        return; // Continuar con el siguiente archivo
       }
-
-      if (!uploadedFileIds.has(fileId)) {
-        uploadedFileIds.add(fileId);
-        return true;
-      }
-      return false;
+  
+      // Si llegamos aquí, el archivo es válido
+      uploadedFileIds.add(fileId);
+      validFiles.push(file);
+      console.log(`Archivo válido agregado: ${file.name} (${file.size} bytes)`);
     });
-
-    if (uniqueNewFiles.length === 0) return; // No hay archivos nuevos para añadir
-
-    // Añadir al array de archivos
-    uploadedFiles = [...uploadedFiles, ...uniqueNewFiles];
-
-    // Actualizar las vistas previas solo para los nuevos archivos
-    uniqueNewFiles.forEach((file) => {
+  
+    // Solo continuar si hay archivos válidos
+    if (validFiles.length === 0) {
+      console.log('No hay archivos válidos para procesar');
+      return;
+    }
+  
+    // Añadir archivos válidos al array principal
+    uploadedFiles = [...uploadedFiles, ...validFiles];
+  
+    // Mostrar preview solo para archivos válidos
+    validFiles.forEach((file) => {
       displayFilePreview(file);
     });
-
-    // Actualizar el input con todos los archivos
+  
+    // Actualizar el input file
     updateFileInput();
+  
+    console.log(`${validFiles.length} archivos válidos procesados. Total: ${uploadedFiles.length}`);
   }
 
   // Función para sincronizar uploadedFiles con el input de archivo
