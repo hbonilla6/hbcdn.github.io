@@ -44,6 +44,13 @@ function inicializarFormulariosHbHbx(formSelector) {
       return false; // Previene el envío del formulario si hay errores.
     }
 
+    // ⚠️ Si el formulario tiene el atributo personalizado `d-cv`, ejecutar directamente:
+    if (this.hasAttribute("d-cv")) {
+      addCurrentPathToForm(this);
+      ejecutarAjax(form);
+      return false;
+    }
+      
     // Muestra una alerta de confirmación con SweetAlert
     Swal.fire({
       title: confirmMessage,
