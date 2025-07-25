@@ -101,7 +101,7 @@ function inicializarFormulariosHbHbx(formSelector) {
 
   // Modificación de tu función para mostrar los valores
   function ejecutarAjax(form) {
-    if (this.hasAttribute("d-cv")){
+    if (form.hasAttribute("d-cv")){
        showLoadingAlert(false);
     }
     else{
