@@ -1,0 +1,187 @@
+/* Estilos Material Design adaptados para Bootstrap */
+.hb-material-field {
+  position: relative;
+  margin-bottom: 0.75rem; /* Reducido de 1.5rem */
+}
+
+.hb-material-field input,
+.hb-material-field textarea {
+  width: 100%;
+  padding: 8px 12px; /* Reducido padding vertical */
+  font-size: 14px; /* Reducido de 15px */
+  border-radius: 4px; /* Reducido de 5px */
+  border: 1px solid #ced4da;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+  resize: none;
+  height: 35px; /* Altura más compacta */
+}
+
+.hb-material-field textarea {
+  height: auto !important;
+  min-height: 60px;
+  resize: vertical;
+}
+
+.hb-material-field input:focus,
+.hb-material-field textarea:focus {
+  border-color: #0d47a1;
+  box-shadow: 0 0 0 0.15rem rgba(91, 192, 222, 0.25);
+}
+
+.hb-material-field label {
+  position: absolute;
+  top: 8px; /* Ajustado para el nuevo padding */
+  left: 12px;
+  color: #6c757d;
+  font-size: 14px; /* Reducido de 15px */
+  pointer-events: none;
+  transition: all 0.2s ease;
+  background: white;
+  padding: 0 4px;
+}
+
+.hb-material-field.focused label,
+.hb-material-field.filled label {
+  top: -8px; /* Ajustado */
+  font-size: 11px;
+  color: #0d47a1;
+}
+
+.hb-material-char-counter {
+  font-size: 10px;
+  color: #6c757d;
+  text-align: right;
+  margin-top: 2px; /* Reducido de 4px */
+  line-height: 1;
+}
+
+.hb-material-field.touched.invalid input,
+.hb-material-field.touched.invalid textarea {
+  border-color: #dc3545;
+}
+
+.hb-material-field.touched.invalid label {
+  color: #dc3545;
+}
+
+/* Estilos para select personalizado */
+.hb-material-select {
+  width: 100%;
+  padding: 8px 12px; /* Reducido padding */
+  font-size: 14px; /* Reducido de 15px */
+  border-radius: 4px; /* Reducido de 5px */
+  border: 1px solid #ced4da;
+  background: white;
+  outline: none;
+  transition: border-color 0.2s;
+  cursor: pointer;
+  position: relative;
+  height: 35px; /* Altura más compacta */
+  box-sizing: border-box;
+}
+
+.hb-material-select:focus {
+  border-color: #0d47a1;
+  box-shadow: 0 0 0 0.15rem rgba(91, 192, 222, 0.25);
+}
+
+.hb-material-select-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.hb-material-select-value {
+  flex: 1;
+  text-align: left;
+  line-height: 1.2;
+  font-size: 14px; /* Consistente con inputs */
+}
+
+.hb-material-select-arrow {
+  border-left: 4px solid transparent; /* Flecha más pequeña */
+  border-right: 4px solid transparent;
+  border-top: 4px solid #6c757d;
+  transition: transform 0.2s ease;
+  margin-left: 8px;
+}
+
+.hb-material-select.open .hb-material-select-arrow {
+  transform: rotate(180deg);
+}
+
+.hb-material-select-panel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+  margin-top: 2px; /* Reducido de 4px */
+}
+
+.hb-material-select.open .hb-material-select-panel {
+  display: block;
+}
+
+.hb-material-option {
+  padding: 8px 12px; /* Reducido padding */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 14px; /* Reducido de 15px */
+}
+
+.hb-material-option:hover {
+  background-color: #f8f9fa;
+}
+
+.hb-material-option.selected {
+  background-color: #e7f6fd;
+  color: #0d47a1;
+}
+
+.hb-material-field.touched.invalid .hb-material-select {
+  border-color: #dc3545;
+}
+
+/* Radio buttons personalizados */
+.form-check-custom {
+  margin-right: 15px; /* Reducido de 20px */
+  margin-bottom: 0.25rem; /* Menos margen vertical */
+}
+
+.form-check-custom .form-check-input:checked {
+  background-color: #0d47a1;
+  border-color: #0d47a1;
+}
+
+.form-check-custom .form-check-input:focus {
+  box-shadow: 0 0 0 0.2rem rgba(91, 192, 222, 0.25);
+}
+
+.form-check-custom .form-check-label {
+  font-size: 14px; /* Consistente */
+}
+
+/* Placeholder cuando label está arriba */
+.hb-material-field input::placeholder,
+.hb-material-field textarea::placeholder {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.hb-material-field.focused input::placeholder,
+.hb-material-field.filled input::placeholder,
+.hb-material-field.focused textarea::placeholder,
+.hb-material-field.filled textarea::placeholder {
+  opacity: 0.6;
+}
