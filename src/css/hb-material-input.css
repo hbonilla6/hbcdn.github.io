@@ -47,6 +47,7 @@
   top: -8px; /* Ajustado */
   font-size: 11px;
   color: #0d47a1;
+  font-weight: normal !important;
 }
 
 .hb-material-char-counter {
