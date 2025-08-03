@@ -55,8 +55,9 @@
   font-size: 10px;
   color: #6c757d;
   text-align: right;
-  margin-top: 2px; /* Reducido de 4px */
+  margin-top: 4px;
   line-height: 1;
+  margin-right: 6px;
 }
 
 .hb-material-field.touched.invalid input,
