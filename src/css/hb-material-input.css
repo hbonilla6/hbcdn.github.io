@@ -41,6 +41,7 @@
   transition: all 0.2s ease;
   background: white;
   padding: 0 4px;
+  font-weight: normal !important;
 }
 
 .hb-material-field.focused label,
