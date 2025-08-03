@@ -2,6 +2,7 @@
 .hb-material-field {
   position: relative;
   margin-bottom: 0.75rem; /* Reducido de 1.5rem */
+  font-weight: normal !important;
 }
 
 .hb-material-field input,
@@ -47,7 +48,6 @@
   top: -8px; /* Ajustado */
   font-size: 11px;
   color: #0d47a1;
-  font-weight: normal !important;
 }
 
 .hb-material-char-counter {
