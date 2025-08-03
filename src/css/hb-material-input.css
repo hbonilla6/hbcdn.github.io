@@ -35,7 +35,7 @@
   position: absolute;
   top: 8px; /* Ajustado para el nuevo padding */
   left: 12px;
-  color: #6c757d;
+  color: #0d47a1;
   font-size: 14px; /* Reducido de 15px */
   pointer-events: none;
   transition: all 0.2s ease;
