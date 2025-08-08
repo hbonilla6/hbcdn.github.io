@@ -475,7 +475,7 @@ class MaterialFields {
 
 // Inicializar cuando se carga el DOM
 //   document.addEventListener('DOMContentLoaded', () => {
-window.materialFields = new MaterialFields();
+// window.materialFields = new MaterialFields();
 
 // // Ejemplo de uso del botón guardar
 // document.querySelector('.btn-guardar').addEventListener('click', () => {
