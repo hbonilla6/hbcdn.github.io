@@ -1,1 +1,116 @@
-.hb-material-field input,.hb-material-field textarea,.hb-material-select{width:100%;outline:0;transition:border-color .2s;height:35px;background:#fff;padding:8px 12px}.hb-material-field{position:relative;margin-bottom:.75rem;font-weight:400!important}.hb-material-field input,.hb-material-field textarea{font-size:14px;border-radius:4px;border:1px solid #ced4da;resize:none}.hb-material-field textarea{height:auto!important;min-height:60px;resize:vertical}.hb-material-field input:focus,.hb-material-field textarea:focus,.hb-material-select:focus{border-color:#0d47a1;box-shadow:0 0 0 .15rem rgba(91,192,222,.25)}.hb-material-field label{position:absolute;top:8px;left:12px;color:#0d47a1;font-size:14px;pointer-events:none;transition:.2s;background:#fff;padding:0 4px;font-weight:400!important}.hb-material-field.filled label,.hb-material-field.focused label{top:-8px;font-size:11px;color:#0d47a1}.hb-material-char-counter{font-size:10px;color:#6c757d;text-align:right;margin-top:4px;line-height:1;margin-right:6px}.hb-material-field.touched.invalid .hb-material-select,.hb-material-field.touched.invalid input,.hb-material-field.touched.invalid textarea{border-color:#dc3545}.hb-material-field.touched.invalid label{color:#dc3545}.hb-material-select{font-size:14px;border-radius:4px;border:1px solid #ced4da;cursor:pointer;position:relative;box-sizing:border-box}.hb-material-select-trigger{display:flex;align-items:center;justify-content:space-between;height:100%}.hb-material-select-value{flex:1;text-align:left;line-height:1.2;font-size:14px}.hb-material-select-arrow{border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #6c757d;transition:transform .2s;margin-left:8px}.hb-material-select.open .hb-material-select-arrow{transform:rotate(180deg)}.hb-material-select-panel{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid #ced4da;border-radius:4px;box-shadow:0 4px 8px rgba(0,0,0,.1);z-index:1000;max-height:200px;overflow-y:auto;display:none;margin-top:2px}.hb-material-select.open .hb-material-select-panel{display:block}.hb-material-option{padding:8px 12px;cursor:pointer;transition:background-color .2s;font-size:14px}.hb-material-option:hover{background-color:#f8f9fa}.hb-material-option.selected{background-color:#e7f6fd;color:#0d47a1}.form-check-custom{margin-right:15px;margin-bottom:.25rem}.form-check-custom .form-check-input:checked{background-color:#0d47a1;border-color:#0d47a1}.form-check-custom .form-check-input:focus{box-shadow:0 0 0 .2rem rgba(91,192,222,.25)}.form-check-custom .form-check-label{font-size:14px}.hb-material-field input::placeholder,.hb-material-field textarea::placeholder{opacity:0;transition:opacity .2s}.hb-material-field.filled input::placeholder,.hb-material-field.filled textarea::placeholder,.hb-material-field.focused input::placeholder,.hb-material-field.focused textarea::placeholder{opacity:.6}.hb-material-field.disabled{opacity:.6;pointer-events:none}.hb-material-field.disabled .hb-material-select,.hb-material-field.disabled input,.hb-material-field.disabled textarea{background-color:#f8f9fa;color:#6c757d;border-color:#e9ecef;cursor:not-allowed}.hb-material-field.disabled label,.hb-material-field.readonly label{color:#6c757d!important}.hb-material-field.disabled .hb-material-select-arrow,.hb-material-select[disabled] .hb-material-select-arrow{border-top-color:#adb5bd}.hb-material-field.disabled .hb-material-char-counter,.hb-material-field.readonly .hb-material-char-counter{color:#adb5bd}.hb-material-field.readonly{opacity:.8}.hb-material-field.readonly input,.hb-material-field.readonly textarea{background-color:#f8f9fa;color:#495057;border-color:#dee2e6;cursor:default}.hb-material-field.readonly input:focus,.hb-material-field.readonly textarea:focus{border-color:#dee2e6;box-shadow:none}.hb-material-field.disabled .hb-material-select:hover,.hb-material-field.disabled input:hover,.hb-material-field.disabled textarea:hover,.hb-material-select[disabled],.hb-material-select[disabled]:hover{border-color:#e9ecef!important}.hb-material-select[disabled]{background-color:#f8f9fa!important;color:#6c757d!important;cursor:not-allowed!important;opacity:.6}.hb-material-select[disabled] .hb-material-select-trigger{cursor:not-allowed}.hb-material-select[disabled] .hb-material-select-value{color:#6c757d}.hb-material-field.disabled.focused .hb-material-select,.hb-material-field.disabled.focused input,.hb-material-field.disabled.focused textarea,.hb-material-select[disabled]:focus{border-color:#e9ecef!important;box-shadow:none!important}.hb-material-field.disabled input::placeholder,.hb-material-field.disabled textarea::placeholder,.hb-material-field.readonly input::placeholder,.hb-material-field.readonly textarea::placeholder{color:#adb5bd;opacity:1}.hb-material-field.disabled .hb-material-char-counter,.hb-material-field.readonly .hb-material-char-counter{opacity:.7}
+/* Estados disabled - Colores similares a la imagen */
+.hb-material-field.disabled input,
+.hb-material-field.disabled textarea,
+.hb-material-field.disabled .hb-material-select {
+    background-color: #f5f5f5;
+    color: #9e9e9e;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+/* Específico para todos los tipos de input disabled (sin validación de tipo) */
+.hb-material-field.disabled input {
+    background-color: #f5f5f5 !important;
+    color: #9e9e9e !important;
+}
+
+.hb-material-field.disabled input:focus,
+.hb-material-field.disabled textarea:focus,
+.hb-material-field.disabled .hb-material-select:focus {
+    border-color: #e0e0e0;
+    box-shadow: none;
+}
+
+/* Labels para campos disabled */
+.hb-material-field.disabled label {
+    color: #9e9e9e;
+    background: #f5f5f5;
+}
+
+.hb-material-field.disabled.filled label,
+.hb-material-field.disabled.focused label {
+    color: #9e9e9e;
+    background: #f5f5f5;
+}
+
+/* Contador para disabled */
+.hb-material-field.disabled .hb-material-char-counter {
+    color: #9e9e9e;
+}
+
+/* No mostrar error en campos disabled */
+.hb-material-field.disabled.touched.invalid .hb-material-select,
+.hb-material-field.disabled.touched.invalid input,
+.hb-material-field.disabled.touched.invalid textarea {
+    border-color: #e0e0e0;
+}
+
+.hb-material-field.disabled.touched.invalid label {
+    color: #9e9e9e;
+}
+
+/* Select disabled */
+.hb-material-field.disabled .hb-material-select {
+    cursor: not-allowed;
+}
+
+/* Flecha disabled */
+.hb-material-field.disabled .hb-material-select-arrow {
+    border-top-color: #9e9e9e;
+}
+
+/* No rotar flecha si está disabled */
+.hb-material-field.disabled .hb-material-select.open .hb-material-select-arrow {
+    transform: none;
+}
+
+/* No mostrar panel si está disabled */
+.hb-material-field.disabled .hb-material-select.open .hb-material-select-panel {
+    display: none;
+}
+
+/* Placeholders para campos disabled */
+.hb-material-field.disabled input::placeholder,
+.hb-material-field.disabled textarea::placeholder {
+    opacity: 0.5;
+    color: #9e9e9e;
+}
+
+/* Cursor correcto */
+.hb-material-field.disabled,
+.hb-material-field.disabled * {
+    cursor: not-allowed !important;
+}
+
+/* Desactivar selección de texto en campos disabled */
+.hb-material-field.disabled input,
+.hb-material-field.disabled textarea,
+.hb-material-field.disabled .hb-material-select-value {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+.hb-material-field.disabled input:focus-visible,
+.hb-material-field.disabled textarea:focus-visible,
+.hb-material-field.disabled .hb-material-select:focus-visible {
+    outline: none;
+}
+
+/* Dark mode para disabled */
+@media (prefers-color-scheme: dark) {
+    .hb-material-field.disabled input,
+    .hb-material-field.disabled textarea,
+    .hb-material-field.disabled .hb-material-select {
+        background-color: #f5f5f5;
+        color: #9e9e9e;
+        border-color: #e0e0e0;
+    }
+    
+    .hb-material-field.disabled label {
+        background-color: #f5f5f5;
+        color: #9e9e9e;
+    }
+}
