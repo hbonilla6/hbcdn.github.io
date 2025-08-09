@@ -202,13 +202,6 @@
   box-shadow: none !important
 }
 
-.hb-material-field.disabled label,
-.hb-material-field.disabled.filled label,
-.hb-material-field.disabled.focused label {
-  color: #0d47a1 !important;
-  background: #fff !important
-}
-
 .form-check-custom .form-check-input:disabled,
 .form-check-custom .form-check-input:disabled+.form-check-label {
   color: #4e4e4e !important;
@@ -222,10 +215,6 @@
 .hb-material-field.disabled.touched.invalid input,
 .hb-material-field.disabled.touched.invalid textarea {
   border-color: #e0e0e0 !important
-}
-
-.hb-material-field.disabled.touched.invalid label {
-  color: #0d47a1 !important
 }
 
 .hb-material-field.disabled .hb-material-select.open .hb-material-select-panel {
@@ -262,16 +251,34 @@
   border-color: #e0e0e0 !important
 }
 
-/* Labels disabled para selects - AGREGAR al final de tu CSS */
-.hb-material-field.disabled:has(.hb-material-select) label,
-.hb-material-field.disabled:has(.hb-material-select).filled label,
-.hb-material-field.disabled:has(.hb-material-select).focused label {
-    color: #4e4e4e !important;
-    background: #f5f5f5 !important;
+/* ESTILOS DISABLED PARA LABELS - AL FINAL PARA MAYOR ESPECIFICIDAD */
+.hb-material-field.disabled label {
+  color: #4e4e4e !important;
+  background: #f5f5f5 !important
 }
 
-/* Alternativa si :has() no funciona en navegadores antiguos */
-.hb-material-field.disabled .hb-material-select ~ label {
-    color: #4e4e4e !important;
-    background: #f5f5f5 !important;
+.hb-material-field.disabled.filled label {
+  color: #4e4e4e !important;
+  background: #f5f5f5 !important;
+  top: -8px;
+  font-size: 11px
+}
+
+.hb-material-field.disabled.focused label {
+  color: #4e4e4e !important;
+  background: #f5f5f5 !important;
+  top: -8px;
+  font-size: 11px
+}
+
+.hb-material-field.disabled.filled.focused label {
+  color: #4e4e4e !important;
+  background: #f5f5f5 !important;
+  top: -8px;
+  font-size: 11px
+}
+
+.hb-material-field.disabled.touched.invalid label {
+  color: #4e4e4e !important;
+  background: #f5f5f5 !important
 }
