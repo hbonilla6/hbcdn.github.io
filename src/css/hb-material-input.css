@@ -11,6 +11,30 @@
     box-sizing: border-box;
 }
 
+/* Específico para inputs de fecha */
+.hb-material-field input[type="date"],
+.hb-material-field input[type="datetime-local"],
+.hb-material-field input[type="time"] {
+    background: #fff !important;
+    color: #212529 !important;
+}
+
+/* Asegurar que los calendarios funcionen bien */
+.hb-material-field input[type="date"]::-webkit-calendar-picker-indicator,
+.hb-material-field input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+.hb-material-field input[type="time"]::-webkit-calendar-picker-indicator {
+    background: transparent;
+    bottom: 0;
+    color: transparent;
+    cursor: pointer;
+    height: auto;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: auto;
+}
+
 .hb-material-field {
     position: relative;
     margin-bottom: .75rem;
@@ -50,6 +74,14 @@
     opacity: 1;
 }
 
+/* Específico para inputs de fecha disabled */
+.hb-material-field.disabled input[type="date"],
+.hb-material-field.disabled input[type="datetime-local"],
+.hb-material-field.disabled input[type="time"] {
+    background-color: #e9ecef !important;
+    color: #6c757d !important;
+}
+
 .hb-material-field.disabled input:focus,
 .hb-material-field.disabled textarea:focus,
 .hb-material-field.disabled .hb-material-select:focus {
@@ -63,6 +95,14 @@
     background-color: #f8f9fa;
     color: #6c757d;
     cursor: default;
+}
+
+/* Específico para inputs de fecha readonly */
+.hb-material-field.readonly input[type="date"],
+.hb-material-field.readonly input[type="datetime-local"],
+.hb-material-field.readonly input[type="time"] {
+    background-color: #f8f9fa !important;
+    color: #6c757d !important;
 }
 
 .hb-material-field.readonly input:focus,
@@ -394,6 +434,14 @@
         border-color: #6c757d;
     }
     
+    /* Forzar colores normales para inputs de fecha en dark mode */
+    .hb-material-field input[type="date"],
+    .hb-material-field input[type="datetime-local"],
+    .hb-material-field input[type="time"] {
+        background-color: #495057 !important;
+        color: #f8f9fa !important;
+    }
+    
     .hb-material-field label {
         background-color: #495057;
         color: #adb5bd;
@@ -407,6 +455,14 @@
         border-color: #ced4da;
     }
     
+    /* Inputs de fecha disabled en dark mode siguen siendo claros */
+    .hb-material-field.disabled input[type="date"],
+    .hb-material-field.disabled input[type="datetime-local"],
+    .hb-material-field.disabled input[type="time"] {
+        background-color: #e9ecef !important;
+        color: #6c757d !important;
+    }
+    
     .hb-material-field.disabled label {
         background-color: #e9ecef;
         color: #6c757d;
@@ -416,6 +472,14 @@
     .hb-material-field.readonly textarea {
         background-color: #f8f9fa;
         color: #6c757d;
+    }
+    
+    /* Inputs de fecha readonly en dark mode */
+    .hb-material-field.readonly input[type="date"],
+    .hb-material-field.readonly input[type="datetime-local"],
+    .hb-material-field.readonly input[type="time"] {
+        background-color: #f8f9fa !important;
+        color: #6c757d !important;
     }
     
     .hb-material-select-panel {
