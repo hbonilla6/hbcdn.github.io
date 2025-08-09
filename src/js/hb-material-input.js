@@ -9,6 +9,7 @@ class MaterialFields {
     init() {
         this.setupFields();
         this.convertSelectsToCustom();
+        this.detectInitialDisabledFields(); // AGREGADO
     }
 
     setupFields() {
@@ -37,7 +38,7 @@ class MaterialFields {
             // Estado inicial CON CONTADOR
             this.updateFieldState(field);
             this.updateCounter(field);
-            this.updateDisabledState(field); // NUEVO: Manejar estado disabled/readonly
+            this.updateDisabledState(field);
         });
     }
 
@@ -58,17 +59,17 @@ class MaterialFields {
             originalSelect.options[0]?.text ||
             'Seleccionar...';
         const required = originalSelect.hasAttribute('required');
-        const disabled = originalSelect.hasAttribute('disabled'); // NUEVO
+        const disabled = originalSelect.hasAttribute('disabled');
         const id = originalSelect.id;
         const name = originalSelect.name || originalSelect.id;
 
         // Crear estructura del select personalizado
         const customSelect = document.createElement('div');
         customSelect.className = 'hb-material-select';
-        customSelect.setAttribute('tabindex', disabled ? '-1' : '0'); // MODIFICADO
+        customSelect.setAttribute('tabindex', disabled ? '-1' : '0');
         customSelect.setAttribute('data-value', originalSelect.value || '');
         if (required) customSelect.setAttribute('required', '');
-        if (disabled) customSelect.setAttribute('disabled', ''); // NUEVO
+        if (disabled) customSelect.setAttribute('disabled', '');
         if (id) customSelect.id = id;
         if (name) customSelect.setAttribute('data-name', name);
 
@@ -138,7 +139,7 @@ class MaterialFields {
             placeholder
         );
         
-        // NUEVO: Manejar estado disabled
+        // Manejar estado disabled
         this.updateSelectDisabledState(customSelect, parent);
     }
 
@@ -153,9 +154,9 @@ class MaterialFields {
         const panel = select.querySelector('.hb-material-select-panel');
         const options = select.querySelectorAll('.hb-material-option');
 
-        // Click en TODO el select (no solo el trigger) - MODIFICADO para disabled
+        // Click en TODO el select (no solo el trigger)
         select.addEventListener('click', (e) => {
-            if (select.hasAttribute('disabled')) return; // NUEVO: No hacer nada si está disabled
+            if (select.hasAttribute('disabled')) return;
             
             e.stopPropagation();
             document
@@ -169,7 +170,7 @@ class MaterialFields {
         // Click en opciones
         options.forEach((option) => {
             option.addEventListener('click', (e) => {
-                if (select.hasAttribute('disabled')) return; // NUEVO
+                if (select.hasAttribute('disabled')) return;
                 
                 e.stopPropagation();
 
@@ -194,16 +195,16 @@ class MaterialFields {
             });
         });
 
-        // Focus y blur - MODIFICADO para disabled
+        // Focus y blur
         select.addEventListener('focus', () => {
-            if (select.hasAttribute('disabled')) return; // NUEVO
+            if (select.hasAttribute('disabled')) return;
             
             parent.classList.add('focused');
             this.updateSelectState(select, parent, valueElement, placeholder);
         });
 
         select.addEventListener('blur', () => {
-            if (select.hasAttribute('disabled')) return; // NUEVO
+            if (select.hasAttribute('disabled')) return;
             
             parent.classList.remove('focused');
             parent.classList.add('touched');
@@ -211,9 +212,9 @@ class MaterialFields {
             this.validateSelect(select, parent);
         });
 
-        // Teclado - MODIFICADO para disabled
+        // Teclado
         select.addEventListener('keydown', (e) => {
-            if (select.hasAttribute('disabled')) return; // NUEVO
+            if (select.hasAttribute('disabled')) return;
             
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
@@ -249,7 +250,6 @@ class MaterialFields {
         }
     }
 
-    // NUEVO: Método para actualizar estado disabled del select
     updateSelectDisabledState(select, parent) {
         if (select.hasAttribute('disabled')) {
             parent.classList.add('disabled');
@@ -280,7 +280,6 @@ class MaterialFields {
     }
 
     handleInput(field) {
-        // NUEVO: No hacer nada si está disabled o readonly
         if (field.hasAttribute('disabled') || field.hasAttribute('readonly')) {
             return;
         }
@@ -291,7 +290,6 @@ class MaterialFields {
     }
 
     handleFocus(field) {
-        // NUEVO: No hacer nada si está disabled
         if (field.hasAttribute('disabled')) {
             return;
         }
@@ -300,7 +298,6 @@ class MaterialFields {
     }
 
     handleBlur(field) {
-        // NUEVO: No hacer nada si está disabled
         if (field.hasAttribute('disabled')) {
             return;
         }
@@ -322,14 +319,28 @@ class MaterialFields {
         }
     }
 
-    // NUEVO: Método para actualizar estado disabled/readonly
+    // MÉTODO MEJORADO para manejar disabled/readonly
     updateDisabledState(field) {
         const parent = field.closest('.hb-material-field');
         
         if (field.hasAttribute('disabled')) {
             parent.classList.add('disabled');
+            
+            // Para inputs de fecha, forzar estilos directamente
+            if (field.type === 'date' || field.type === 'datetime-local' || field.type === 'time') {
+                field.style.backgroundColor = '#f5f5f5';
+                field.style.color = '#4e4e4e';
+                field.style.borderColor = '#e0e0e0';
+            }
         } else {
             parent.classList.remove('disabled');
+            
+            // Restaurar estilos normales para inputs de fecha
+            if (field.type === 'date' || field.type === 'datetime-local' || field.type === 'time') {
+                field.style.backgroundColor = '';
+                field.style.color = '';
+                field.style.borderColor = '';
+            }
         }
         
         if (field.hasAttribute('readonly')) {
@@ -381,7 +392,6 @@ class MaterialFields {
 
         if (!parent.classList.contains('touched')) return;
         
-        // NUEVO: No validar campos disabled
         if (field.hasAttribute('disabled')) return;
 
         let isValid = true;
@@ -428,7 +438,36 @@ class MaterialFields {
         }
     }
 
-    // NUEVOS: Métodos públicos para manejar disabled/readonly dinámicamente
+    // NUEVO: Detectar campos disabled/readonly al cargar
+    detectInitialDisabledFields() {
+        // Para inputs y textareas
+        const fields = document.querySelectorAll(
+            '.hb-material-field input, .hb-material-field textarea'
+        );
+        
+        fields.forEach((field) => {
+            if (field.hasAttribute('disabled') || field.hasAttribute('readonly')) {
+                this.updateDisabledState(field);
+            }
+        });
+        
+        // Para selects originales que ya están disabled
+        const selects = document.querySelectorAll(
+            '.hb-material-field select'
+        );
+        
+        selects.forEach((select) => {
+            const parent = select.closest('.hb-material-field');
+            const customSelect = parent.querySelector('.hb-material-select');
+            
+            if (select.hasAttribute('disabled') && customSelect) {
+                customSelect.setAttribute('disabled', '');
+                this.updateSelectDisabledState(customSelect, parent);
+            }
+        });
+    }
+
+    // Métodos públicos para manejar disabled/readonly dinámicamente
     setFieldDisabled(fieldId, disabled = true) {
         const field = document.getElementById(fieldId);
         if (!field) return;
@@ -468,10 +507,8 @@ class MaterialFields {
             }
             this.updateDisabledState(field);
         }
-        // Nota: readonly no aplica a selects
     }
 
-    // Métodos públicos existentes
     validateAll() {
         const fields = document.querySelectorAll(
             '.hb-material-field input, .hb-material-field textarea'
@@ -482,7 +519,6 @@ class MaterialFields {
         let isFormValid = true;
 
         fields.forEach((field) => {
-            // MODIFICADO: No validar campos disabled
             if (field.hasAttribute('disabled')) return;
             
             const parent = field.closest('.hb-material-field');
@@ -495,7 +531,6 @@ class MaterialFields {
         });
 
         selects.forEach((select) => {
-            // MODIFICADO: No validar selects disabled
             if (select.hasAttribute('disabled')) return;
             
             const parent = select.closest('.hb-material-field');
@@ -552,7 +587,6 @@ class MaterialFields {
         const radios = document.querySelectorAll('input[type="radio"]');
 
         fields.forEach((field) => {
-            // MODIFICADO: No limpiar campos disabled o readonly
             if (field.hasAttribute('disabled') || field.hasAttribute('readonly')) {
                 return;
             }
@@ -566,7 +600,6 @@ class MaterialFields {
         });
 
         selects.forEach((select) => {
-            // MODIFICADO: No limpiar selects disabled
             if (select.hasAttribute('disabled')) {
                 return;
             }
@@ -589,7 +622,6 @@ class MaterialFields {
         });
 
         radios.forEach((radio) => {
-            // MODIFICADO: No limpiar radios disabled
             if (radio.hasAttribute('disabled')) {
                 return;
             }
@@ -598,24 +630,3 @@ class MaterialFields {
         });
     }
 }
-
-// Inicializar cuando se carga el DOM
-// document.addEventListener('DOMContentLoaded', () => {
-//     window.materialFields = new MaterialFields();
-
-//     // Ejemplo de uso del botón guardar
-//     document.querySelector('.btn-guardar').addEventListener('click', () => {
-//         if (materialFields.validateAll()) {
-//             const data = materialFields.getFormData();
-//             console.log('Datos del formulario:', data);
-//             alert('Formulario válido. Ver consola para datos.');
-//         } else {
-//             alert('Por favor, complete todos los campos requeridos.');
-//         }
-//     });
-
-//     // Ejemplos de uso de los nuevos métodos
-//     // materialFields.setFieldDisabled('campo1', true); // Deshabilitar
-//     // materialFields.setFieldDisabled('campo1', false); // Habilitar
-//     // materialFields.setFieldReadonly('campo2', true); // Solo lectura
-// });
