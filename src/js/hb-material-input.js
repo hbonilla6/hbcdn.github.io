@@ -1,6 +1,6 @@
 /**
-       * Sistema genérico de campos Material Design para Bootstrap
-       */
+ * Sistema genérico de campos Material Design para Bootstrap
+ */
 class MaterialFields {
     constructor() {
         this.init();
@@ -37,6 +37,7 @@ class MaterialFields {
             // Estado inicial CON CONTADOR
             this.updateFieldState(field);
             this.updateCounter(field);
+            this.updateDisabledState(field); // NUEVO: Manejar estado disabled/readonly
         });
     }
 
@@ -57,15 +58,17 @@ class MaterialFields {
             originalSelect.options[0]?.text ||
             'Seleccionar...';
         const required = originalSelect.hasAttribute('required');
+        const disabled = originalSelect.hasAttribute('disabled'); // NUEVO
         const id = originalSelect.id;
         const name = originalSelect.name || originalSelect.id;
 
         // Crear estructura del select personalizado
         const customSelect = document.createElement('div');
         customSelect.className = 'hb-material-select';
-        customSelect.setAttribute('tabindex', '0');
+        customSelect.setAttribute('tabindex', disabled ? '-1' : '0'); // MODIFICADO
         customSelect.setAttribute('data-value', originalSelect.value || '');
         if (required) customSelect.setAttribute('required', '');
+        if (disabled) customSelect.setAttribute('disabled', ''); // NUEVO
         if (id) customSelect.id = id;
         if (name) customSelect.setAttribute('data-name', name);
 
@@ -134,6 +137,9 @@ class MaterialFields {
             valueElement,
             placeholder
         );
+        
+        // NUEVO: Manejar estado disabled
+        this.updateSelectDisabledState(customSelect, parent);
     }
 
     setupCustomSelectEvents(
@@ -147,8 +153,10 @@ class MaterialFields {
         const panel = select.querySelector('.hb-material-select-panel');
         const options = select.querySelectorAll('.hb-material-option');
 
-        // Click en TODO el select (no solo el trigger)
+        // Click en TODO el select (no solo el trigger) - MODIFICADO para disabled
         select.addEventListener('click', (e) => {
+            if (select.hasAttribute('disabled')) return; // NUEVO: No hacer nada si está disabled
+            
             e.stopPropagation();
             document
                 .querySelectorAll('.hb-material-select.open')
@@ -161,6 +169,8 @@ class MaterialFields {
         // Click en opciones
         options.forEach((option) => {
             option.addEventListener('click', (e) => {
+                if (select.hasAttribute('disabled')) return; // NUEVO
+                
                 e.stopPropagation();
 
                 options.forEach((opt) => opt.classList.remove('selected'));
@@ -184,21 +194,27 @@ class MaterialFields {
             });
         });
 
-        // Focus y blur
+        // Focus y blur - MODIFICADO para disabled
         select.addEventListener('focus', () => {
+            if (select.hasAttribute('disabled')) return; // NUEVO
+            
             parent.classList.add('focused');
             this.updateSelectState(select, parent, valueElement, placeholder);
         });
 
         select.addEventListener('blur', () => {
+            if (select.hasAttribute('disabled')) return; // NUEVO
+            
             parent.classList.remove('focused');
             parent.classList.add('touched');
             this.updateSelectState(select, parent, valueElement, placeholder);
             this.validateSelect(select, parent);
         });
 
-        // Teclado
+        // Teclado - MODIFICADO para disabled
         select.addEventListener('keydown', (e) => {
+            if (select.hasAttribute('disabled')) return; // NUEVO
+            
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 select.classList.toggle('open');
@@ -233,6 +249,17 @@ class MaterialFields {
         }
     }
 
+    // NUEVO: Método para actualizar estado disabled del select
+    updateSelectDisabledState(select, parent) {
+        if (select.hasAttribute('disabled')) {
+            parent.classList.add('disabled');
+            select.setAttribute('tabindex', '-1');
+        } else {
+            parent.classList.remove('disabled');
+            select.setAttribute('tabindex', '0');
+        }
+    }
+
     validateSelect(select, parent) {
         if (!parent.classList.contains('touched')) return;
 
@@ -253,16 +280,31 @@ class MaterialFields {
     }
 
     handleInput(field) {
+        // NUEVO: No hacer nada si está disabled o readonly
+        if (field.hasAttribute('disabled') || field.hasAttribute('readonly')) {
+            return;
+        }
+        
         this.updateCounter(field);
         this.updateFieldState(field);
         this.validateField(field);
     }
 
     handleFocus(field) {
+        // NUEVO: No hacer nada si está disabled
+        if (field.hasAttribute('disabled')) {
+            return;
+        }
+        
         field.closest('.hb-material-field').classList.add('focused');
     }
 
     handleBlur(field) {
+        // NUEVO: No hacer nada si está disabled
+        if (field.hasAttribute('disabled')) {
+            return;
+        }
+        
         const parent = field.closest('.hb-material-field');
         parent.classList.remove('focused');
         parent.classList.add('touched');
@@ -277,6 +319,23 @@ class MaterialFields {
             parent.classList.add('filled');
         } else {
             parent.classList.remove('filled');
+        }
+    }
+
+    // NUEVO: Método para actualizar estado disabled/readonly
+    updateDisabledState(field) {
+        const parent = field.closest('.hb-material-field');
+        
+        if (field.hasAttribute('disabled')) {
+            parent.classList.add('disabled');
+        } else {
+            parent.classList.remove('disabled');
+        }
+        
+        if (field.hasAttribute('readonly')) {
+            parent.classList.add('readonly');
+        } else {
+            parent.classList.remove('readonly');
         }
     }
 
@@ -321,6 +380,9 @@ class MaterialFields {
         const parent = field.closest('.hb-material-field');
 
         if (!parent.classList.contains('touched')) return;
+        
+        // NUEVO: No validar campos disabled
+        if (field.hasAttribute('disabled')) return;
 
         let isValid = true;
 
@@ -366,7 +428,50 @@ class MaterialFields {
         }
     }
 
-    // Métodos públicos
+    // NUEVOS: Métodos públicos para manejar disabled/readonly dinámicamente
+    setFieldDisabled(fieldId, disabled = true) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        const parent = field.closest('.hb-material-field');
+        
+        if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
+            if (disabled) {
+                field.setAttribute('disabled', '');
+            } else {
+                field.removeAttribute('disabled');
+            }
+            this.updateDisabledState(field);
+        } else {
+            // Para selects personalizados
+            const customSelect = parent.querySelector('.hb-material-select');
+            if (customSelect) {
+                if (disabled) {
+                    customSelect.setAttribute('disabled', '');
+                } else {
+                    customSelect.removeAttribute('disabled');
+                }
+                this.updateSelectDisabledState(customSelect, parent);
+            }
+        }
+    }
+
+    setFieldReadonly(fieldId, readonly = true) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+
+        if (field.tagName === 'INPUT' || field.tagName === 'TEXTAREA') {
+            if (readonly) {
+                field.setAttribute('readonly', '');
+            } else {
+                field.removeAttribute('readonly');
+            }
+            this.updateDisabledState(field);
+        }
+        // Nota: readonly no aplica a selects
+    }
+
+    // Métodos públicos existentes
     validateAll() {
         const fields = document.querySelectorAll(
             '.hb-material-field input, .hb-material-field textarea'
@@ -377,6 +482,9 @@ class MaterialFields {
         let isFormValid = true;
 
         fields.forEach((field) => {
+            // MODIFICADO: No validar campos disabled
+            if (field.hasAttribute('disabled')) return;
+            
             const parent = field.closest('.hb-material-field');
             parent.classList.add('touched');
             this.validateField(field);
@@ -387,6 +495,9 @@ class MaterialFields {
         });
 
         selects.forEach((select) => {
+            // MODIFICADO: No validar selects disabled
+            if (select.hasAttribute('disabled')) return;
+            
             const parent = select.closest('.hb-material-field');
             parent.classList.add('touched');
             this.validateSelect(select, parent);
@@ -441,6 +552,11 @@ class MaterialFields {
         const radios = document.querySelectorAll('input[type="radio"]');
 
         fields.forEach((field) => {
+            // MODIFICADO: No limpiar campos disabled o readonly
+            if (field.hasAttribute('disabled') || field.hasAttribute('readonly')) {
+                return;
+            }
+            
             field.value = '';
             const parent = field.closest('.hb-material-field');
             parent.classList.remove('filled', 'focused', 'touched', 'invalid');
@@ -450,6 +566,11 @@ class MaterialFields {
         });
 
         selects.forEach((select) => {
+            // MODIFICADO: No limpiar selects disabled
+            if (select.hasAttribute('disabled')) {
+                return;
+            }
+            
             select.setAttribute('data-value', '');
             const parent = select.closest('.hb-material-field');
             const valueElement = select.querySelector(
@@ -468,23 +589,33 @@ class MaterialFields {
         });
 
         radios.forEach((radio) => {
+            // MODIFICADO: No limpiar radios disabled
+            if (radio.hasAttribute('disabled')) {
+                return;
+            }
+            
             radio.checked = false;
         });
     }
 }
 
 // Inicializar cuando se carga el DOM
-//   document.addEventListener('DOMContentLoaded', () => {
-// window.materialFields = new MaterialFields();
+// document.addEventListener('DOMContentLoaded', () => {
+//     window.materialFields = new MaterialFields();
 
-// // Ejemplo de uso del botón guardar
-// document.querySelector('.btn-guardar').addEventListener('click', () => {
-//     if (materialFields.validateAll()) {
-//         const data = materialFields.getFormData();
-//         console.log('Datos del formulario:', data);
-//         alert('Formulario válido. Ver consola para datos.');
-//     } else {
-//         alert('Por favor, complete todos los campos requeridos.');
-//     }
+//     // Ejemplo de uso del botón guardar
+//     document.querySelector('.btn-guardar').addEventListener('click', () => {
+//         if (materialFields.validateAll()) {
+//             const data = materialFields.getFormData();
+//             console.log('Datos del formulario:', data);
+//             alert('Formulario válido. Ver consola para datos.');
+//         } else {
+//             alert('Por favor, complete todos los campos requeridos.');
+//         }
+//     });
+
+//     // Ejemplos de uso de los nuevos métodos
+//     // materialFields.setFieldDisabled('campo1', true); // Deshabilitar
+//     // materialFields.setFieldDisabled('campo1', false); // Habilitar
+//     // materialFields.setFieldReadonly('campo2', true); // Solo lectura
 // });
-// //   });

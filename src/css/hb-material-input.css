@@ -1,190 +1,453 @@
-/* Estilos Material Design adaptados para Bootstrap */
+/* Estilos base */
+.hb-material-field input,
+.hb-material-field textarea,
+.hb-material-select {
+    width: 100%;
+    outline: 0;
+    transition: border-color .2s, background-color .2s, color .2s;
+    height: 35px;
+    background: #fff;
+    padding: 8px 12px;
+    box-sizing: border-box;
+}
+
 .hb-material-field {
-  position: relative;
-  margin-bottom: 0.75rem; /* Reducido de 1.5rem */
-  font-weight: normal !important;
+    position: relative;
+    margin-bottom: .75rem;
+    font-weight: 400 !important;
 }
 
 .hb-material-field input,
 .hb-material-field textarea {
-  width: 100%;
-  padding: 8px 12px; /* Reducido padding vertical */
-  font-size: 14px; /* Reducido de 15px */
-  border-radius: 4px; /* Reducido de 5px */
-  border: 1px solid #ced4da;
-  background: white;
-  outline: none;
-  transition: border-color 0.2s;
-  resize: none;
-  height: 35px; /* Altura más compacta */
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    resize: none;
 }
 
 .hb-material-field textarea {
-  height: auto !important;
-  min-height: 60px;
-  resize: vertical;
+    height: auto !important;
+    min-height: 60px;
+    resize: vertical;
 }
 
+/* Estados focus normales */
 .hb-material-field input:focus,
-.hb-material-field textarea:focus {
-  border-color: #0d47a1;
-  box-shadow: 0 0 0 0.15rem rgba(91, 192, 222, 0.25);
+.hb-material-field textarea:focus,
+.hb-material-select:focus {
+    border-color: #0d47a1;
+    box-shadow: 0 0 0 .15rem rgba(91, 192, 222, .25);
 }
 
+/* NUEVOS: Estados disabled */
+.hb-material-field.disabled input,
+.hb-material-field.disabled textarea,
+.hb-material-field.disabled .hb-material-select {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    border-color: #e9ecef;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.hb-material-field.disabled input:focus,
+.hb-material-field.disabled textarea:focus,
+.hb-material-field.disabled .hb-material-select:focus {
+    border-color: #e9ecef;
+    box-shadow: none;
+}
+
+/* NUEVOS: Estados readonly */
+.hb-material-field.readonly input,
+.hb-material-field.readonly textarea {
+    background-color: #f8f9fa;
+    cursor: default;
+}
+
+.hb-material-field.readonly input:focus,
+.hb-material-field.readonly textarea:focus {
+    border-color: #0d47a1;
+    box-shadow: 0 0 0 .15rem rgba(91, 192, 222, .15);
+}
+
+/* Labels */
 .hb-material-field label {
-  position: absolute;
-  top: 8px; /* Ajustado para el nuevo padding */
-  left: 12px;
-  color: #0d47a1;
-  font-size: 14px; /* Reducido de 15px */
-  pointer-events: none;
-  transition: all 0.2s ease;
-  background: white;
-  padding: 0 4px;
-  font-weight: normal !important;
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    color: #0d47a1;
+    font-size: 14px;
+    pointer-events: none;
+    transition: .2s;
+    background: #fff;
+    padding: 0 4px;
+    font-weight: 400 !important;
 }
 
-.hb-material-field.focused label,
-.hb-material-field.filled label {
-  top: -8px; /* Ajustado */
-  font-size: 11px;
-  color: #0d47a1;
+.hb-material-field.filled label,
+.hb-material-field.focused label {
+    top: -8px;
+    font-size: 11px;
+    color: #0d47a1;
 }
 
+/* NUEVO: Labels para campos disabled */
+.hb-material-field.disabled label {
+    color: #6c757d;
+    background: #f8f9fa;
+}
+
+.hb-material-field.disabled.filled label,
+.hb-material-field.disabled.focused label {
+    color: #6c757d;
+}
+
+/* NUEVO: Labels para campos readonly */
+.hb-material-field.readonly label {
+    background: #f8f9fa;
+}
+
+/* Contador de caracteres */
 .hb-material-char-counter {
-  font-size: 10px;
-  color: #6c757d;
-  text-align: right;
-  margin-top: 4px;
-  line-height: 1;
-  margin-right: 6px;
+    font-size: 10px;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 4px;
+    line-height: 1;
+    margin-right: 6px;
 }
 
+/* Estados de validación */
+.hb-material-field.touched.invalid .hb-material-select,
 .hb-material-field.touched.invalid input,
 .hb-material-field.touched.invalid textarea {
-  border-color: #dc3545;
+    border-color: #dc3545;
 }
 
 .hb-material-field.touched.invalid label {
-  color: #dc3545;
+    color: #dc3545;
 }
 
-/* Estilos para select personalizado */
+/* NUEVO: No mostrar error en campos disabled */
+.hb-material-field.disabled.touched.invalid .hb-material-select,
+.hb-material-field.disabled.touched.invalid input,
+.hb-material-field.disabled.touched.invalid textarea {
+    border-color: #e9ecef;
+}
+
+.hb-material-field.disabled.touched.invalid label {
+    color: #6c757d;
+}
+
+/* Selects personalizados */
 .hb-material-select {
-  width: 100%;
-  padding: 8px 12px; /* Reducido padding */
-  font-size: 14px; /* Reducido de 15px */
-  border-radius: 4px; /* Reducido de 5px */
-  border: 1px solid #ced4da;
-  background: white;
-  outline: none;
-  transition: border-color 0.2s;
-  cursor: pointer;
-  position: relative;
-  height: 35px; /* Altura más compacta */
-  box-sizing: border-box;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    cursor: pointer;
+    position: relative;
+    box-sizing: border-box;
 }
 
-.hb-material-select:focus {
-  border-color: #0d47a1;
-  box-shadow: 0 0 0 0.15rem rgba(91, 192, 222, 0.25);
+/* NUEVO: Select disabled */
+.hb-material-field.disabled .hb-material-select {
+    cursor: not-allowed;
 }
 
 .hb-material-select-trigger {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
 }
 
 .hb-material-select-value {
-  flex: 1;
-  text-align: left;
-  line-height: 1.2;
-  font-size: 14px; /* Consistente con inputs */
+    flex: 1;
+    text-align: left;
+    line-height: 1.2;
+    font-size: 14px;
 }
 
 .hb-material-select-arrow {
-  border-left: 4px solid transparent; /* Flecha más pequeña */
-  border-right: 4px solid transparent;
-  border-top: 4px solid #6c757d;
-  transition: transform 0.2s ease;
-  margin-left: 8px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #6c757d;
+    transition: transform .2s;
+    margin-left: 8px;
+}
+
+/* NUEVO: Flecha disabled */
+.hb-material-field.disabled .hb-material-select-arrow {
+    border-top-color: #adb5bd;
 }
 
 .hb-material-select.open .hb-material-select-arrow {
-  transform: rotate(180deg);
+    transform: rotate(180deg);
+}
+
+/* NUEVO: No rotar flecha si está disabled */
+.hb-material-field.disabled .hb-material-select.open .hb-material-select-arrow {
+    transform: none;
 }
 
 .hb-material-select-panel {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid #ced4da;
-  border-radius: 4px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 1000;
-  max-height: 200px;
-  overflow-y: auto;
-  display: none;
-  margin-top: 2px; /* Reducido de 4px */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, .1);
+    z-index: 1000;
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    margin-top: 2px;
 }
 
 .hb-material-select.open .hb-material-select-panel {
-  display: block;
+    display: block;
+}
+
+/* NUEVO: No mostrar panel si está disabled */
+.hb-material-field.disabled .hb-material-select.open .hb-material-select-panel {
+    display: none;
 }
 
 .hb-material-option {
-  padding: 8px 12px; /* Reducido padding */
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-  font-size: 14px; /* Reducido de 15px */
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background-color .2s;
+    font-size: 14px;
 }
 
 .hb-material-option:hover {
-  background-color: #f8f9fa;
+    background-color: #f8f9fa;
 }
 
 .hb-material-option.selected {
-  background-color: #e7f6fd;
-  color: #0d47a1;
+    background-color: #e7f6fd;
+    color: #0d47a1;
 }
 
-.hb-material-field.touched.invalid .hb-material-select {
-  border-color: #dc3545;
-}
-
-/* Radio buttons personalizados */
+/* Checkboxes y radios */
 .form-check-custom {
-  margin-right: 15px; /* Reducido de 20px */
-  margin-bottom: 0.25rem; /* Menos margen vertical */
+    margin-right: 15px;
+    margin-bottom: .25rem;
 }
 
 .form-check-custom .form-check-input:checked {
-  background-color: #0d47a1;
-  border-color: #0d47a1;
+    background-color: #0d47a1;
+    border-color: #0d47a1;
 }
 
 .form-check-custom .form-check-input:focus {
-  box-shadow: 0 0 0 0.2rem rgba(91, 192, 222, 0.25);
+    box-shadow: 0 0 0 .2rem rgba(91, 192, 222, .25);
 }
 
 .form-check-custom .form-check-label {
-  font-size: 14px; /* Consistente */
+    font-size: 14px;
 }
 
-/* Placeholder cuando label está arriba */
+/* NUEVO: Checkboxes y radios disabled */
+.form-check-custom .form-check-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.form-check-custom .form-check-input:disabled + .form-check-label {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Placeholders */
 .hb-material-field input::placeholder,
 .hb-material-field textarea::placeholder {
-  opacity: 0;
-  transition: opacity 0.2s ease;
+    opacity: 0;
+    transition: opacity .2s;
 }
 
-.hb-material-field.focused input::placeholder,
 .hb-material-field.filled input::placeholder,
-.hb-material-field.focused textarea::placeholder,
-.hb-material-field.filled textarea::placeholder {
-  opacity: 0.6;
+.hb-material-field.filled textarea::placeholder,
+.hb-material-field.focused input::placeholder,
+.hb-material-field.focused textarea::placeholder {
+    opacity: .6;
+}
+
+/* NUEVO: Placeholders para campos disabled */
+.hb-material-field.disabled input::placeholder,
+.hb-material-field.disabled textarea::placeholder {
+    opacity: 0.4;
+    color: #adb5bd;
+}
+
+/* NUEVO: Placeholders para campos readonly */
+.hb-material-field.readonly input::placeholder,
+.hb-material-field.readonly textarea::placeholder {
+    opacity: 0.4;
+}
+
+/* NUEVOS: Estilos adicionales para mejorar la experiencia visual */
+
+/* Animación más suave para transiciones disabled */
+.hb-material-field input,
+.hb-material-field textarea,
+.hb-material-select,
+.hb-material-field label {
+    transition: all 0.2s ease-in-out;
+}
+
+/* Mejorar el contraste en estado disabled */
+.hb-material-field.disabled .hb-material-char-counter {
+    color: #adb5bd;
+}
+
+/* Asegurar que el cursor sea correcto */
+.hb-material-field.disabled,
+.hb-material-field.disabled * {
+    cursor: not-allowed !important;
+}
+
+.hb-material-field.readonly input,
+.hb-material-field.readonly textarea {
+    cursor: default !important;
+}
+
+/* Mejorar la apariencia del select disabled */
+.hb-material-field.disabled .hb-material-select-trigger {
+    cursor: not-allowed;
+}
+
+.hb-material-field.disabled .hb-material-select-value {
+    user-select: none;
+}
+
+/* Asegurar que los elementos disabled no reciban eventos de pointer */
+.hb-material-field.disabled input,
+.hb-material-field.disabled textarea,
+.hb-material-field.disabled .hb-material-select {
+    pointer-events: auto; /* Mantener para que funcionen los eventos del sistema */
+}
+
+/* Pero desactivar la selección de texto en campos disabled */
+.hb-material-field.disabled input,
+.hb-material-field.disabled textarea,
+.hb-material-field.disabled .hb-material-select-value {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+/* Estilos especiales para campos required disabled */
+.hb-material-field.disabled input[required],
+.hb-material-field.disabled textarea[required],
+.hb-material-field.disabled .hb-material-select[required] {
+    /* Los campos required disabled no muestran el indicador de error */
+    border-color: #e9ecef !important;
+}
+
+/* Hover states - solo para campos no disabled */
+.hb-material-field:not(.disabled) input:hover,
+.hb-material-field:not(.disabled) textarea:hover,
+.hb-material-field:not(.disabled) .hb-material-select:hover {
+    border-color: #adb5bd;
+}
+
+/* Focus visible mejorado para accesibilidad */
+.hb-material-field input:focus-visible,
+.hb-material-field textarea:focus-visible,
+.hb-material-select:focus-visible {
+    outline: 2px solid #0d47a1;
+    outline-offset: 2px;
+}
+
+.hb-material-field.disabled input:focus-visible,
+.hb-material-field.disabled textarea:focus-visible,
+.hb-material-field.disabled .hb-material-select:focus-visible {
+    outline: none;
+}
+
+/* Compatibilidad con formularios de Bootstrap */
+.hb-material-field input.is-invalid,
+.hb-material-field textarea.is-invalid {
+    border-color: #dc3545;
+}
+
+.hb-material-field input.is-valid,
+.hb-material-field textarea.is-valid {
+    border-color: #28a745;
+}
+
+/* Estados especiales para readonly */
+.hb-material-field.readonly input:hover,
+.hb-material-field.readonly textarea:hover {
+    border-color: #ced4da;
+}
+
+/* Indicador visual sutil para campos readonly */
+.hb-material-field.readonly::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 8px 8px 0;
+    border-color: transparent #dee2e6 transparent transparent;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .hb-material-field {
+        margin-bottom: 1rem;
+    }
+    
+    .hb-material-field input,
+    .hb-material-field textarea,
+    .hb-material-select {
+        font-size: 16px; /* Prevenir zoom en iOS */
+    }
+}
+
+/* Dark mode support (opcional) */
+@media (prefers-color-scheme: dark) {
+    .hb-material-field input,
+    .hb-material-field textarea,
+    .hb-material-select {
+        background-color: #2d3748;
+        color: #e2e8f0;
+        border-color: #4a5568;
+    }
+    
+    .hb-material-field label {
+        background-color: #2d3748;
+        color: #a0aec0;
+    }
+    
+    .hb-material-field.disabled input,
+    .hb-material-field.disabled textarea,
+    .hb-material-field.disabled .hb-material-select {
+        background-color: #1a202c;
+        color: #718096;
+        border-color: #2d3748;
+    }
+    
+    .hb-material-field.disabled label {
+        background-color: #1a202c;
+        color: #718096;
+    }
+    
+    .hb-material-select-panel {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .hb-material-option:hover {
+        background-color: #4a5568;
+    }
 }
