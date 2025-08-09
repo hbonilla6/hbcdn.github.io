@@ -53,22 +53,22 @@
 .hb-material-field.disabled input:focus,
 .hb-material-field.disabled textarea:focus,
 .hb-material-field.disabled .hb-material-select:focus {
-    border-color: #f4e6d7;
+    border-color: #ced4da;
     box-shadow: none;
 }
 
-/* MEJORADOS: Estados readonly - Tonos cálidos muy sutiles */
+/* Estados readonly - Muy sutiles */
 .hb-material-field.readonly input,
 .hb-material-field.readonly textarea {
-    background-color: #fffbf7;
-    color: #8b7355;
+    background-color: #f8f9fa;
+    color: #6c757d;
     cursor: default;
 }
 
 .hb-material-field.readonly input:focus,
 .hb-material-field.readonly textarea:focus {
-    border-color: #e6ddd4;
-    box-shadow: 0 0 0 .1rem rgba(160, 130, 109, .1);
+    border-color: #adb5bd;
+    box-shadow: 0 0 0 .1rem rgba(108, 117, 125, .1);
 }
 
 /* Labels */
@@ -92,27 +92,27 @@
     color: #0d47a1;
 }
 
-/* MEJORADO: Labels para campos disabled - Tonos cálidos */
+/* Labels para campos disabled - Bootstrap estándar */
 .hb-material-field.disabled label {
-    color: #b8956f;
-    background: #fef7f0;
+    color: #6c757d;
+    background: #e9ecef;
 }
 
 .hb-material-field.disabled.filled label,
 .hb-material-field.disabled.focused label {
-    color: #b8956f;
-    background: #fef7f0;
+    color: #6c757d;
+    background: #e9ecef;
 }
 
-/* MEJORADO: Labels para campos readonly */
+/* Labels para campos readonly */
 .hb-material-field.readonly label {
-    color: #9c7c57;
-    background: #fffbf7;
+    color: #6c757d;
+    background: #f8f9fa;
 }
 
 .hb-material-field.readonly.filled label,
 .hb-material-field.readonly.focused label {
-    color: #9c7c57;
+    color: #6c757d;
 }
 
 /* Contador de caracteres */
@@ -125,9 +125,9 @@
     margin-right: 6px;
 }
 
-/* MEJORADO: Contador para disabled */
+/* Contador para disabled */
 .hb-material-field.disabled .hb-material-char-counter {
-    color: #c4a484;
+    color: #6c757d;
 }
 
 /* Estados de validación */
@@ -141,15 +141,15 @@
     color: #dc3545;
 }
 
-/* MEJORADO: No mostrar error en campos disabled */
+/* No mostrar error en campos disabled */
 .hb-material-field.disabled.touched.invalid .hb-material-select,
 .hb-material-field.disabled.touched.invalid input,
 .hb-material-field.disabled.touched.invalid textarea {
-    border-color: #f4e6d7;
+    border-color: #ced4da;
 }
 
 .hb-material-field.disabled.touched.invalid label {
-    color: #b8956f;
+    color: #6c757d;
 }
 
 /* Selects personalizados */
@@ -189,9 +189,9 @@
     margin-left: 8px;
 }
 
-/* MEJORADO: Flecha disabled - Tonos cálidos */
+/* Flecha disabled - Bootstrap estándar */
 .hb-material-field.disabled .hb-material-select-arrow {
-    border-top-color: #d4b896;
+    border-top-color: #6c757d;
 }
 
 .hb-material-select.open .hb-material-select-arrow {
@@ -263,14 +263,14 @@
     font-size: 14px;
 }
 
-/* MEJORADO: Checkboxes y radios disabled */
+/* Checkboxes y radios disabled */
 .form-check-custom .form-check-input:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
 
 .form-check-custom .form-check-input:disabled + .form-check-label {
-    color: #a0826d;
+    color: #6c757d;
     cursor: not-allowed;
 }
 
@@ -288,18 +288,18 @@
     opacity: .6;
 }
 
-/* MEJORADO: Placeholders para campos disabled */
+/* Placeholders para campos disabled */
 .hb-material-field.disabled input::placeholder,
 .hb-material-field.disabled textarea::placeholder {
     opacity: 0.5;
-    color: #d4b896;
+    color: #6c757d;
 }
 
-/* MEJORADO: Placeholders para campos readonly */
+/* Placeholders para campos readonly */
 .hb-material-field.readonly input::placeholder,
 .hb-material-field.readonly textarea::placeholder {
     opacity: 0.5;
-    color: #c4a484;
+    color: #6c757d;
 }
 
 /* Transiciones suaves */
@@ -338,10 +338,10 @@
     border-color: #adb5bd;
 }
 
-/* MEJORADO: Hover para readonly - Tonos cálidos sutiles */
+/* Hover para readonly */
 .hb-material-field.readonly input:hover,
 .hb-material-field.readonly textarea:hover {
-    border-color: #f0e6d9;
+    border-color: #adb5bd;
 }
 
 /* Focus visible mejorado para accesibilidad */
@@ -384,46 +384,46 @@
     }
 }
 
-/* MEJORADO: Dark mode support con colores profesionales */
+/* MEJORADO: Dark mode support con colores Bootstrap estándar */
 @media (prefers-color-scheme: dark) {
     .hb-material-field input,
     .hb-material-field textarea,
     .hb-material-select {
-        background-color: #374151;
-        color: #f3f4f6;
-        border-color: #6b7280;
+        background-color: #495057;
+        color: #f8f9fa;
+        border-color: #6c757d;
     }
     
     .hb-material-field label {
-        background-color: #374151;
-        color: #d1d5db;
+        background-color: #495057;
+        color: #adb5bd;
     }
     
     .hb-material-field.disabled input,
     .hb-material-field.disabled textarea,
     .hb-material-field.disabled .hb-material-select {
-        background-color: #f9fafb;
-        color: #9ca3af;
-        border-color: #e5e7eb;
+        background-color: #e9ecef;
+        color: #6c757d;
+        border-color: #ced4da;
     }
     
     .hb-material-field.disabled label {
-        background-color: #f9fafb;
-        color: #9ca3af;
+        background-color: #e9ecef;
+        color: #6c757d;
     }
     
     .hb-material-field.readonly input,
     .hb-material-field.readonly textarea {
-        background-color: #f8fafc;
-        color: #64748b;
+        background-color: #f8f9fa;
+        color: #6c757d;
     }
     
     .hb-material-select-panel {
-        background-color: #374151;
-        border-color: #6b7280;
+        background-color: #495057;
+        border-color: #6c757d;
     }
     
     .hb-material-option:hover {
-        background-color: #4b5563;
+        background-color: #6c757d;
     }
 }
