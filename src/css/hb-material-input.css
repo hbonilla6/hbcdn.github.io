@@ -39,36 +39,36 @@
     box-shadow: 0 0 0 .15rem rgba(91, 192, 222, .25);
 }
 
-/* MEJORADOS: Estados disabled - Más sutiles y profesionales */
+/* Estados disabled - Estilo Bootstrap estándar */
 .hb-material-field.disabled input,
 .hb-material-field.disabled textarea,
 .hb-material-field.disabled .hb-material-select {
-    background-color: #fafafa;
-    color: #9e9e9e;
-    border-color: #e0e0e0;
+    background-color: #e9ecef;
+    color: #6c757d;
+    border-color: #ced4da;
     cursor: not-allowed;
-    opacity: 1; /* Removido el opacity general que hacía ver mal */
+    opacity: 1;
 }
 
 .hb-material-field.disabled input:focus,
 .hb-material-field.disabled textarea:focus,
 .hb-material-field.disabled .hb-material-select:focus {
-    border-color: #e0e0e0;
+    border-color: #f4e6d7;
     box-shadow: none;
 }
 
-/* MEJORADOS: Estados readonly - Muy sutiles */
+/* MEJORADOS: Estados readonly - Tonos cálidos muy sutiles */
 .hb-material-field.readonly input,
 .hb-material-field.readonly textarea {
-    background-color: #fbfbfb;
-    color: #616161;
+    background-color: #fffbf7;
+    color: #8b7355;
     cursor: default;
 }
 
 .hb-material-field.readonly input:focus,
 .hb-material-field.readonly textarea:focus {
-    border-color: #bdbdbd;
-    box-shadow: 0 0 0 .1rem rgba(158, 158, 158, .1);
+    border-color: #e6ddd4;
+    box-shadow: 0 0 0 .1rem rgba(160, 130, 109, .1);
 }
 
 /* Labels */
@@ -92,27 +92,27 @@
     color: #0d47a1;
 }
 
-/* MEJORADO: Labels para campos disabled - Más sutil */
+/* MEJORADO: Labels para campos disabled - Tonos cálidos */
 .hb-material-field.disabled label {
-    color: #bdbdbd;
-    background: #fafafa;
+    color: #b8956f;
+    background: #fef7f0;
 }
 
 .hb-material-field.disabled.filled label,
 .hb-material-field.disabled.focused label {
-    color: #bdbdbd;
-    background: #fafafa;
+    color: #b8956f;
+    background: #fef7f0;
 }
 
 /* MEJORADO: Labels para campos readonly */
 .hb-material-field.readonly label {
-    color: #757575;
-    background: #fbfbfb;
+    color: #9c7c57;
+    background: #fffbf7;
 }
 
 .hb-material-field.readonly.filled label,
 .hb-material-field.readonly.focused label {
-    color: #757575;
+    color: #9c7c57;
 }
 
 /* Contador de caracteres */
@@ -127,7 +127,7 @@
 
 /* MEJORADO: Contador para disabled */
 .hb-material-field.disabled .hb-material-char-counter {
-    color: #bdbdbd;
+    color: #c4a484;
 }
 
 /* Estados de validación */
@@ -145,11 +145,11 @@
 .hb-material-field.disabled.touched.invalid .hb-material-select,
 .hb-material-field.disabled.touched.invalid input,
 .hb-material-field.disabled.touched.invalid textarea {
-    border-color: #e0e0e0;
+    border-color: #f4e6d7;
 }
 
 .hb-material-field.disabled.touched.invalid label {
-    color: #bdbdbd;
+    color: #b8956f;
 }
 
 /* Selects personalizados */
@@ -189,9 +189,9 @@
     margin-left: 8px;
 }
 
-/* MEJORADO: Flecha disabled - Más sutil */
+/* MEJORADO: Flecha disabled - Tonos cálidos */
 .hb-material-field.disabled .hb-material-select-arrow {
-    border-top-color: #d0d0d0;
+    border-top-color: #d4b896;
 }
 
 .hb-material-select.open .hb-material-select-arrow {
@@ -270,7 +270,7 @@
 }
 
 .form-check-custom .form-check-input:disabled + .form-check-label {
-    color: #9e9e9e;
+    color: #a0826d;
     cursor: not-allowed;
 }
 
@@ -292,14 +292,14 @@
 .hb-material-field.disabled input::placeholder,
 .hb-material-field.disabled textarea::placeholder {
     opacity: 0.5;
-    color: #d0d0d0;
+    color: #d4b896;
 }
 
 /* MEJORADO: Placeholders para campos readonly */
 .hb-material-field.readonly input::placeholder,
 .hb-material-field.readonly textarea::placeholder {
     opacity: 0.5;
-    color: #bdbdbd;
+    color: #c4a484;
 }
 
 /* Transiciones suaves */
@@ -338,10 +338,10 @@
     border-color: #adb5bd;
 }
 
-/* MEJORADO: Hover para readonly - Muy sutil */
+/* MEJORADO: Hover para readonly - Tonos cálidos sutiles */
 .hb-material-field.readonly input:hover,
 .hb-material-field.readonly textarea:hover {
-    border-color: #e0e0e0;
+    border-color: #f0e6d9;
 }
 
 /* Focus visible mejorado para accesibilidad */
@@ -384,46 +384,46 @@
     }
 }
 
-/* MEJORADO: Dark mode support más sutil */
+/* MEJORADO: Dark mode support con colores profesionales */
 @media (prefers-color-scheme: dark) {
     .hb-material-field input,
     .hb-material-field textarea,
     .hb-material-select {
-        background-color: #2d3748;
-        color: #e2e8f0;
-        border-color: #4a5568;
+        background-color: #374151;
+        color: #f3f4f6;
+        border-color: #6b7280;
     }
     
     .hb-material-field label {
-        background-color: #2d3748;
-        color: #a0aec0;
+        background-color: #374151;
+        color: #d1d5db;
     }
     
     .hb-material-field.disabled input,
     .hb-material-field.disabled textarea,
     .hb-material-field.disabled .hb-material-select {
-        background-color: #1a202c;
-        color: #718096;
-        border-color: #2d3748;
+        background-color: #f9fafb;
+        color: #9ca3af;
+        border-color: #e5e7eb;
     }
     
     .hb-material-field.disabled label {
-        background-color: #1a202c;
-        color: #718096;
+        background-color: #f9fafb;
+        color: #9ca3af;
     }
     
     .hb-material-field.readonly input,
     .hb-material-field.readonly textarea {
-        background-color: #2a2e3a;
-        color: #cbd5e0;
+        background-color: #f8fafc;
+        color: #64748b;
     }
     
     .hb-material-select-panel {
-        background-color: #2d3748;
-        border-color: #4a5568;
+        background-color: #374151;
+        border-color: #6b7280;
     }
     
     .hb-material-option:hover {
-        background-color: #4a5568;
+        background-color: #4b5563;
     }
 }
