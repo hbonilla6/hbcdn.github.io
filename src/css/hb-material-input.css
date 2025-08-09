@@ -39,35 +39,36 @@
     box-shadow: 0 0 0 .15rem rgba(91, 192, 222, .25);
 }
 
-/* NUEVOS: Estados disabled */
+/* MEJORADOS: Estados disabled - Más sutiles y profesionales */
 .hb-material-field.disabled input,
 .hb-material-field.disabled textarea,
 .hb-material-field.disabled .hb-material-select {
-    background-color: #f8f9fa;
-    color: #6c757d;
-    border-color: #e9ecef;
+    background-color: #fafafa;
+    color: #9e9e9e;
+    border-color: #e0e0e0;
     cursor: not-allowed;
-    opacity: 0.65;
+    opacity: 1; /* Removido el opacity general que hacía ver mal */
 }
 
 .hb-material-field.disabled input:focus,
 .hb-material-field.disabled textarea:focus,
 .hb-material-field.disabled .hb-material-select:focus {
-    border-color: #e9ecef;
+    border-color: #e0e0e0;
     box-shadow: none;
 }
 
-/* NUEVOS: Estados readonly */
+/* MEJORADOS: Estados readonly - Muy sutiles */
 .hb-material-field.readonly input,
 .hb-material-field.readonly textarea {
-    background-color: #f8f9fa;
+    background-color: #fbfbfb;
+    color: #616161;
     cursor: default;
 }
 
 .hb-material-field.readonly input:focus,
 .hb-material-field.readonly textarea:focus {
-    border-color: #0d47a1;
-    box-shadow: 0 0 0 .15rem rgba(91, 192, 222, .15);
+    border-color: #bdbdbd;
+    box-shadow: 0 0 0 .1rem rgba(158, 158, 158, .1);
 }
 
 /* Labels */
@@ -91,20 +92,27 @@
     color: #0d47a1;
 }
 
-/* NUEVO: Labels para campos disabled */
+/* MEJORADO: Labels para campos disabled - Más sutil */
 .hb-material-field.disabled label {
-    color: #6c757d;
-    background: #f8f9fa;
+    color: #bdbdbd;
+    background: #fafafa;
 }
 
 .hb-material-field.disabled.filled label,
 .hb-material-field.disabled.focused label {
-    color: #6c757d;
+    color: #bdbdbd;
+    background: #fafafa;
 }
 
-/* NUEVO: Labels para campos readonly */
+/* MEJORADO: Labels para campos readonly */
 .hb-material-field.readonly label {
-    background: #f8f9fa;
+    color: #757575;
+    background: #fbfbfb;
+}
+
+.hb-material-field.readonly.filled label,
+.hb-material-field.readonly.focused label {
+    color: #757575;
 }
 
 /* Contador de caracteres */
@@ -115,6 +123,11 @@
     margin-top: 4px;
     line-height: 1;
     margin-right: 6px;
+}
+
+/* MEJORADO: Contador para disabled */
+.hb-material-field.disabled .hb-material-char-counter {
+    color: #bdbdbd;
 }
 
 /* Estados de validación */
@@ -128,15 +141,15 @@
     color: #dc3545;
 }
 
-/* NUEVO: No mostrar error en campos disabled */
+/* MEJORADO: No mostrar error en campos disabled */
 .hb-material-field.disabled.touched.invalid .hb-material-select,
 .hb-material-field.disabled.touched.invalid input,
 .hb-material-field.disabled.touched.invalid textarea {
-    border-color: #e9ecef;
+    border-color: #e0e0e0;
 }
 
 .hb-material-field.disabled.touched.invalid label {
-    color: #6c757d;
+    color: #bdbdbd;
 }
 
 /* Selects personalizados */
@@ -149,7 +162,7 @@
     box-sizing: border-box;
 }
 
-/* NUEVO: Select disabled */
+/* MEJORADO: Select disabled */
 .hb-material-field.disabled .hb-material-select {
     cursor: not-allowed;
 }
@@ -176,16 +189,16 @@
     margin-left: 8px;
 }
 
-/* NUEVO: Flecha disabled */
+/* MEJORADO: Flecha disabled - Más sutil */
 .hb-material-field.disabled .hb-material-select-arrow {
-    border-top-color: #adb5bd;
+    border-top-color: #d0d0d0;
 }
 
 .hb-material-select.open .hb-material-select-arrow {
     transform: rotate(180deg);
 }
 
-/* NUEVO: No rotar flecha si está disabled */
+/* No rotar flecha si está disabled */
 .hb-material-field.disabled .hb-material-select.open .hb-material-select-arrow {
     transform: none;
 }
@@ -210,7 +223,7 @@
     display: block;
 }
 
-/* NUEVO: No mostrar panel si está disabled */
+/* No mostrar panel si está disabled */
 .hb-material-field.disabled .hb-material-select.open .hb-material-select-panel {
     display: none;
 }
@@ -250,14 +263,14 @@
     font-size: 14px;
 }
 
-/* NUEVO: Checkboxes y radios disabled */
+/* MEJORADO: Checkboxes y radios disabled */
 .form-check-custom .form-check-input:disabled {
-    opacity: 0.5;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
 .form-check-custom .form-check-input:disabled + .form-check-label {
-    opacity: 0.5;
+    color: #9e9e9e;
     cursor: not-allowed;
 }
 
@@ -275,22 +288,21 @@
     opacity: .6;
 }
 
-/* NUEVO: Placeholders para campos disabled */
+/* MEJORADO: Placeholders para campos disabled */
 .hb-material-field.disabled input::placeholder,
 .hb-material-field.disabled textarea::placeholder {
-    opacity: 0.4;
-    color: #adb5bd;
+    opacity: 0.5;
+    color: #d0d0d0;
 }
 
-/* NUEVO: Placeholders para campos readonly */
+/* MEJORADO: Placeholders para campos readonly */
 .hb-material-field.readonly input::placeholder,
 .hb-material-field.readonly textarea::placeholder {
-    opacity: 0.4;
+    opacity: 0.5;
+    color: #bdbdbd;
 }
 
-/* NUEVOS: Estilos adicionales para mejorar la experiencia visual */
-
-/* Animación más suave para transiciones disabled */
+/* Transiciones suaves */
 .hb-material-field input,
 .hb-material-field textarea,
 .hb-material-select,
@@ -298,12 +310,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-/* Mejorar el contraste en estado disabled */
-.hb-material-field.disabled .hb-material-char-counter {
-    color: #adb5bd;
-}
-
-/* Asegurar que el cursor sea correcto */
+/* Cursor correcto */
 .hb-material-field.disabled,
 .hb-material-field.disabled * {
     cursor: not-allowed !important;
@@ -314,23 +321,7 @@
     cursor: default !important;
 }
 
-/* Mejorar la apariencia del select disabled */
-.hb-material-field.disabled .hb-material-select-trigger {
-    cursor: not-allowed;
-}
-
-.hb-material-field.disabled .hb-material-select-value {
-    user-select: none;
-}
-
-/* Asegurar que los elementos disabled no reciban eventos de pointer */
-.hb-material-field.disabled input,
-.hb-material-field.disabled textarea,
-.hb-material-field.disabled .hb-material-select {
-    pointer-events: auto; /* Mantener para que funcionen los eventos del sistema */
-}
-
-/* Pero desactivar la selección de texto en campos disabled */
+/* Desactivar selección de texto en campos disabled */
 .hb-material-field.disabled input,
 .hb-material-field.disabled textarea,
 .hb-material-field.disabled .hb-material-select-value {
@@ -340,19 +331,17 @@
     -ms-user-select: none;
 }
 
-/* Estilos especiales para campos required disabled */
-.hb-material-field.disabled input[required],
-.hb-material-field.disabled textarea[required],
-.hb-material-field.disabled .hb-material-select[required] {
-    /* Los campos required disabled no muestran el indicador de error */
-    border-color: #e9ecef !important;
-}
-
 /* Hover states - solo para campos no disabled */
 .hb-material-field:not(.disabled) input:hover,
 .hb-material-field:not(.disabled) textarea:hover,
 .hb-material-field:not(.disabled) .hb-material-select:hover {
     border-color: #adb5bd;
+}
+
+/* MEJORADO: Hover para readonly - Muy sutil */
+.hb-material-field.readonly input:hover,
+.hb-material-field.readonly textarea:hover {
+    border-color: #e0e0e0;
 }
 
 /* Focus visible mejorado para accesibilidad */
@@ -380,26 +369,7 @@
     border-color: #28a745;
 }
 
-/* Estados especiales para readonly */
-.hb-material-field.readonly input:hover,
-.hb-material-field.readonly textarea:hover {
-    border-color: #ced4da;
-}
-
-/* Indicador visual sutil para campos readonly */
-.hb-material-field.readonly::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 8px 8px 0;
-    border-color: transparent #dee2e6 transparent transparent;
-    pointer-events: none;
-    z-index: 1;
-}
+/* REMOVIDO: El indicador visual para readonly ya que era muy invasivo */
 
 /* Responsive adjustments */
 @media (max-width: 576px) {
@@ -414,7 +384,7 @@
     }
 }
 
-/* Dark mode support (opcional) */
+/* MEJORADO: Dark mode support más sutil */
 @media (prefers-color-scheme: dark) {
     .hb-material-field input,
     .hb-material-field textarea,
@@ -440,6 +410,12 @@
     .hb-material-field.disabled label {
         background-color: #1a202c;
         color: #718096;
+    }
+    
+    .hb-material-field.readonly input,
+    .hb-material-field.readonly textarea {
+        background-color: #2a2e3a;
+        color: #cbd5e0;
     }
     
     .hb-material-select-panel {
