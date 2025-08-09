@@ -424,27 +424,20 @@
     }
 }
 
-/* MEJORADO: Dark mode support con colores Bootstrap estándar */
+/* Dark mode support - SIN fondos oscuros */
 @media (prefers-color-scheme: dark) {
+    /* Los inputs mantienen fondo blanco siempre */
     .hb-material-field input,
     .hb-material-field textarea,
     .hb-material-select {
-        background-color: #495057;
-        color: #f8f9fa;
+        background-color: #fff;
+        color: #212529;
         border-color: #6c757d;
     }
     
-    /* Forzar colores normales para inputs de fecha en dark mode */
-    .hb-material-field input[type="date"],
-    .hb-material-field input[type="datetime-local"],
-    .hb-material-field input[type="time"] {
-        background-color: #495057 !important;
-        color: #f8f9fa !important;
-    }
-    
     .hb-material-field label {
-        background-color: #495057;
-        color: #adb5bd;
+        background-color: #fff;
+        color: #6c757d;
     }
     
     .hb-material-field.disabled input,
@@ -453,14 +446,6 @@
         background-color: #e9ecef;
         color: #6c757d;
         border-color: #ced4da;
-    }
-    
-    /* Inputs de fecha disabled en dark mode siguen siendo claros */
-    .hb-material-field.disabled input[type="date"],
-    .hb-material-field.disabled input[type="datetime-local"],
-    .hb-material-field.disabled input[type="time"] {
-        background-color: #e9ecef !important;
-        color: #6c757d !important;
     }
     
     .hb-material-field.disabled label {
@@ -474,20 +459,12 @@
         color: #6c757d;
     }
     
-    /* Inputs de fecha readonly en dark mode */
-    .hb-material-field.readonly input[type="date"],
-    .hb-material-field.readonly input[type="datetime-local"],
-    .hb-material-field.readonly input[type="time"] {
-        background-color: #f8f9fa !important;
-        color: #6c757d !important;
-    }
-    
     .hb-material-select-panel {
-        background-color: #495057;
+        background-color: #fff;
         border-color: #6c757d;
     }
     
     .hb-material-option:hover {
-        background-color: #6c757d;
+        background-color: #f8f9fa;
     }
 }
